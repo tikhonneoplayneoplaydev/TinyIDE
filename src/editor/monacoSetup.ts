@@ -199,6 +199,7 @@ const LANG_BY_EXT: Record<string, string> = {
   graphql: 'graphql', gql: 'graphql', prisma: 'prisma',
   dockerfile: 'dockerfile', makefile: 'makefile', cmake: 'cmake',
   txt: 'plaintext', log: 'plaintext', csv: 'plaintext',
+  fun: 'funo', funo: 'funo',
 };
 
 export function languageForPath(path: string): string {
@@ -238,6 +239,7 @@ export const EXT_COLORS: Record<string, string> = {
   graphql: '#e10098', gql: '#e10098', prisma: '#0c344b',
   dockerfile: '#384d54', makefile: '#427819', cmake: '#4b9a3f',
   txt: '#9aa7c4', log: '#9aa7c4', csv: '#2aa198',
+  fun: '#e4a35a', funo: '#e4a35a',
 };
 
 export function colorForPath(path: string): string {

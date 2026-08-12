@@ -17,7 +17,7 @@ const MONACO_LANGS = [
 const EXTRA = [
   'json','jsonc','json5','typescript','css','scss','less','html','vue','svelte',
   'toml','diff','tex','latex','asm','verilog','systemverilog','vhdl','makefile',
-  'cmake','prisma','plaintext','sql','powershell','batch','zig','groovy','ocaml',
+  'cmake','prisma','plaintext','sql','powershell','batch','zig','groovy','ocaml','funo',
   'erlang','haskell','ruby','shell','lua','python','rust','go','dart','scala',
 ];
 
@@ -538,7 +538,7 @@ const LABELS = {
   fsharp:'F#', erlang:'Erlang', groovy:'Groovy', less:'Less', vue:'Vue',
   svelte:'Svelte', diff:'±', tex:'LaTeX', latex:'LaTeX', asm:'ASM',
   verilog:'V', vhdl:'VHDL', makefile:'Make', cmake:'CMake', prisma:'Prisma',
-  plaintext:'TXT', jsonc:'JSONC', json5:'JSON5', batch:'BAT', vbs:'VBS',
+  plaintext:'TXT', jsonc:'JSONC', json5:'JSON5', batch:'BAT', vbs:'VBS', funo:'Funo',
   ocaml:'OCaml', clojure:'Clj',
 };
 

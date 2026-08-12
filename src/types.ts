@@ -84,7 +84,7 @@ export type Settings = {
   terminalFontSize: number;
 };
 
-export type Activity = 'explorer' | 'search' | 'languages' | 'settings' | 'source';
+export type Activity = 'explorer' | 'search' | 'languages' | 'settings' | 'source' | 'funo';
 
 export type ShellId = 'shell' | 'nu' | 'pwsh' | 'cmd' | 'zsh' | 'fish';
 

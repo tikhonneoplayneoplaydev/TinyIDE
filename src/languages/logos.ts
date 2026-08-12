@@ -404,6 +404,10 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
     "color": "#3be133",
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#ec6813\"/>\n<path d=\"M32 12 L51 32 L32 52 L13 32 Z\" fill=\"#fff\"/>\n<path d=\"M32 22 L42 32 L32 42 L22 32 Z\" fill=\"#ec6813\"/></svg>"
   },
+  "funo": {
+    "color": "#6b7280",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#6b7280\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">Funo</text></svg>"
+  },
   "erlang": {
     "color": "#b83998",
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#b83998\"/>\n<circle cx=\"32\" cy=\"32\" r=\"15\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4.5\"/>\n<circle cx=\"14\" cy=\"14\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"14\" r=\"4.5\" fill=\"#fff\"/>\n<circle cx=\"14\" cy=\"50\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"50\" r=\"4.5\" fill=\"#fff\"/></svg>"

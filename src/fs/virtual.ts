@@ -1090,6 +1090,21 @@ end architecture;
 
 \\end{document}
 `],
+  [`${DEMO_ROOT}/funo/hello.fun`, `fun greet(name: text) -> text = "Привет, " + name
+
+fun main() {
+    text who = readln()
+    println(greet(who))
+    return(200)
+}
+`],
+  [`${DEMO_ROOT}/funo/fibonacci.fun`, `fun fib(n: int) -> int = if n < 2 then n else fib(n - 1) + fib(n - 2)
+
+fun main() {
+    int answer = fib(10)
+    println("fib(10) = " + answer)
+}
+`],
   [`${DEMO_ROOT}/samples/startup.s`, `# ARM64 startup (фрагмент)
 .section .text.startup
 .global _start

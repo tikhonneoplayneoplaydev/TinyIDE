@@ -1,11 +1,11 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import vue from '@vitejs/plugin-vue';
 
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [vue()],
   // Prevent vite from obscuring rust errors
   clearScreen: false,
   // Tauri expects a fixed port, fail if that port is not available
@@ -13,7 +13,6 @@ export default defineConfig({
     port: 1420,
     strictPort: true,
     host: '0.0.0.0',
-    // allow the live-preview host in dev (sandboxed iframe preview)
     allowedHosts: true,
     hmr: host
       ? {
@@ -23,11 +22,9 @@ export default defineConfig({
         }
       : undefined,
     watch: {
-      // don't watch rust sources
       ignored: ['**/src-tauri/**'],
     },
   },
-  // gh-pages deploy builds with --base=./
   base: process.env.VITE_BASE || '/',
   build: {
     target: 'es2021',

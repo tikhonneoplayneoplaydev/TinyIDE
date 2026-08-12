@@ -5,6 +5,8 @@ use std::fs;
 use std::sync::Mutex;
 use tauri::{Emitter, State};
 
+mod funo;
+
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 struct DirEntry {
@@ -341,6 +343,41 @@ fn git_status(cwd: String) -> Result<GitInfo, String> {
     Ok(GitInfo { branch, files })
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+//  Funo compiler (встроенный — язык Funo → Java/JVM)
+// ═══════════════════════════════════════════════════════════════════════
+
+/// Проверка исходника Funo: возвращает диагностику (без компиляции).
+#[tauri::command]
+fn funo_check(source: String) -> Vec<funo::Diagnostic> {
+    funo::check_source(&source)
+}
+
+/// Транспиляция Funo → Java-код (работает без установленной Java).
+#[tauri::command]
+fn funo_transpile(source: String) -> Result<serde_json::Value, String> {
+    match funo::transpile(&source) {
+        Ok(java) => Ok(serde_json::json!({ "ok": true, "java": java })),
+        Err(diags) => Ok(serde_json::json!({ "ok": false, "errors": diags })),
+    }
+}
+
+/// Компиляция в .class/.jar (нужны javac/jar в PATH) + опциональный запуск.
+#[tauri::command]
+fn funo_compile(
+    source: String,
+    project_root: String,
+    run_after: bool,
+) -> Result<serde_json::Value, String> {
+    let cp = funo::discover_classpath(&project_root);
+    let result = if run_after {
+        funo::compile_and_run(&project_root, &source, &cp)
+    } else {
+        funo::compile_only(&project_root, &source, &cp)
+    };
+    Ok(serde_json::to_value(&result).map_err(|e| e.to_string())?)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -359,7 +396,10 @@ pub fn run() {
             pty_resize,
             pty_kill,
             run_task,
-            git_status
+            git_status,
+            funo_check,
+            funo_transpile,
+            funo_compile
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
