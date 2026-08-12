@@ -17,7 +17,7 @@ const MONACO_LANGS = [
 const EXTRA = [
   'json','jsonc','json5','typescript','css','scss','less','html','vue','svelte',
   'toml','diff','tex','latex','asm','verilog','systemverilog','vhdl','makefile',
-  'cmake','prisma','plaintext','sql','powershell','batch',
+  'cmake','prisma','plaintext','sql','powershell','batch','zig','groovy',
 ];
 
 const LANGS = [...new Set([...MONACO_LANGS, ...EXTRA])];
@@ -52,6 +52,8 @@ const COLORS = {
   cameligo: '#3be133', vue: '#41b883', svelte: '#ff3e00', graphql: '#e10098',
   solidity: '#aa6746', css3: '#264de4', latex2: '#3d6117', sql2: '#e38c00',
   objc: '#438eff', 'objective-c': '#438eff', csp: '#5c6bc0', vhdl2: '#db4d3f',
+  twig: '#7f9a3a',
+  abap: '#008fd3',
 };
 
 const DARK_TEXT = new Set(['javascript','yaml','c1f12e','qsharp','pascal','tcl','twig','cameligo','pascaligo','bat','batch']);
@@ -175,6 +177,155 @@ const HAND = {
   shell: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#3e5c2e"/>
 <path d="M18 22 L30 32 L18 42" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 <path d="M34 44 h14" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
+
+  // Lua — полумесяц
+  lua: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#000080"/>
+<path d="M36 10 A 24 24 0 1 0 36 54 A 19 19 0 1 1 36 10 Z" fill="#fff"/></svg>`,
+
+  // Julia — три точки (фирменный знак языка)
+  julia: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#9558b2"/>
+<circle cx="32" cy="18" r="9" fill="#389826" stroke="#fff" stroke-width="2.5"/>
+<circle cx="20" cy="41" r="9" fill="#cb3c33" stroke="#fff" stroke-width="2.5"/>
+<circle cx="44" cy="41" r="9" fill="#ffffff" stroke="#fff" stroke-width="2.5"/></svg>`,
+
+  // Zig — молния-Z
+  zig: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#ec915c"/>
+<path d="M42 12 L24 33 H33 L22 52 L41 30 H32 Z" fill="#fff"/></svg>`,
+
+  // Dart — мишень со стрелой
+  dart: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#00b4ab"/>
+<circle cx="32" cy="32" r="16" fill="none" stroke="#fff" stroke-width="4.5"/>
+<circle cx="32" cy="32" r="6.5" fill="#fff"/>
+<path d="M24 40 L40 24" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M40 24 l-9 3 l4 -8 z" fill="#fff"/></svg>`,
+
+  // SCSS — витиеватая S с хвостом
+  scss: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#c6538c"/>
+<path d="M24 17 C 24 11 41 11 41 17 C 41 25 21 23 21 32 C 21 42 40 43 43 35 C 45 30 44 26 42 21" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/></svg>`,
+
+  // Less — знак «меньше»
+  less: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1d365d"/>
+<path d="M20 20 L36 32 L20 44" stroke="#fff" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  // PHP — слон (elePHPant)
+  php: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#4f5d95"/>
+<circle cx="18" cy="31" r="9" fill="#fff"/>
+<circle cx="25" cy="29" r="6" fill="#4f5d95"/>
+<path d="M12 35 q -7 5 -4 14 q 1 4 5 3" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+<rect x="22" y="30" width="24" height="14" rx="7" fill="#fff"/>
+<path d="M26 44 v8 M34 44 v8 M42 44 v8" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+<path d="M48 36 q 5 1 4 6" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>`,
+
+  // Perl — верблюд
+  perl: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0298c3"/>
+<path d="M13 43 C 13 33 21 31 24 37 C 26 29 35 29 37 37 C 42 34 47 38 45 43" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M13 43 q -2 -6 1 -9" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<path d="M18 43 v7 M27 43 v7 M36 43 v7 M44 43 v7" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></svg>`,
+
+  // Handlebars — усы
+  handlebars: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#f7931e"/>
+<path d="M12 37 Q 20 18 32 30 Q 44 18 52 37 Q 44 41 38 35 Q 35 43 32 43 Q 29 43 26 35 Q 20 41 12 37 Z" fill="#fff"/></svg>`,
+
+  // Solidity — стопка ромбов
+  solidity: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#aa6746"/>
+<path d="M32 11 l6 8 -6 8 -6 -8 z" fill="#fff"/>
+<path d="M32 24 l9 11 -9 11 -9 -11 z" fill="#fff"/>
+<path d="M32 42 l11 13 -11 13 -11 -13 z" fill="#fff"/></svg>`,
+
+  // plaintext — документ с текстом
+  plaintext: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#9aa7c4"/>
+<rect x="17" y="9" width="30" height="46" rx="4" fill="#fff"/>
+<path d="M47 9 h-7 a7 7 0 0 1 7 7 z" fill="#9aa7c4"/>
+<path d="M24 22 h16 M24 28 h16 M24 34 h10" stroke="#9aa7c4" stroke-width="3.2" stroke-linecap="round"/></svg>`,
+
+  // PowerShell — терминал с курсором
+  powershell: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#012456"/>
+<rect x="13" y="15" width="38" height="34" rx="5" fill="none" stroke="#fff" stroke-width="4"/>
+<path d="M20 26 h16 M20 33 h24" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+<rect x="20" y="40" width="8" height="3.5" fill="#fff"/></svg>`,
+
+  // Batch — окно консоли
+  batch: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#c1f12e"/>
+<rect x="14" y="17" width="36" height="30" rx="4" fill="none" stroke="#fff" stroke-width="4"/>
+<path d="M14 25 h36" stroke="#fff" stroke-width="4"/>
+<circle cx="21" cy="21" r="1.8" fill="#fff"/><circle cx="27" cy="21" r="1.8" fill="#fff"/><circle cx="33" cy="21" r="1.8" fill="#fff"/>
+<path d="M20 33 h14 M20 39 h9" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>
+<rect x="31" y="37.5" width="6" height="3" fill="#fff"/></svg>`,
+
+  // MySQL — дельфин
+  mysql: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#00758f"/>
+<path d="M14 42 C 16 28 24 21 32 24 C 42 27 48 33 47 42 C 44 34 38 30 31 32 C 22 34 16 38 14 42 Z" fill="#fff"/>
+<path d="M30 25 q -4 -9 4 -11 q 2 7 -2 11 z" fill="#fff"/>
+<path d="M47 40 q 6 -3 7 -9 q -3 6 -9 6 z" fill="#fff"/></svg>`,
+
+  // PostgreSQL — слон
+  pgsql: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#336791"/>
+<ellipse cx="26" cy="36" rx="15" ry="10" fill="#fff"/>
+<circle cx="42" cy="27" r="8" fill="#fff"/>
+<circle cx="39" cy="25" r="5" fill="#336791"/>
+<path d="M48 29 q 6 2 5 12 q -1 4 -5 3" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round"/>
+<path d="M15 42 v7 M23 42 v7 M31 42 v7" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M11 36 q -5 -1 -4 -6" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>`,
+
+  // Twig — ветка с листьями
+  twig: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#7f9a3a"/>
+<path d="M13 47 Q 30 30 51 15" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<path d="M27 35 q -8 -10 -16 -8 M36 27 q -7 -11 -14 -10" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/>
+<ellipse cx="12" cy="25" rx="4.5" ry="7" transform="rotate(25 12 25)" fill="#fff"/>
+<ellipse cx="23" cy="17" rx="4.5" ry="7" transform="rotate(35 23 17)" fill="#fff"/></svg>`,
+
+  // Pug — мордочка мопса
+  pug: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#a86454"/>
+<ellipse cx="32" cy="33" rx="17" ry="15" fill="#fff"/>
+<path d="M17 26 q -8 -13 1 -16 q 7 -2 9 8 z M47 26 q 8 -13 -1 -16 q -7 -2 -9 8 z" fill="#fff"/>
+<circle cx="32" cy="40" r="8" fill="#a86454"/>
+<circle cx="26" cy="30" r="2.6" fill="#a86454"/>
+<circle cx="38" cy="30" r="2.6" fill="#a86454"/>
+<path d="M28 42 q 4 3 8 0" stroke="#a86454" stroke-width="2" fill="none" stroke-linecap="round"/></svg>`,
+
+  // Liquid — капля
+  liquid: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#67b8de"/>
+<path d="M32 10 C 43 25 47 33 47 39 A 15 15 0 1 1 17 39 C 17 33 21 25 32 10 Z" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round"/></svg>`,
+
+  // Cypher — замок
+  cypher: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#34c0eb"/>
+<path d="M24 30 v-5 a8 8 0 0 1 16 0 v5" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<rect x="18" y="29" width="28" height="21" rx="4.5" fill="#fff"/>
+<circle cx="32" cy="37" r="3.2" fill="#34c0eb"/>
+<path d="M32 40 v4.5" stroke="#34c0eb" stroke-width="3" stroke-linecap="round"/></svg>`,
+
+  // Groovy — восьмая нота
+  groovy: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#4298b8"/>
+<ellipse cx="28" cy="40" rx="10" ry="7.5" fill="#fff"/>
+<path d="M36 33 V16" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+<path d="M36 16 q 10 3 7 12" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/></svg>`,
+
+  // F# — диез из штрихов
+  fsharp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#378bba"/>
+<path d="M28 13 L24 51 M40 13 L36 51 M16 26 h32 M15 38 h32" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/></svg>`,
+
+  // Redis — стопка серверов
+  redis: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#d82c20"/>
+<rect x="17" y="15" width="30" height="10" rx="3" fill="#fff"/>
+<rect x="17" y="27" width="30" height="10" rx="3" fill="#fff"/>
+<rect x="17" y="39" width="30" height="10" rx="3" fill="#fff"/></svg>`,
+
+  // Scala — спираль
+  scala: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#c22d40"/>
+<path d="M21 20 q 0 -9 11 -9 q 13 0 13 11 q 0 11 -13 13 q -15 3 -15 15 q 0 8 12 8" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/></svg>`,
+
+  // ABAP — сапфир SAP
+  abap: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#008fd3"/>
+<path d="M32 13 L51 32 L32 51 L13 32 Z" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+<path d="M32 24 L40 32 L32 40 L24 32 Z" fill="#fff" opacity="0.85"/></svg>`,
+
+  // Apex — искра
+  apex: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1797c0"/>
+<path d="M32 10 L36 28 L54 32 L36 36 L32 54 L28 36 L10 32 L28 28 Z" fill="#fff"/></svg>`,
+
+  // XML — угловые скобки
+  xml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0060ac"/>
+<path d="M20 22 L11 32 L20 42 M44 22 L53 32 L44 42" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
 };
 
 // ── метки для остальных ────────────────────────────────────────────────────
@@ -219,6 +370,7 @@ for (const lang of LANGS) {
 // алиасы
 out.typescript2 = out.typescript; out.css2 = out.css; out.scss2 = out.scss;
 out.html2 = out.html; out.json2 = out.json; out['c++'] = out.cpp;
+out.jsonc = out.json; out.json5 = out.json;
 
 const code = `// ⚡ AUTO-GENERATED by scripts/gen-logos.mjs — не редактировать вручную
 export const langLogos: Record<string, { color: string; svg: string }> = ${JSON.stringify(out, null, 2)};
