@@ -21,17 +21,17 @@ const active = () => store.openFiles.find((f) => f.path === store.activePath);
 <template>
   <div class="statusbar">
     <div class="status-left">
-      <span class="status-item" title="Ветка"><AppIcon name="branch" :size="13" /> main</span>
-      <span class="status-item" title="Синхронизация"><AppIcon name="sync" :size="13" /> 0↓ 0↑</span>
-      <span class="status-item" title="Ошибки"><AppIcon name="check" :size="13" /> 0</span>
-      <span class="status-item warn" title="Несохранённые"><AppIcon name="warn" :size="13" /> {{ dirtyCount() }}</span>
+      <span class="status-item" :title="store.t('status.main')"><AppIcon name="branch" :size="13" /> {{ store.t('status.main') }}</span>
+      <span class="status-item" title="sync"><AppIcon name="sync" :size="13" /> 0↓ 0↑</span>
+      <span class="status-item" :title="store.t('status.errors')"><AppIcon name="check" :size="13" /> 0</span>
+      <span class="status-item warn" :title="store.t('status.changes')"><AppIcon name="warn" :size="13" /> {{ dirtyCount() }}</span>
     </div>
     <div class="status-right">
       <span class="status-item status-click" @click="store.toast('TinyIDE v0.5.0 — Tauri 2 · Vue 3 · Monaco · AGPL-3.0')">
         {{ active() ? active()!.language : 'Plain Text' }}
       </span>
       <span class="status-item">Ln {{ cursor.line }}, Col {{ cursor.col }}</span>
-      <span class="status-item">Spaces: {{ store.settings.tabSize }}</span>
+      <span class="status-item">{{ store.t('status.spaces') }}: {{ store.settings.tabSize }}</span>
       <span class="status-item">UTF-8</span>
       <span class="status-item">LF</span>
       <button
@@ -45,14 +45,14 @@ const active = () => store.openFiles.find((f) => f.path === store.activePath);
       <button
         class="status-btn"
         :class="{ on: store.panelOpen }"
-        title="Терминал (Ctrl+`)"
+        :title="store.t('menu.toggleTerminal') + ' (Ctrl+`)'"
         @click="store.setPanelOpen(!store.panelOpen)"
       >
         <AppIcon name="terminal" :size="15" />
       </button>
       <button
         class="status-btn"
-        title="Переключить тему"
+        title="theme"
         @click="store.updateSettings({ theme: store.settings.theme === 'dark' ? 'light' : 'dark' })"
       >
         <AppIcon :name="store.settings.theme === 'dark' ? 'sun' : 'moon'" />

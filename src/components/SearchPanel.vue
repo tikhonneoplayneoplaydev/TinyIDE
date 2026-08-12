@@ -2,7 +2,7 @@
 import { onUnmounted, ref, watch } from 'vue';
 import type { FsNode } from '../types';
 import { store } from '../store';
-import { readFileText } from '../fs/bridge';
+import { readFileText, listDirReal, SKIP_DIRS } from '../fs/bridge';
 import AppIcon from './AppIcon.vue';
 
 type Result = { path: string; name: string; line: number; text: string };
@@ -25,26 +25,50 @@ watch(query, async (qRaw) => {
   const myCancel = { flag: false };
   timer = window.setTimeout(async () => {
     const out: Result[] = [];
-    const walk = async (n: FsNode) => {
+    const readOne = async (path: string, name: string) => {
+      if (myCancel.flag || out.length >= 300) return;
+      try {
+        const content = await readFileText(ws, path);
+        const lines = content.split('\n');
+        for (let i = 0; i < lines.length && out.length < 300; i++) {
+          if (lines[i].toLowerCase().includes(q)) {
+            out.push({ path, name, line: i + 1, text: lines[i].trim().slice(0, 160) });
+          }
+        }
+      } catch {
+        /* unreadable */
+      }
+    };
+    const walkVirtual = async (n: FsNode) => {
       if (myCancel.flag || out.length >= 300) return;
       if (n.kind === 'file') {
         if ((n.size ?? 0) > 512_000) return;
-        try {
-          const content = await readFileText(ws, n.path);
-          const lines = content.split('\n');
-          for (let i = 0; i < lines.length && out.length < 300; i++) {
-            if (lines[i].toLowerCase().includes(q)) {
-              out.push({ path: n.path, name: n.name, line: i + 1, text: lines[i].trim().slice(0, 160) });
-            }
-          }
-        } catch {
-          /* unreadable */
-        }
+        await readOne(n.path, n.name);
       } else {
-        for (const c of n.children ?? []) await walk(c);
+        for (const c of n.children ?? []) await walkVirtual(c);
       }
     };
-    await walk(ws.tree);
+    const walkReal = async (path: string) => {
+      if (myCancel.flag || out.length >= 300) return;
+      let entries;
+      try {
+        entries = await listDirReal(path);
+      } catch {
+        return;
+      }
+      for (const e of entries) {
+        if (myCancel.flag || out.length >= 300) return;
+        if (!store.settings.showHidden && e.name.startsWith('.')) continue;
+        if (e.is_dir && SKIP_DIRS.has(e.name)) continue;
+        if (e.is_dir) {
+          await walkReal(e.path);
+        } else {
+          await readOne(e.path, e.name);
+        }
+      }
+    };
+    if (ws.mode === 'real') await walkReal(ws.rootPath);
+    else await walkVirtual(ws.tree);
     if (!myCancel.flag) {
       results.value = out;
       searching.value = false;

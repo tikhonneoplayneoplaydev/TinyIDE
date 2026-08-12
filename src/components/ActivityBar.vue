@@ -2,14 +2,14 @@
 import { store } from '../store';
 import AppIcon from './AppIcon.vue';
 
-const ITEMS: { id: 'explorer' | 'search' | 'source' | 'funo' | 'plugins' | 'languages' | 'settings'; label: string; icon: string }[] = [
-  { id: 'explorer', label: 'Explorer', icon: 'files' },
-  { id: 'search', label: 'Search', icon: 'search' },
-  { id: 'source', label: 'Source Control', icon: 'git' },
-  { id: 'funo', label: 'Funo — компилятор', icon: 'funo' },
-  { id: 'plugins', label: 'Plugins (WASM)', icon: 'puzzle' },
-  { id: 'languages', label: 'Languages', icon: 'languages' },
-  { id: 'settings', label: 'Settings', icon: 'gear' },
+const ITEMS: { id: 'explorer' | 'search' | 'source' | 'funo' | 'plugins' | 'languages' | 'settings'; key: string; icon: string }[] = [
+  { id: 'explorer', key: 'activity.explorer', icon: 'files' },
+  { id: 'search', key: 'activity.search', icon: 'search' },
+  { id: 'source', key: 'activity.source', icon: 'git' },
+  { id: 'funo', key: 'activity.funo', icon: 'funo' },
+  { id: 'plugins', key: 'activity.plugins', icon: 'puzzle' },
+  { id: 'languages', key: 'activity.languages', icon: 'languages' },
+  { id: 'settings', key: 'activity.settings', icon: 'gear' },
 ];
 
 const click = (id: (typeof ITEMS)[number]['id']) => {
@@ -29,8 +29,8 @@ const click = (id: (typeof ITEMS)[number]['id']) => {
       :key="it.id"
       class="activity-btn"
       :class="{ active: store.activity === it.id }"
-      :title="it.label"
-      :aria-label="it.label"
+      :title="store.t(it.key)"
+      :aria-label="store.t(it.key)"
       @click="click(it.id)"
     >
       <AppIcon :name="it.icon" :size="22" />

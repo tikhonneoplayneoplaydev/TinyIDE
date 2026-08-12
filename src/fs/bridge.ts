@@ -10,7 +10,7 @@ export const isTauri: boolean =
 
 export const vfs = new VirtualFS();
 
-const SKIP_DIRS = new Set([
+export const SKIP_DIRS = new Set([
   'node_modules', '.git', 'target', 'dist', 'build', 'out', '.next', '.nuxt',
   '.cache', '__pycache__', '.venv', 'vendor', '.parcel-cache', 'coverage',
 ]);
@@ -59,6 +59,79 @@ export async function loadWorkspaceTree(
 ): Promise<FsNode> {
   if (mode === 'virtual') return vfs.getTree();
   return loadRealDir(path, 0, 6, showHidden);
+}
+
+// ─── ленивая загрузка дерева (реальный режим) ───────────────────────────────
+// Открытие папки не сканирует всё дерево: грузится только корень,
+// а дети подгружаются при раскрытии. Плюс защита от циклов-джункшенов
+// (Windows) через канонические пути.
+
+export type RealEntry = {
+  name: string;
+  path: string;
+  is_dir: boolean;
+  size?: number;
+  canonical?: string | null;
+};
+
+export async function listDirReal(path: string): Promise<RealEntry[]> {
+  return (await invoke('list_dir', { path })) as RealEntry[];
+}
+
+function normalize(p: string): string {
+  return p.replace(/\\/g, '/');
+}
+
+export function entryToNode(e: RealEntry, showHidden: boolean): FsNode | null {
+  if (!showHidden && e.name.startsWith('.')) return null;
+  if (e.is_dir && SKIP_DIRS.has(e.name)) return null;
+  return {
+    name: e.name,
+    path: e.path,
+    kind: e.is_dir ? 'dir' : 'file',
+    size: e.size,
+    canonical: e.canonical ?? null,
+    loaded: false,
+    children: [],
+  };
+}
+
+/** Корень рабочей папки: загружены только прямые дети. */
+export async function loadRootLazy(path: string, showHidden: boolean): Promise<FsNode> {
+  const p = normalize(path);
+  const name = p.slice(p.lastIndexOf('/') + 1) || p;
+  const root: FsNode = { name, path: p, kind: 'dir', loaded: false, children: [] };
+  const entries = await listDirReal(p);
+  const kids: FsNode[] = [];
+  for (const e of entries) {
+    const n = entryToNode(e, showHidden);
+    if (n) kids.push(n);
+  }
+  kids.sort((a, b) => (a.kind !== b.kind ? (a.kind === 'dir' ? -1 : 1) : a.name.localeCompare(b.name)));
+  root.children = kids;
+  root.loaded = true;
+  return root;
+}
+
+/** Дети папки (для раскрытия узла); visited — канонические пути для защиты от циклов. */
+export async function loadDirChildren(
+  node: FsNode,
+  showHidden: boolean,
+  visited: Set<string>
+): Promise<FsNode[]> {
+  const entries = await listDirReal(node.path);
+  const out: FsNode[] = [];
+  for (const e of entries) {
+    const n = entryToNode(e, showHidden);
+    if (!n) continue;
+    if (n.kind === 'dir') {
+      if (n.canonical && visited.has(n.canonical)) continue; // цикл (junction)
+      n.loaded = false;
+    }
+    out.push(n);
+  }
+  out.sort((a, b) => (a.kind !== b.kind ? (a.kind === 'dir' ? -1 : 1) : a.name.localeCompare(b.name)));
+  return out;
 }
 
 // ─── file operations ────────────────────────────────────────────────────────

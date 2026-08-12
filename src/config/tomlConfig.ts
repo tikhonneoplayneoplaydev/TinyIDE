@@ -16,6 +16,7 @@ export const DEFAULT_CONFIG_TOML = `# ══════════════
 [appearance]
 theme = "dark"        # "dark" | "light"
 accent = "cyan"       # "cyan" | "violet" | "pink" | "green" | "amber" | "red"
+language = "ru"      # "ru" | "en" | "he" | "uk" | "de" | "es"
 
 [editor]
 font_family = "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace"
@@ -139,6 +140,10 @@ export function configToSettings(text: string): ConfigResult {
   if (appr.theme === 'dark' || appr.theme === 'light') patch.theme = appr.theme;
   const ac = str(appr.accent) as AccentKey | undefined;
   if (ac && ACCENT_PRESETS[ac]) patch.accent = ac;
+  if (['ru', 'en', 'he', 'uk', 'de', 'es'].includes(String(appr.language)))
+    patch.lang = String(appr.language) as never;
+  const ru2 = str(appr.registry_url);
+  if (ru2) patch.registryUrl = ru2;
 
   // effects
   const tr = bool(eff.trail);

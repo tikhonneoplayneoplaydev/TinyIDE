@@ -8,12 +8,14 @@ import { ACCENT_PRESETS, Emitter, FONT_PRESETS } from './types';
 import {
   isTauri, loadWorkspaceTree, openFolderDialog, readFileText, writeFileText,
   deletePath as fsDeletePath, renamePath as fsRenamePath, vfs,
-  createFile as fsCreateFile,
+  createFile as fsCreateFile, loadRootLazy, loadDirChildren,
 } from './fs/bridge';
 import { DEMO_ROOT } from './fs/virtual';
 import { languageForPath } from './editor/monacoSetup';
 import { CONFIG_FILENAME, DEFAULT_CONFIG_TOML, configToSettings } from './config/tomlConfig';
 import type { TaskCommands } from './types';
+import { translate } from './i18n';
+import type { Lang } from './i18n';
 
 const DEFAULT_SETTINGS: Settings = {
   theme: 'dark',
@@ -49,6 +51,8 @@ const DEFAULT_SETTINGS: Settings = {
   shell: 'shell',
   terminalFontSize: 13,
   customShells: [],
+  lang: 'ru' as Lang,
+  registryUrl: 'https://tikhonneoplayneoplaydev.github.io/TinyIDE/plugins/registry.json',
 };
 
 function loadSettings(): Settings {
@@ -77,6 +81,9 @@ export function getMonacoEditor(): monaco_editor | null {
   return monacoEditor;
 }
 
+// ─── защита от циклов при ленивой загрузке (реальные пути) ─────────────────
+let visitedReal = new Set<string>();
+
 // ─── стор ─────────────────────────────────────────────────────────────────
 export const store = reactive({
   settings: loadSettings(),
@@ -103,6 +110,9 @@ export const store = reactive({
   // ── actions ──────────────────────────────────────────────────────────────
   updateSettings(patch: Partial<Settings>) {
     Object.assign(this.settings, patch);
+    if (patch.lang) {
+      document.documentElement.dir = patch.lang === 'he' ? 'rtl' : 'ltr';
+    }
     try {
       localStorage.setItem('tinyide.settings', JSON.stringify(this.settings));
     } catch {
@@ -147,7 +157,7 @@ export const store = reactive({
     await writeFileText(ws, path, content);
     savedMap.set(path, content);
     this.dirty = { ...this.dirty, [path]: false };
-    this.toast('Файл сохранён');
+    this.toast(this.t('toast.saved'));
     if (path === (this.workspace?.rootPath ?? DEMO_ROOT) + '/' + CONFIG_FILENAME) {
       applyConfigText(content);
     }
@@ -188,7 +198,8 @@ export const store = reactive({
   },
 
   async setWorkspacePath(path: string, toastMsg?: string) {
-    const tree = await loadWorkspaceTree(path, 'real', this.settings.showHidden);
+    visitedReal.clear();
+    const tree = await loadRootLazy(path, this.settings.showHidden);
     const name = path.split('/').pop() || path;
     this.workspace = { mode: 'real', rootName: name, rootPath: path, tree };
     this.openFiles = [];
@@ -197,28 +208,49 @@ export const store = reactive({
     tryApplyConfigAt('real', path);
   },
 
+  /** Ленивое раскрытие папки: подгружает детей один раз. */
+  async expandDir(node: FsNode) {
+    if (node.kind !== 'dir' || node.loaded) return;
+    if (this.workspace?.mode !== 'real') {
+      node.loaded = true;
+      return;
+    }
+    try {
+      const kids = await loadDirChildren(node, this.settings.showHidden, visitedReal);
+      node.children = kids;
+      node.loaded = true;
+      for (const k of kids) {
+        if (k.kind === 'dir' && k.canonical) visitedReal.add(k.canonical);
+      }
+    } catch (e) {
+      console.error('expandDir failed:', node.path, e);
+      node.children = [];
+      node.loaded = true;
+    }
+  },
+
+  /** i18n: перевод по ключу на текущем языке. */
+  t(key: string): string {
+    return translate(this.settings.lang, key);
+  },
+
   async openFolder() {
     if (!isTauri) {
-      this.toast('Открытие папок доступно в десктоп-приложении (Tauri)');
+      this.toast(this.t('toast.desktopOnly'));
       return;
     }
     const dir = await openFolderDialog();
     if (!dir) return;
-    const tree = await loadWorkspaceTree(dir, 'real', this.settings.showHidden);
-    const name = dir.split('/').pop() || dir;
-    this.workspace = { mode: 'real', rootName: name, rootPath: dir, tree };
-    this.openFiles = [];
-    this.activePath = null;
-    this.toast('Открыта папка ' + name);
-    tryApplyConfigAt('real', dir);
+    await this.setWorkspacePath(dir, this.t('toast.folderOpen') + ' ' + dir.split('/').pop());
   },
 
   async openExample() {
+    visitedReal.clear();
     const tree = await loadWorkspaceTree(DEMO_ROOT, 'virtual', this.settings.showHidden);
     this.workspace = { mode: 'virtual', rootName: 'example-project', rootPath: DEMO_ROOT, tree };
     this.openFiles = [];
     this.activePath = null;
-    this.toast('Пример проекта загружен');
+    this.toast(this.t('toast.exampleLoaded'));
     tryApplyConfigAt('virtual', DEMO_ROOT);
   },
 

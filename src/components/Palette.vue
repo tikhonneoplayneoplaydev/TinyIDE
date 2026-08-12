@@ -94,12 +94,12 @@ function onHover(i: number) {
       <input
         ref="inputEl"
         v-model="query"
-        :placeholder="quick ? 'Введите имя файла…' : 'Введите команду…'"
+        :placeholder="quick ? store.t('palette.filePlaceholder') : store.t('palette.cmdPlaceholder')"
         @keydown="onKey"
         @input="idx = 0"
       />
       <div class="palette-list" ref="listEl">
-        <div v-if="filtered.length === 0" class="palette-empty">Ничего не найдено</div>
+        <div v-if="filtered.length === 0" class="palette-empty">{{ store.t('palette.empty') }}</div>
         <div
           v-for="(r, i) in filtered"
           :key="r.key"
@@ -116,9 +116,9 @@ function onHover(i: number) {
         </div>
       </div>
       <div class="palette-footer">
-        <span>↑↓ — навигация</span>
-        <span>↵ — выполнить</span>
-        <span>Esc — закрыть</span>
+        <span>↑↓ — {{ store.t('palette.nav') }}</span>
+        <span>↵ — {{ store.t('palette.run') }}</span>
+        <span>Esc — {{ store.t('palette.close') }}</span>
       </div>
     </div>
   </div>

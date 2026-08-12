@@ -1,6 +1,7 @@
 // ─── Shared types for Comet IDE ─────────────────────────────────────────────
 
 import type { MutableRefObject } from 'react';
+import type { Lang } from './i18n';
 
 export type FsNode = {
   name: string;
@@ -10,6 +11,10 @@ export type FsNode = {
   /** virtual-mode only */
   content?: string;
   children?: FsNode[];
+  /** real-mode lazy: children загружены */
+  loaded?: boolean;
+  /** реальный (канонический) путь — для защиты от циклов-джункшенов */
+  canonical?: string | null;
 };
 
 export type Workspace = {
@@ -84,6 +89,8 @@ export type Settings = {
   shell: ShellId;
   terminalFontSize: number;
   customShells: CustomShell[];
+  lang: Lang;
+  registryUrl: string;
 };
 
 export type Activity = 'explorer' | 'search' | 'languages' | 'settings' | 'source' | 'funo' | 'plugins';
@@ -119,6 +126,10 @@ export type EditorApi = {
   format: () => void;
   getValue: () => string;
   reveal: (line: number, col?: number) => void;
+  cut: () => void;
+  copy: () => void;
+  paste: () => void;
+  selectAll: () => void;
 };
 
 /** Tiny event emitter used for high-frequency events (cursor moves). */

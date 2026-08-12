@@ -1,7 +1,7 @@
 {
   "name": "tinyide",
   "private": true,
-  "version": "0.7.0",
+  "version": "0.8.0",
   "type": "module",
   "description": "TinyIDE — быстрая IDE на Tauri 2, Vue 3 и Monaco. Анимированный курсор-комета, 90+ языков, модуль Funo.",
   "license": "AGPL-3.0",

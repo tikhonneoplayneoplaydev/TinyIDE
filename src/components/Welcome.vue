@@ -26,7 +26,7 @@ function openSample(lang: string) {
   if (!ext) return;
   const ws = store.workspace;
   if (!ws) {
-    store.toast('Сначала откройте пример проекта');
+    store.toast(store.t('toast.noWorkspace'));
     return;
   }
   const walk = (n: FsNode): string | null => {
@@ -42,7 +42,7 @@ function openSample(lang: string) {
   };
   const p = walk(ws.tree);
   if (p) store.openFile(p);
-  else store.toast('Пример не найден');
+  else store.toast('Example not found');
 }
 </script>
 
@@ -61,20 +61,18 @@ function openSample(lang: string) {
         <circle cx="17.6" cy="6.4" r="2.6" fill="#eafcff" />
       </svg>
       <h1 class="welcome-title">Tiny<span>IDE</span></h1>
-      <p class="welcome-sub">
-        Быстрая IDE на <b>Tauri 2</b> · <b>Vue 3</b> · <b>Monaco</b> — кометный курсор, 90+ языков и модуль <b>Funo</b>
-      </p>
+      <p class="welcome-sub">{{ store.t('welcome.subtitle') }}</p>
       <div class="welcome-actions">
-        <button class="btn primary" @click="store.openFolder()">Открыть папку</button>
-        <button class="btn" @click="store.openExample()">Открыть пример проекта</button>
-        <button class="btn" @click="store.setPalette({ mode: 'quick' })">Быстрое открытие</button>
+        <button class="btn primary" @click="store.openFolder()">{{ store.t('welcome.openFolder') }}</button>
+        <button class="btn" @click="store.openExample()">{{ store.t('welcome.openExample') }}</button>
+        <button class="btn" @click="store.setPalette({ mode: 'quick' })">{{ store.t('welcome.quickOpen') }}</button>
       </div>
       <div class="welcome-shortcuts">
-        <span><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>P</kbd> Палитра</span>
-        <span><kbd>Ctrl</kbd><kbd>P</kbd> Файл</span>
-        <span><kbd>Ctrl</kbd><kbd>S</kbd> Сохранить</span>
-        <span><kbd>Ctrl</kbd><kbd>B</kbd> Сайдбар</span>
-        <span><kbd>Ctrl</kbd><kbd>`</kbd> Терминал</span>
+        <span><kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>P</kbd> {{ store.t('welcome.palette') }}</span>
+        <span><kbd>Ctrl</kbd><kbd>P</kbd> {{ store.t('welcome.file') }}</span>
+        <span><kbd>Ctrl</kbd><kbd>S</kbd> {{ store.t('welcome.save') }}</span>
+        <span><kbd>Ctrl</kbd><kbd>B</kbd> {{ store.t('welcome.sidebar') }}</span>
+        <span><kbd>Ctrl</kbd><kbd>`</kbd> {{ store.t('welcome.terminal') }}</span>
       </div>
       <div class="welcome-langs">
         <button v-for="lang in CHIPS" :key="lang" class="lang-chip" @click="openSample(lang)">

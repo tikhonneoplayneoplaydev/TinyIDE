@@ -36,7 +36,7 @@ const selected = computed(() => {
 });
 
 function fmtDiags(diags: FunoDiagnostic[]): string {
-  if (!diags.length) return '✅ Ошибок нет';
+  if (!diags.length) return store.t('funo.ok');
   return diags
     .map((d) => `\x1b[31m[${d.severity}] ${d.title}\x1b[0m ${d.line}:${d.column} — ${d.message}`)
     .join('\n');
@@ -44,7 +44,7 @@ function fmtDiags(diags: FunoDiagnostic[]): string {
 
 async function withSource(fn: (src: string, path: string) => Promise<string>) {
   if (!selected.value) {
-    store.toast('Нет .fun файла — откройте пример или создайте файл');
+    store.toast(store.t('funo.noFun'));
     return;
   }
   busy.value = true;
@@ -141,17 +141,16 @@ const styled = (line: string) =>
 <template>
   <div class="funo-panel">
     <div class="panel-header">
-      <span class="panel-title">Funo Compiler</span>
+      <span class="panel-title">{{ store.t('funo.title') }}</span>
       <span class="panel-count">.fun</span>
     </div>
 
     <div class="funo-intro">
-      <b>Funo</b> — язык, компилируемый в Java/JVM. Встроенный компилятор (Rust) проверяет код,
-      транслирует в Java и собирает <code>.jar</code>.
+      <b>Funo</b> — {{ store.t('funo.intro').replace('Funo — ', '') }}
     </div>
 
     <div class="funo-files">
-      <div v-if="funFiles.length === 0" class="funo-empty">Нет .fun файлов. Открой пример проекта или создай <code>main.fun</code>.</div>
+      <div v-if="funFiles.length === 0" class="funo-empty">{{ store.t('funo.noFiles') }}</div>
       <div
         v-for="f in funFiles"
         :key="f.path"
@@ -180,12 +179,12 @@ const styled = (line: string) =>
     </div>
 
     <div v-if="!isTauri" class="funo-webnote">
-      Веб-демо: «Проверить» и «В Java» работают упрощённо; полный компилятор (Rust) — в десктоп-версии.
+      {{ store.t('funo.webNote') }}
     </div>
 
     <div class="funo-output">
       <template v-if="output === ''">
-        <span class="task-hint">Нажми «Проверить», чтобы увидеть диагностику, или «В Java» — получить сгенерированный код.</span>
+        <span class="task-hint">{{ store.t('funo.hint') }}</span>
       </template>
       <template v-else>
         <div v-for="(line, i) in output.split('\n')" :key="i" v-html="styled(line) || '&nbsp;'" />

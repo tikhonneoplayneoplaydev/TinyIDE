@@ -234,7 +234,7 @@ async function run(command?: string) {
   const h = await runTask(cmd, cwd);
   h.onOutput((t) => (output.value += t));
   h.onExit((code) => {
-    output.value += `\n\x1b[90m[задача завершена · код ${code}]\x1b[0m\n`;
+    output.value += `\n\x1b[90m{{ store.t('tasks.done') }} ${code}]\x1b[0m\n`;
     taskRunning.value = false;
   });
 }
@@ -251,10 +251,10 @@ const styledLines = (line: string) =>
 <template>
   <div class="bottom-panel">
     <div class="bottom-tabs">
-      <button class="bottom-tab" :class="{ active: store.panelTab === 'terminal' }" @click="store.setPanelTab('terminal')">Терминал</button>
-      <button class="bottom-tab" :class="{ active: store.panelTab === 'tasks' }" @click="store.setPanelTab('tasks')">Задачи</button>
+      <button class="bottom-tab" :class="{ active: store.panelTab === 'terminal' }" @click="store.setPanelTab('terminal')">{{ store.t('terminal.tab') }}</button>
+      <button class="bottom-tab" :class="{ active: store.panelTab === 'tasks' }" @click="store.setPanelTab('tasks')">{{ store.t('tasks.tab') }}</button>
       <button class="bottom-tab" :class="{ active: store.panelTab === 'problems' }" @click="store.setPanelTab('problems'); collectMarkers()">
-        Проблемы
+        {{ store.t('problems.tab') }}
         <span v-if="markers.length" class="problems-count" :class="{ err: markerCounts().errors > 0 }">
           {{ markerCounts().errors }}⚑ {{ markerCounts().warnings }}⚠
         </span>
@@ -268,10 +268,10 @@ const styledLines = (line: string) =>
     <template v-if="store.panelTab === 'terminal'">
       <div class="bottom-toolbar">
         <ShellSelector :model-value="store.settings.shell" @update:model-value="(v) => store.updateSettings({ shell: v })" />
-        <button class="btn-icon" title="Перезапустить терминал" @click="restartKey++">
+        <button class="btn-icon" :title="store.t('terminal.restart')" @click="restartKey++">
           <AppIcon name="refresh" />
         </button>
-        <span class="term-status">{{ running ? '● подключено' : '○ остановлено' }}</span>
+        <span class="term-status">{{ running ? store.t('terminal.connected') : store.t('terminal.stopped') }}</span>
         <div class="bottom-tabs-spacer" />
       </div>
       <div ref="hostRef" class="term-host" />
@@ -279,7 +279,7 @@ const styledLines = (line: string) =>
 
     <template v-else-if="store.panelTab === 'problems'">
       <div class="problems-wrap">
-        <div v-if="markers.length === 0" class="git-empty">Проблем нет — код чистый ✨</div>
+        <div v-if="markers.length === 0" class="git-empty">{{ store.t('problems.empty') }}</div>
         <div
           v-for="(m, i) in markers"
           :key="i"
@@ -297,21 +297,19 @@ const styledLines = (line: string) =>
     <template v-else>
       <div class="tasks-wrap">
         <div class="bottom-toolbar">
-          <button class="btn-icon primary" title="Запустить" :disabled="taskRunning" @click="run()">
+          <button class="btn-icon primary" :title="store.t('tasks.run')" :disabled="taskRunning" @click="run()">
             <AppIcon name="play" />
           </button>
           <select class="select shell-select" :value="taskName" title="Команда из секции [commands] в tinyide.toml" @change="(e) => (taskName = (e.target as HTMLSelectElement).value)">
             <option v-for="(cmd, n) in store.taskCommands" :key="n" :value="n">{{ n }}: {{ cmd }}</option>
           </select>
-          <button class="btn-icon" title="Очистить вывод" @click="output = ''">
+          <button class="btn-icon" :title="store.t('tasks.clear')" @click="output = ''">
             <AppIcon name="trash" />
           </button>
           <div class="bottom-tabs-spacer" />
         </div>
         <div ref="outEl" class="task-output">
-          <span v-if="output === '' && !taskRunning" class="task-hint">
-            Выбери команду (build / run / test — из секции [commands] файла tinyide.toml) и нажми ▶
-          </span>
+          <span v-if="output === '' && !taskRunning" class="task-hint">{{ store.t('tasks.hint') }}</span>
           <div v-for="(line, i) in output.split('\n')" :key="i" v-html="styledLines(line) || '&nbsp;'" />
         </div>
       </div>

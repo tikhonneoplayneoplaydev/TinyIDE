@@ -145,7 +145,7 @@ fn plugin_bytes(name: &str) -> Result<Vec<u8>, String> {
     Ok(bytes)
 }
 
-fn user_plugins_dir() -> Result<PathBuf, String> {
+pub fn user_plugins_dir() -> Result<PathBuf, String> {
     let base = std::env::var("HOME").unwrap_or_else(|_| ".".into());
     Ok(PathBuf::from(base).join(".tinyide").join("plugins"))
 }

@@ -42,7 +42,7 @@ async function load() {
   const ws = store.workspace;
   if (!ws) return;
   if (!isTauri) {
-    err.value = 'Git-операции доступны в десктоп-версии (Tauri). В веб-демо — только просмотр.';
+    err.value = store.t('git.desktopOnly');
     return;
   }
   loading.value = true;
@@ -90,29 +90,29 @@ async function runGit(op: () => Promise<string>, okMsg: string) {
   }
 }
 
-const pull = () => store.workspace && runGit(() => gitPull(store.workspace!.rootPath), '✓ git pull выполнен');
-const push = () => store.workspace && runGit(() => gitPush(store.workspace!.rootPath), '✓ git push выполнен');
+const pull = () => store.workspace && runGit(() => gitPull(store.workspace!.rootPath), store.t('git.pullDone'));
+const push = () => store.workspace && runGit(() => gitPush(store.workspace!.rootPath), store.t('git.pushDone'));
 const commit = () => {
   const m = commitMsg.value.trim();
   if (!m) {
-    store.toast('Введите сообщение коммита');
+    store.toast(store.t('git.enterMsg'));
     return;
   }
   commitMsg.value = '';
-  store.workspace && runGit(() => gitCommit(store.workspace!.rootPath, m), '✓ Коммит создан');
+  store.workspace && runGit(() => gitCommit(store.workspace!.rootPath, m), store.t('git.commitDone'));
 };
-const init = () => store.workspace && runGit(() => gitInit(store.workspace!.rootPath), '✓ git init выполнен');
+const init = () => store.workspace && runGit(() => gitInit(store.workspace!.rootPath), store.t('git.initDone'));
 
 async function clone() {
   const url = cloneUrl.value.trim();
   if (!url) {
-    store.toast('Введите URL репозитория');
+    store.toast(store.t('git.enterUrl'));
     return;
   }
   busy.value = true;
   output.value = '';
   try {
-    const parent = await openFolderDialog('Куда клонировать?');
+    const parent = await openFolderDialog(store.t('git.cloneWhere'));
     if (!parent) {
       busy.value = false;
       return;
@@ -123,7 +123,7 @@ async function clone() {
     output.value += '\x1b[32m✓ Клонировано: ' + cloned + '\x1b[0m\n';
     cloneUrl.value = '';
     cloneToken.value = '';
-    await store.setWorkspacePath(cloned, 'Репозиторий открыт: ' + cloned.split('/').pop());
+    await store.setWorkspacePath(cloned, store.t('git.repoOpened') + ': ' + cloned.split('/').pop());
     await load();
   } catch (e) {
     output.value += '\x1b[31mОшибка:\x1b[0m\n' + String(e);
@@ -136,9 +136,9 @@ async function clone() {
 <template>
   <div class="git-panel">
     <div class="panel-header">
-      <span class="panel-title">Source Control</span>
+      <span class="panel-title">{{ store.t('git.title') }}</span>
       <div class="panel-actions">
-        <button title="Обновить" :disabled="busy" @click="load"><AppIcon name="refresh" :size="13" /></button>
+        <button :title="store.t('common.refresh')" :disabled="busy" @click="load"><AppIcon name="refresh" :size="13" /></button>
       </div>
     </div>
 
@@ -149,15 +149,15 @@ async function clone() {
       <div class="git-clone">
         <div class="git-clone-title">
           <AppIcon name="git" :size="14" />
-          Клонировать репозиторий
+          {{ store.t('git.clone') }}
         </div>
-        <input v-model="cloneUrl" class="git-input" placeholder="https://github.com/user/repo.git — любой провайдер" @keydown.enter="clone" />
+        <input v-model="cloneUrl" class="git-input" :placeholder="store.t('git.clonePlaceholder')" @keydown.enter="clone" />
         <div class="git-token-row">
           <input
             v-model="cloneToken"
             class="git-input"
             :type="showToken ? 'text' : 'password'"
-            placeholder="токен (для приватных репозиториев, необязательно)"
+            :placeholder="store.t('git.tokenPlaceholder')"
             @keydown.enter="clone"
           />
           <button class="btn-icon" :title="showToken ? 'Скрыть' : 'Показать'" @click="showToken = !showToken">
@@ -167,10 +167,10 @@ async function clone() {
         <button class="btn primary git-clone-btn" :disabled="busy" @click="clone">
           <AppIcon name="git" :size="14" /> Клонировать
         </button>
-        <div class="git-hint">Работает с GitHub, GitLab, Bitbucket, Gitea, Codeberg и любым git-сервером (https / ssh / git://).</div>
+        <div class="git-hint">{{ store.t('git.hint') }}</div>
       </div>
       <div class="git-sep" />
-      <button class="btn ghost git-init-btn" :disabled="busy" @click="init">Инициализировать git здесь</button>
+      <button class="btn ghost git-init-btn" :disabled="busy" @click="init"> {{ store.t('git.init') }}</button>
     </template>
 
     <!-- состояние репозитория -->
@@ -192,20 +192,20 @@ async function clone() {
       </div>
 
       <div class="git-actions">
-        <button class="btn git-act" :disabled="busy" title="git pull" @click="pull">
-          <AppIcon name="sync" :size="13" /> Pull
+        <button class="btn git-act" :disabled="busy" :title="store.t('git.pull')" @click="pull">
+          <AppIcon name="sync" :size="13" /> {{ store.t('git.pull') }}
         </button>
-        <button class="btn git-act" :disabled="busy" title="git push" @click="push">
-          <AppIcon name="check" :size="13" /> Push
+        <button class="btn git-act" :disabled="busy" :title="store.t('git.push')" @click="push">
+          <AppIcon name="check" :size="13" /> {{ store.t('git.push') }}
         </button>
-        <button class="btn git-act" :disabled="busy" title="git init" @click="init">
+        <button class="btn git-act" :disabled="busy" :title="store.t('git.init')" @click="init">
           <AppIcon name="plus" :size="13" /> Init
         </button>
       </div>
 
       <div class="git-commit-row">
-        <input v-model="commitMsg" class="git-input" placeholder="Сообщение коммита…" @keydown.enter="commit" />
-        <button class="btn primary git-act" :disabled="busy || !commitMsg.trim()" @click="commit">Commit</button>
+        <input v-model="commitMsg" class="git-input" :placeholder="store.t('git.commitPlaceholder')" @keydown.enter="commit" />
+        <button class="btn primary git-act" :disabled="busy || !commitMsg.trim()" @click="commit"> {{ store.t('git.commit') }}</button>
       </div>
     </template>
 
@@ -216,7 +216,7 @@ async function clone() {
 
     <!-- файлы -->
     <div v-if="isRepo" class="git-list-head">Изменения ({{ files.length }})</div>
-    <div v-if="!err && isRepo && files.length === 0 && !loading" class="git-empty">Изменений нет — чисто ✨</div>
+    <div v-if="!err && isRepo && files.length === 0 && !loading" class="git-empty">{{ store.t('git.clean') }}</div>
     <div class="git-list">
       <div
         v-for="(f, i) in files"

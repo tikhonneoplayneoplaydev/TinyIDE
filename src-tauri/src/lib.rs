@@ -17,6 +17,7 @@ struct DirEntry {
     path: String,
     is_dir: bool,
     size: Option<u64>,
+    canonical: Option<String>,
 }
 
 /// List the contents of a directory (files and folders, dirs first).
@@ -40,6 +41,9 @@ fn list_dir(path: String) -> Result<Vec<DirEntry>, String> {
             path: p.to_string_lossy().replace('\\', "/"),
             is_dir,
             size,
+            canonical: fs::canonicalize(&p)
+                .ok()
+                .map(|c| c.to_string_lossy().replace('\\', "/")),
         });
     }
     out.sort_by(|a, b| {
@@ -529,6 +533,21 @@ fn plugins_uninstall(name: String) -> Result<(), String> {
     plugins::plugins_uninstall(name)
 }
 
+#[tauri::command]
+fn plugins_dir() -> Result<String, String> {
+    Ok(plugins::user_plugins_dir()?.to_string_lossy().into_owned())
+}
+
+/// Запись бинарного файла (base64) — для установки .wasm плагинов из маркета.
+#[tauri::command]
+fn write_binary(path: String, base64_data: String) -> Result<(), String> {
+    use base64::Engine;
+    let bytes = base64::engine::general_purpose::STANDARD
+        .decode(base64_data.trim())
+        .map_err(|e| e.to_string())?;
+    std::fs::write(&path, bytes).map_err(|e| e.to_string())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -561,7 +580,9 @@ pub fn run() {
             plugins_list,
             plugins_call,
             plugins_install,
-            plugins_uninstall
+            plugins_uninstall,
+            plugins_dir,
+            write_binary
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

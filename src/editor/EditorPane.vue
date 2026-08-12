@@ -46,6 +46,7 @@ function editorOptions(s: Settings): monaco.editor.IStandaloneEditorConstruction
     selectionHighlight: false,
     quickSuggestions: s.quickSuggestions ? { other: true, comments: false, strings: false } : false,
     wordBasedSuggestions: 'currentDocument',
+    contextmenu: false, // кастомное контекстное меню TinyIDE вместо системного
   };
 }
 
@@ -76,6 +77,10 @@ onMounted(() => {
         editor.focus();
       }
     },
+    cut: () => editor.getAction('editor.action.clipboardCutAction')?.run(),
+    copy: () => editor.getAction('editor.action.clipboardCopyAction')?.run(),
+    paste: () => editor.getAction('editor.action.clipboardPasteAction')?.run(),
+    selectAll: () => editor.getAction('editor.action.selectAll')?.run(),
   });
 
   monacoCreated = true;

@@ -22,7 +22,11 @@ const isDir = props.node.kind === 'dir';
 const visible = (n: FsNode) => store.settings.showHidden || !n.name.startsWith('.');
 
 function toggle() {
-  if (isDir) expanded.value = !expanded.value;
+  if (!isDir) return;
+  expanded.value = !expanded.value;
+  if (expanded.value && !props.node.loaded) {
+    store.expandDir(props.node);
+  }
 }
 
 function openMenu(e: MouseEvent, node: FsNode) {
@@ -31,23 +35,23 @@ function openMenu(e: MouseEvent, node: FsNode) {
   const ws = store.workspace;
   if (!ws) return;
   const base: (MenuItemDef | 'sep')[] = [
-    { label: 'New File', run: () => store.requestCreate(node.path, 'file') },
-    { label: 'New Folder', run: () => store.requestCreate(node.path, 'dir') },
+    { label: store.t('common.newFile'), run: () => store.requestCreate(node.path, 'file') },
+    { label: store.t('common.newFolder'), run: () => store.requestCreate(node.path, 'dir') },
     'sep',
   ];
   if (node.kind === 'dir') {
-    base.push({ label: 'Collapse All', run: () => (expanded.value = false) });
+    base.push({ label: store.t('common.collapseAll'), run: () => (expanded.value = false) });
   }
   base.push(
     {
-      label: 'Rename…',
+      label: store.t('common.rename'),
       run: () => {
         renameName.value = node.name;
         renaming.value = true;
       },
     },
     {
-      label: 'Delete',
+      label: store.t('common.delete'),
       danger: true,
       run: () => {
         store.doFsOp(() => fsDeletePath(ws, node.path)).then(() => {
@@ -55,16 +59,16 @@ function openMenu(e: MouseEvent, node: FsNode) {
           store.openFiles.forEach((f) => {
             if (f.path === node.path || f.path.startsWith(prefix)) store.closeTab(f.path);
           });
-          store.toast(`Удалено: ${node.name}`);
+          store.toast(store.t('toast.deleted') + ' ' + node.name);
         });
       },
     },
     'sep',
     {
-      label: 'Copy Path',
+      label: store.t('common.copyPath'),
       run: () => {
         navigator.clipboard?.writeText(node.path).catch(() => undefined);
-        store.toast('Путь скопирован');
+        store.toast(store.t('toast.pathCopied'));
       },
     }
   );
