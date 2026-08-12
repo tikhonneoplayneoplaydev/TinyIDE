@@ -23,7 +23,7 @@ async function startCodeFlow() {
   statusMsg.value = 'Поднимаем локальный сервер на localhost:1250 и открываем браузер…';
   try {
     const res = await invoke('oauth_github_authorize', {
-      clientId: store.githubClientId.trim(),
+      clientId: store.githubClientId.trim() || store.DEFAULT_GITHUB_CLIENT_ID,
       masterPassword: store.githubMasterPassword || null,
     });
     const r = res as { token: string; login: string };
@@ -42,7 +42,8 @@ async function startCodeFlow() {
 }
 
 async function start() {
-  const clientId = store.githubClientId.trim();
+  // Client ID: поле в настройках, иначе вшитый дефолт
+  const clientId = store.githubClientId.trim() || store.DEFAULT_GITHUB_CLIENT_ID;
   if (!clientId) return;
   // десктоп — код-флоу через локальный сервер (PKCE, шифрование Argon2+ChaCha20)
   if (isTauri) {
@@ -85,9 +86,10 @@ async function poll() {
   if (cancelled || !deviceCode) return;
   try {
     let res: { access_token?: string; error?: string; error_description?: string };
+    const clientId = store.githubClientId.trim() || store.DEFAULT_GITHUB_CLIENT_ID;
     if (isTauri) {
       res = await invoke('oauth_github_token', {
-        clientId: store.githubClientId.trim(),
+        clientId,
         deviceCode,
       });
     } else {
@@ -95,7 +97,7 @@ async function poll() {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded', Accept: 'application/json' },
         body:
-          'client_id=' + encodeURIComponent(store.githubClientId.trim()) +
+          'client_id=' + encodeURIComponent(clientId) +
           '&device_code=' + encodeURIComponent(deviceCode) +
           '&grant_type=urn:ietf:params:oauth:grant-type:device_code',
       });

@@ -868,7 +868,7 @@ use std::net::TcpListener;
 
 const OAUTH_PORT: u16 = 1250;
 const OAUTH_CALLBACK: &str = "http://localhost:1250/callback";
-const OAUTH_TIMEOUT_SECS: u64 = 120;
+const OAUTH_TIMEOUT_SECS: u64 = 180;
 
 fn data_dir() -> Result<std::path::PathBuf, String> {
     let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
@@ -1081,8 +1081,15 @@ async fn oauth_github_authorize(client_id: String, master_password: Option<Strin
                             .collect();
                         let cb_state = q.get("state").cloned().unwrap_or_default();
                         if cb_state != state {
-                            send_http(&mut stream, "<h2>Ошибка: state не совпал (возможна CSRF-атака)</h2>");
-                            return Err("state mismatch".into());
+                            // Это callback от СТАРОЙ попытки входа (например, браузер
+                            // открыл сохранённую вкладку). Игнорируем и ЖДЁМ дальше —
+                            // убивать сервер нельзя, иначе новая правильная попытка
+                            // останется без обработки.
+                            send_http(
+                                &mut stream,
+                                "<html><body style='font-family:sans-serif;text-align:center;padding:50px'><h3>Это устаревший запрос входа.</h3><p>Если ты только что нажал «Войти» в TinyIDE — закрой эту вкладку, новый запрос уже обрабатывается.</p></body></html>",
+                            );
+                            continue;
                         }
                         let code = q.get("code").cloned().unwrap_or_default();
                         if code.is_empty() {

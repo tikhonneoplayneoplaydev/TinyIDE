@@ -110,8 +110,11 @@ export const store = reactive({
   toastMsg: null as string | null,
   splash: 'show' as 'show' | 'hide' | 'gone',
 
-  // ── GitHub OAuth (device flow) ─────────────────────────────────────────
-  githubClientId: localStorage.getItem('tinyide.github.clientId') ?? '',
+  // ── GitHub OAuth ────────────────────────────────────────────────────────
+  // Дефолтный Client ID вшит (OAuth App TinyIDE) — можно переопределить в настройках
+  DEFAULT_GITHUB_CLIENT_ID: 'Ov23lig2KwXHEa1qSTyi',
+  githubClientId:
+    localStorage.getItem('tinyide.github.clientId') ?? 'Ov23lig2KwXHEa1qSTyi',
   githubToken: localStorage.getItem('tinyide.github.token') ?? '',
   githubLogin: localStorage.getItem('tinyide.github.login') ?? '',
   githubAuthOpen: false,

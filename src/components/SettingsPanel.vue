@@ -220,10 +220,13 @@ const reset = () => {
           <input
             class="git-input"
             style="max-width: 170px"
-            :value="store.githubClientId"
-            placeholder="Iv1.…"
+            :value="store.githubClientId === store.DEFAULT_GITHUB_CLIENT_ID ? '' : store.githubClientId"
+            placeholder="вшит по умолчанию (Ov23…STyi)"
             @input="(e) => store.setGithubClientId((e.target as HTMLInputElement).value)"
           />
+        </div>
+        <div class="config-note" style="font-size:10.5px">
+          Client ID уже вшит в приложение — можно не заполнять. Укажи свой, если создал отдельный OAuth App.
         </div>
         <div class="setting-row">
           <span>Мастер-пароль (шифрование токена)</span>
