@@ -1,20 +1,28 @@
 import type { FsNode, IdeApi } from '../types';
-import { EXT_COLORS } from '../editor/monacoSetup';
 import { CometLogo } from './icons';
+import { LangLogo } from '../languages/LangLogo';
 
-const CHIPS: [string, string][] = [
-  ['py', 'Python'], ['rs', 'Rust'], ['go', 'Go'], ['ts', 'TypeScript'],
-  ['js', 'JavaScript'], ['java', 'Java'], ['cpp', 'C++'], ['c', 'C'],
-  ['cs', 'C#'], ['rb', 'Ruby'], ['php', 'PHP'], ['swift', 'Swift'],
-  ['kt', 'Kotlin'], ['scala', 'Scala'], ['dart', 'Dart'], ['lua', 'Lua'],
-  ['zig', 'Zig'], ['hs', 'Haskell'], ['ex', 'Elixir'], ['clj', 'Clojure'],
-  ['sql', 'SQL'], ['html', 'HTML'], ['css', 'CSS'], ['scss', 'SCSS'],
-  ['json', 'JSON'], ['yaml', 'YAML'], ['toml', 'TOML'], ['md', 'Markdown'],
-  ['sh', 'Shell'], ['ps1', 'PowerShell'], ['vue', 'Vue'], ['svelte', 'Svelte'],
+const CHIPS: string[] = [
+  'python', 'rust', 'go', 'typescript', 'javascript', 'java', 'cpp', 'c',
+  'csharp', 'ruby', 'php', 'swift', 'kotlin', 'scala', 'dart', 'lua',
+  'zig', 'haskell', 'elixir', 'clojure', 'sql', 'html', 'css', 'scss',
+  'json', 'yaml', 'toml', 'markdown', 'shell', 'powershell', 'vue', 'svelte',
 ];
 
 export default function Welcome({ ide }: { ide: IdeApi }) {
-  const openSample = (ext: string) => {
+  const SAMPLE_EXT: Record<string, string> = {
+    python: 'py', rust: 'rs', go: 'go', typescript: 'ts', javascript: 'js',
+    java: 'java', cpp: 'cpp', c: 'c', csharp: 'cs', ruby: 'rb', php: 'php',
+    swift: 'swift', kotlin: 'kt', scala: 'scala', dart: 'dart', lua: 'lua',
+    zig: 'zig', haskell: 'hs', elixir: 'ex', clojure: 'clj', sql: 'sql',
+    html: 'html', css: 'css', scss: 'scss', json: 'json', yaml: 'yaml',
+    toml: 'toml', markdown: 'md', shell: 'sh', powershell: 'ps1',
+    vue: 'vue', svelte: 'svelte',
+  };
+
+  const openSample = (lang: string) => {
+    const ext = SAMPLE_EXT[lang];
+    if (!ext) return;
     const ws = ide.workspace;
     if (!ws) {
       ide.toast('Сначала откройте пример проекта');
@@ -64,10 +72,10 @@ export default function Welcome({ ide }: { ide: IdeApi }) {
           <span><kbd>Ctrl</kbd><kbd>B</kbd> Сайдбар</span>
         </div>
         <div className="welcome-langs">
-          {CHIPS.map(([ext, label]) => (
-            <button key={ext} className="lang-chip" onClick={() => openSample(ext)}>
-              <span className="file-dot" style={{ background: EXT_COLORS[ext] || '#9aa7c4' }} />
-              {label}
+          {CHIPS.map((lang) => (
+            <button key={lang} className="lang-chip" onClick={() => openSample(lang)}>
+              <LangLogo lang={lang} size={16} />
+              {lang}
             </button>
           ))}
         </div>

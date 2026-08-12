@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
 import type { FsNode, IdeApi } from '../types';
-import { EXT_COLORS } from '../editor/monacoSetup';
+import { LangLogo } from '../languages/LangLogo';
 import { SearchIcon } from './icons';
 
 const POPULAR = new Set([
@@ -73,11 +73,10 @@ export default function LanguagesPanel({ ide }: { ide: IdeApi }) {
       <div className="lang-list">
         {filtered.map((l) => {
           const ext = l.extensions?.[0]?.replace('.', '') ?? '';
-          const color = EXT_COLORS[ext] || '#9aa7c4';
           const pop = POPULAR.has(l.id);
           return (
             <button key={l.id} className="lang-row" onClick={() => openSample(l.id)} title={l.id}>
-              <span className="file-dot" style={{ background: color }} />
+              <LangLogo lang={l.id} size={18} />
               <span className="lang-name">{l.id}</span>
               {pop && <span className="lang-pop">популярный</span>}
               {ext && <span className="lang-ext">{'.' + ext}</span>}

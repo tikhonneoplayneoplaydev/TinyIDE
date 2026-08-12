@@ -1,5 +1,5 @@
 import type { IdeApi } from '../types';
-import { colorForPath } from '../editor/monacoSetup';
+import { LangLogo } from '../languages/LangLogo';
 import { CloseIcon } from './icons';
 
 export default function TabsBar({ ide }: { ide: IdeApi }) {
@@ -21,7 +21,7 @@ export default function TabsBar({ ide }: { ide: IdeApi }) {
             }}
             title={f.path}
           >
-            <span className="file-dot" style={{ background: colorForPath(f.path) }} />
+            <LangLogo lang={f.language} size={14} />
             <span className="tab-name">{f.name}</span>
             {isDirty ? (
               <span className="tab-dirty" title="Не сохранено" />

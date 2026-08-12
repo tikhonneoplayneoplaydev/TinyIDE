@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { FsNode, IdeApi, MenuItemDef } from '../types';
-import { colorForPath } from '../editor/monacoSetup';
 import { createDir as fsCreateDir, createFile as fsCreateFile, deletePath as fsDeletePath } from '../fs/bridge';
+import { languageForPath } from '../editor/monacoSetup';
+import { LangLogo } from '../languages/LangLogo';
 import { ChevronIcon, FolderIcon, PlusIcon, RefreshIcon } from './icons';
 
 export default function Explorer({ ide }: { ide: IdeApi }) {
@@ -139,7 +140,7 @@ export default function Explorer({ ide }: { ide: IdeApi }) {
         title={node.path}
       >
         <span className="tree-indent" />
-        <span className="file-dot" style={{ background: colorForPath(node.path) }} />
+        <LangLogo lang={languageForPath(node.path)} size={15} />
         <span className="tree-name">{node.name}</span>
       </div>
     );
@@ -207,7 +208,7 @@ function CreateInput({
 
   return (
     <div className="tree-row create-row" style={{ '--depth': depth } as React.CSSProperties}>
-      {kind === 'dir' ? <FolderIcon size={15} /> : <span className="file-dot" style={{ background: '#9aa7c4' }} />}
+      {kind === 'dir' ? <FolderIcon size={15} /> : <LangLogo lang={languageForPath(name)} size={15} />}
       <input
         className="tree-input"
         autoFocus
@@ -253,7 +254,7 @@ function RenameInput({
       {node.kind === 'dir' ? (
         <FolderIcon size={15} />
       ) : (
-        <span className="file-dot" style={{ background: colorForPath(node.path) }} />
+        <LangLogo lang={languageForPath(node.path)} size={15} />
       )}
       <input
         className="tree-input"
