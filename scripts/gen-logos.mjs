@@ -17,7 +17,8 @@ const MONACO_LANGS = [
 const EXTRA = [
   'json','jsonc','json5','typescript','css','scss','less','html','vue','svelte',
   'toml','diff','tex','latex','asm','verilog','systemverilog','vhdl','makefile',
-  'cmake','prisma','plaintext','sql','powershell','batch','zig','groovy',
+  'cmake','prisma','plaintext','sql','powershell','batch','zig','groovy','ocaml',
+  'erlang','haskell','ruby','shell','lua','python','rust','go','dart','scala',
 ];
 
 const LANGS = [...new Set([...MONACO_LANGS, ...EXTRA])];
@@ -326,6 +327,166 @@ const HAND = {
   // XML — угловые скобки
   xml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0060ac"/>
 <path d="M20 22 L11 32 L20 42 M44 22 L53 32 L44 42" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  // Bicep — согнутая рука с бицепсом
+  bicep: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#519aba"/>
+<path d="M14 44 C 16 30 26 22 40 24 C 52 26 54 40 48 46" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round"/>
+<ellipse cx="30" cy="34" rx="10" ry="6" transform="rotate(-30 30 34)" fill="#fff"/></svg>`,
+
+  // Erlang — узел (фирменный знак)
+  erlang: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#b83998"/>
+<circle cx="32" cy="32" r="15" fill="none" stroke="#fff" stroke-width="4.5"/>
+<circle cx="14" cy="14" r="4.5" fill="#fff"/><circle cx="50" cy="14" r="4.5" fill="#fff"/>
+<circle cx="14" cy="50" r="4.5" fill="#fff"/><circle cx="50" cy="50" r="4.5" fill="#fff"/></svg>`,
+
+  // R — буква с хвостом-волной (в духе фирменного)
+  r: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#198ce7"/>
+<text x="30" y="39" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="26" fill="#fff">R</text>
+<path d="M20 46 q 6 5 12 0 q 6 -5 12 0" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"/></svg>`,
+
+  // Scheme — скобки-спираль
+  scheme: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1e4aec"/>
+<path d="M22 20 q -7 7 0 12 q 7 5 0 12 M42 20 q 7 7 0 12 q -7 5 0 12" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/></svg>`,
+
+  // OCaml — кристалл
+  ocaml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#ec6813"/>
+<path d="M32 12 L51 32 L32 52 L13 32 Z" fill="#fff"/>
+<path d="M32 22 L42 32 L32 42 L22 32 Z" fill="#ec6813"/></svg>`,
+
+  // Tcl — черепаха
+  tcl: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#e4cc98"/>
+<circle cx="31" cy="34" r="13" fill="#5b7d4e"/>
+<path d="M18 34 q -5 -5 -4 -11 M18 38 q -6 3 -4 9 M46 34 q 5 -5 4 -11 M46 38 q 6 3 4 9" stroke="#5b7d4e" stroke-width="4" fill="none" stroke-linecap="round"/>
+<circle cx="13" cy="22" r="3.5" fill="#5b7d4e"/>
+<circle cx="51" cy="22" r="3.5" fill="#5b7d4e"/>
+<path d="M31 21 v-7 q 0 -4 -3 -4" stroke="#5b7d4e" stroke-width="4" fill="none" stroke-linecap="round"/></svg>`,
+
+  // TOML — домик с T
+  toml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#9c4221"/>
+<path d="M12 27 L32 12 L52 27" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="18" y="29" width="28" height="23" rx="3" fill="#fff"/>
+<path d="M24 36 h16 M24 42 h16" stroke="#9c4221" stroke-width="3.4" stroke-linecap="round"/></svg>`,
+
+  // YAML — Y со стрелками вниз
+  yaml: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#cb171e"/>
+<path d="M16 14 L32 36 L48 14" stroke="#fff" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M22 50 h20 M32 38 v12" stroke="#fff" stroke-width="5.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  // INI — шестерёнка настроек
+  ini: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#3f6faf"/>
+<circle cx="32" cy="32" r="11" fill="#fff"/>
+<path d="M32 13 v7 M32 44 v7 M13 32 h7 M44 32 h7 M19.5 19.5 l5 5 M39.5 39.5 l5 5 M44.5 19.5 l-5 5 M24.5 39.5 l-5 5" stroke="#fff" stroke-width="5" stroke-linecap="round"/></svg>`,
+
+  // Makefile — гаечный ключ
+  makefile: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#427819"/>
+<path d="M45 14 L30 29 a11 11 0 1 0 5 5 l15 -15 z" fill="#fff" transform="rotate(45 32 32)"/></svg>`,
+
+  // CMake — ключ + гайка
+  cmake: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#da3434"/>
+<path d="M42 12 L30 24 a9 9 0 1 0 4 4 l12 -12 z" fill="#fff" transform="rotate(40 32 32)"/>
+<polygon points="45,36 50,39 50,45 45,48 40,45 40,39" fill="#fff"/></svg>`,
+
+  // Verilog — цифровой сигнал
+  verilog: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#5c6bc0"/>
+<path d="M10 48 h8 v-20 h9 v10 h10 v-24 h8 v14 h9 v-8 h8 v22" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  // SystemVerilog — сигнал с регистром
+  systemverilog: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#6a7cc9"/>
+<path d="M10 46 h9 v-18 h10 v10 h9 v-22 h9 v12 h8 v-6 h9 v24" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="16" y="36" width="7" height="7" fill="#fff"/></svg>`,
+
+  // VHDL — сигнал с пиками
+  vhdl: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#db4d3f"/>
+<path d="M12 46 h8 v-22 h7 l6 22 h6 l6 -22 h7 l6 22 h4" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  // ASM — микросхема
+  asm: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#9c7a3c"/>
+<rect x="20" y="20" width="24" height="24" rx="3" fill="#fff"/>
+<path d="M26 13 v7 M32 13 v7 M38 13 v7 M26 44 v7 M32 44 v7 M38 44 v7 M13 26 h7 M13 32 h7 M13 38 h7 M44 26 h7 M44 32 h7 M44 38 h7" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/>
+<circle cx="32" cy="32" r="5" fill="#9c7a3c"/></svg>`,
+
+  // TeX/LaTeX — сигма
+  tex: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#3d6117"/>
+<path d="M18 14 h28 M22 14 h3 l10 18 -10 18 h-3 M18 50 h28" stroke="#fff" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  // Diff — плюс/минус
+  diff: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#d01919"/>
+<rect x="10" y="10" width="20" height="20" rx="4" fill="#34d399"/>
+<path d="M20 15 v10 M15 20 h10" stroke="#064e3b" stroke-width="3.6" stroke-linecap="round"/>
+<rect x="34" y="34" width="20" height="20" rx="4" fill="#f87171"/>
+<path d="M39 44 h10" stroke="#7f1d1d" stroke-width="3.6" stroke-linecap="round"/></svg>`,
+
+  // Q# — бра-кет
+  qsharp: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#fed659"/>
+<text x="32" y="41" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="19" fill="#1a1a1a">|ψ⟩</text></svg>`,
+
+  // Razor — лезвие
+  razor: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#512bd4"/>
+<path d="M20 14 L48 30 L44 36 L38 39 L22 18 Z" fill="#fff"/>
+<path d="M38 39 L20 14" stroke="#512bd4" stroke-width="3"/>
+<path d="M38 34 l3 8 M34 32 l3 8" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>`,
+
+  // Protobuf — куб
+  protobuf: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#607d8b"/>
+<path d="M32 12 L50 24 V40 L32 52 L14 40 V24 Z" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+<path d="M14 24 L32 36 L50 24 M32 36 V52" fill="none" stroke="#fff" stroke-width="3.4" stroke-linejoin="round"/></svg>`,
+
+  // Objective-C — буква с молнией
+  'objective-c': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#438eff"/>
+<circle cx="32" cy="32" r="18" fill="none" stroke="#fff" stroke-width="5"/>
+<path d="M30 18 L22 34 H28 L24 46 L40 28 H33 L36 18 Z" fill="#fff"/></svg>`,
+
+  // HCL — щит
+  hcl: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#844fba"/>
+<path d="M32 10 L50 17 V32 C 50 45 42 52 32 55 C 22 52 14 45 14 32 V17 Z" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round"/>
+<path d="M24 38 V24 L32 30 L40 24 V38" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  // MIPS — процессор с M
+  mips: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#d4a017"/>
+<rect x="18" y="18" width="28" height="28" rx="3" fill="#fff"/>
+<path d="M24 12 v6 M32 12 v6 M40 12 v6 M24 46 v6 M32 46 v6 M40 46 v6 M12 24 h6 M12 32 h6 M12 40 h6 M46 24 h6 M46 32 h6 M46 40 h6" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>
+<text x="32" y="37" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="16" fill="#d4a017">M</text></svg>`,
+
+  // Redshift — красная галактика
+  redshift: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#e4433d"/>
+<circle cx="32" cy="32" r="17" fill="none" stroke="#fff" stroke-width="4"/>
+<circle cx="32" cy="32" r="6" fill="#fff"/>
+<ellipse cx="32" cy="32" rx="22" ry="6" transform="rotate(-18 32 32)" fill="none" stroke="#fff" stroke-width="2.6"/></svg>`,
+
+  // Pascal — треугольник с P
+  pascal: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#e3f171"/>
+<path d="M16 50 L32 14 L48 50 Z" fill="none" stroke="#fff" stroke-width="4.5" stroke-linejoin="round"/>
+<text x="32" y="42" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="17" fill="#fff">P</text></svg>`,
+
+  // PowerQuery — PQ
+  powerquery: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#d24136"/>
+<text x="32" y="41" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="21" fill="#fff">PQ</text></svg>`,
+
+  // WGSL — шейдер-куб
+  wgsl: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#8f4fd1"/>
+<path d="M32 10 L50 22 V44 L32 54 L14 44 V22 Z" fill="none" stroke="#fff" stroke-width="4" stroke-linejoin="round"/>
+<path d="M14 22 L32 34 L50 22 M32 34 V54" fill="#fff" opacity="0.25" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>`,
+
+  // Azure CLI — облако
+  azcli: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#0064ad"/>
+<path d="M20 44 a9 9 0 0 1 1.5 -17.9 A12 12 0 0 1 45 26 a8.5 8.5 0 0 1 -1 17 Z" fill="#fff"/>
+<text x="32" y="42" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="800" font-size="13" fill="#0064ad">AZ</text></svg>`,
+
+  // Freemarker2 — F с молнией
+  freemarker2: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#8a6d3b"/>
+<path d="M26 14 V50 M26 14 H42 M26 30 H38" stroke="#fff" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+<path d="M42 36 L30 46 M36 34 l-2 10" stroke="#ffd43b" stroke-width="3" stroke-linecap="round"/></svg>`,
+
+  // Postiats/ATS — стрелка-треугольник
+  postiats: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#1e4aec"/>
+<path d="M16 20 L40 32 L16 44 Z" fill="#fff"/>
+<path d="M36 16 L52 32 L36 48" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+
+  // Ligo (Cameligo/Pascaligo) — волна интерферометра
+  pascaligo: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#3be133"/>
+<path d="M12 22 q 7 -7 14 0 t 14 0 t 14 0" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+<path d="M12 34 q 7 -7 14 0 t 14 0 t 14 0" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+<path d="M12 46 q 7 -7 14 0 t 14 0 t 14 0" stroke="#fff" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.4"/></svg>`,
 };
 
 // ── метки для остальных ────────────────────────────────────────────────────
@@ -371,6 +532,11 @@ for (const lang of LANGS) {
 out.typescript2 = out.typescript; out.css2 = out.css; out.scss2 = out.scss;
 out.html2 = out.html; out.json2 = out.json; out['c++'] = out.cpp;
 out.jsonc = out.json; out.json5 = out.json;
+out.latex = out.tex; out.cameligo = out.pascaligo;
+out.m3 = out.erlang; out.msdax = out.pgsql; out.sophia = out.solidity;
+out.st = out.verilog; out.pla = out.plaintext; out.sb = out.plaintext;
+out.restructuredtext = out.plaintext; out.mdx = out.markdown;
+out.flow9 = out.lexon ? out.lexon : out.plaintext; out.ecl = out.erlang;
 
 const code = `// ⚡ AUTO-GENERATED by scripts/gen-logos.mjs — не редактировать вручную
 export const langLogos: Record<string, { color: string; svg: string }> = ${JSON.stringify(out, null, 2)};

@@ -10,7 +10,7 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "azcli": {
     "color": "#0064ad",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#0064ad\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">AZ</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#0064ad\"/>\n<path d=\"M20 44 a9 9 0 0 1 1.5 -17.9 A12 12 0 0 1 45 26 a8.5 8.5 0 0 1 -1 17 Z\" fill=\"#fff\"/>\n<text x=\"32\" y=\"42\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-weight=\"800\" font-size=\"13\" fill=\"#0064ad\">AZ</text></svg>"
   },
   "bat": {
     "color": "#c1f12e",
@@ -18,11 +18,11 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "bicep": {
     "color": "#519aba",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#519aba\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">Bicep</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#519aba\"/>\n<path d=\"M14 44 C 16 30 26 22 40 24 C 52 26 54 40 48 46\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4.5\" stroke-linecap=\"round\"/>\n<ellipse cx=\"30\" cy=\"34\" rx=\"10\" ry=\"6\" transform=\"rotate(-30 30 34)\" fill=\"#fff\"/></svg>"
   },
   "cameligo": {
     "color": "#3be133",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3be133\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#1a1a1a\">LIGO</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3be133\"/>\n<path d=\"M12 22 q 7 -7 14 0 t 14 0 t 14 0\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\"/>\n<path d=\"M12 34 q 7 -7 14 0 t 14 0 t 14 0\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\"0.7\"/>\n<path d=\"M12 46 q 7 -7 14 0 t 14 0 t 14 0\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\"0.4\"/></svg>"
   },
   "clojure": {
     "color": "#db5855",
@@ -61,20 +61,20 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#2496ed\"/>\n<rect x=\"16\" y=\"22\" width=\"33\" height=\"22\" rx=\"4\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/>\n<path d=\"M16 32 h33\" stroke=\"#fff\" stroke-width=\"4\"/>\n<path d=\"M9 28 q-4 0 -4 -3.5 M9 36 q-4 0 -4 -3.5\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/></svg>"
   },
   "ecl": {
-    "color": "#8a1267",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#8a1267\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">ECL</text></svg>"
+    "color": "#b83998",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#b83998\"/>\n<circle cx=\"32\" cy=\"32\" r=\"15\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4.5\"/>\n<circle cx=\"14\" cy=\"14\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"14\" r=\"4.5\" fill=\"#fff\"/>\n<circle cx=\"14\" cy=\"50\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"50\" r=\"4.5\" fill=\"#fff\"/></svg>"
   },
   "elixir": {
     "color": "#6e4a7e",
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#6e4a7e\"/>\n<path d=\"M32 10 C 46 26 48 38 32 52 C 16 38 18 26 32 10 Z\" fill=\"#fff\"/>\n<path d=\"M24 38 q3 -4 6 0 q3 4 6 0\" stroke=\"#6e4a7e\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\"/></svg>"
   },
   "flow9": {
-    "color": "#2d2d2d",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#2d2d2d\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">F9</text></svg>"
+    "color": "#1a5fab",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#1a5fab\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">Lexon</text></svg>"
   },
   "freemarker2": {
     "color": "#8a6d3b",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#8a6d3b\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">FTL</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#8a6d3b\"/>\n<path d=\"M26 14 V50 M26 14 H42 M26 30 H38\" stroke=\"#fff\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\"/>\n<path d=\"M42 36 L30 46 M36 34 l-2 10\" stroke=\"#ffd43b\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>"
   },
   "fsharp": {
     "color": "#378bba",
@@ -94,7 +94,7 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "hcl": {
     "color": "#844fba",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#844fba\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">HCL</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#844fba\"/>\n<path d=\"M32 10 L50 17 V32 C 50 45 42 52 32 55 C 22 52 14 45 14 32 V17 Z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4.5\" stroke-linejoin=\"round\"/>\n<path d=\"M24 38 V24 L32 30 L40 24 V38\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "html": {
     "color": "#e34c26",
@@ -102,7 +102,7 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "ini": {
     "color": "#3f6faf",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3f6faf\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">INI</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3f6faf\"/>\n<circle cx=\"32\" cy=\"32\" r=\"11\" fill=\"#fff\"/>\n<path d=\"M32 13 v7 M32 44 v7 M13 32 h7 M44 32 h7 M19.5 19.5 l5 5 M39.5 39.5 l5 5 M44.5 19.5 l-5 5 M24.5 39.5 l-5 5\" stroke=\"#fff\" stroke-width=\"5\" stroke-linecap=\"round\"/></svg>"
   },
   "java": {
     "color": "#b07219",
@@ -137,24 +137,24 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#000080\"/>\n<path d=\"M36 10 A 24 24 0 1 0 36 54 A 19 19 0 1 1 36 10 Z\" fill=\"#fff\"/></svg>"
   },
   "m3": {
-    "color": "#4e9a51",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#4e9a51\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">M3</text></svg>"
+    "color": "#b83998",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#b83998\"/>\n<circle cx=\"32\" cy=\"32\" r=\"15\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4.5\"/>\n<circle cx=\"14\" cy=\"14\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"14\" r=\"4.5\" fill=\"#fff\"/>\n<circle cx=\"14\" cy=\"50\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"50\" r=\"4.5\" fill=\"#fff\"/></svg>"
   },
   "markdown": {
     "color": "#083fa1",
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#083fa1\"/>\n<text x=\"32\" y=\"36\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-weight=\"800\" font-size=\"25\" fill=\"#fff\">M</text>\n<path d=\"M32 42 v11 M26 47.5 l6 6 6-6\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "mdx": {
-    "color": "#323232",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#323232\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">MDX</text></svg>"
+    "color": "#083fa1",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#083fa1\"/>\n<text x=\"32\" y=\"36\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-weight=\"800\" font-size=\"25\" fill=\"#fff\">M</text>\n<path d=\"M32 42 v11 M26 47.5 l6 6 6-6\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "mips": {
     "color": "#d4a017",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#d4a017\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">MIPS</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#d4a017\"/>\n<rect x=\"18\" y=\"18\" width=\"28\" height=\"28\" rx=\"3\" fill=\"#fff\"/>\n<path d=\"M24 12 v6 M32 12 v6 M40 12 v6 M24 46 v6 M32 46 v6 M40 46 v6 M12 24 h6 M12 32 h6 M12 40 h6 M46 24 h6 M46 32 h6 M46 40 h6\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linecap=\"round\"/>\n<text x=\"32\" y=\"37\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-weight=\"800\" font-size=\"16\" fill=\"#d4a017\">M</text></svg>"
   },
   "msdax": {
-    "color": "#00758f",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#00758f\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">MSDAX</text></svg>"
+    "color": "#336791",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#336791\"/>\n<ellipse cx=\"26\" cy=\"36\" rx=\"15\" ry=\"10\" fill=\"#fff\"/>\n<circle cx=\"42\" cy=\"27\" r=\"8\" fill=\"#fff\"/>\n<circle cx=\"39\" cy=\"25\" r=\"5\" fill=\"#336791\"/>\n<path d=\"M48 29 q 6 2 5 12 q -1 4 -5 3\" stroke=\"#fff\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/>\n<path d=\"M15 42 v7 M23 42 v7 M31 42 v7\" stroke=\"#fff\" stroke-width=\"4.5\" stroke-linecap=\"round\"/>\n<path d=\"M11 36 q -5 -1 -4 -6\" stroke=\"#fff\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>"
   },
   "mysql": {
     "color": "#00758f",
@@ -162,15 +162,15 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "objective-c": {
     "color": "#438eff",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#438eff\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">ObjC</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#438eff\"/>\n<circle cx=\"32\" cy=\"32\" r=\"18\" fill=\"none\" stroke=\"#fff\" stroke-width=\"5\"/>\n<path d=\"M30 18 L22 34 H28 L24 46 L40 28 H33 L36 18 Z\" fill=\"#fff\"/></svg>"
   },
   "pascal": {
     "color": "#e3f171",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#e3f171\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#1a1a1a\">Pascal</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#e3f171\"/>\n<path d=\"M16 50 L32 14 L48 50 Z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4.5\" stroke-linejoin=\"round\"/>\n<text x=\"32\" y=\"42\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-weight=\"800\" font-size=\"17\" fill=\"#fff\">P</text></svg>"
   },
   "pascaligo": {
     "color": "#3be133",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3be133\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#1a1a1a\">LIGO</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3be133\"/>\n<path d=\"M12 22 q 7 -7 14 0 t 14 0 t 14 0\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\"/>\n<path d=\"M12 34 q 7 -7 14 0 t 14 0 t 14 0\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\"0.7\"/>\n<path d=\"M12 46 q 7 -7 14 0 t 14 0 t 14 0\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" opacity=\"0.4\"/></svg>"
   },
   "perl": {
     "color": "#0298c3",
@@ -185,16 +185,16 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#4f5d95\"/>\n<circle cx=\"18\" cy=\"31\" r=\"9\" fill=\"#fff\"/>\n<circle cx=\"25\" cy=\"29\" r=\"6\" fill=\"#4f5d95\"/>\n<path d=\"M12 35 q -7 5 -4 14 q 1 4 5 3\" stroke=\"#fff\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\"/>\n<rect x=\"22\" y=\"30\" width=\"24\" height=\"14\" rx=\"7\" fill=\"#fff\"/>\n<path d=\"M26 44 v8 M34 44 v8 M42 44 v8\" stroke=\"#fff\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n<path d=\"M48 36 q 5 1 4 6\" stroke=\"#fff\" stroke-width=\"3\" stroke-linecap=\"round\"/></svg>"
   },
   "pla": {
-    "color": "#6b7280",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#6b7280\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">PLA</text></svg>"
+    "color": "#9aa7c4",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#9aa7c4\"/>\n<rect x=\"17\" y=\"9\" width=\"30\" height=\"46\" rx=\"4\" fill=\"#fff\"/>\n<path d=\"M47 9 h-7 a7 7 0 0 1 7 7 z\" fill=\"#9aa7c4\"/>\n<path d=\"M24 22 h16 M24 28 h16 M24 34 h10\" stroke=\"#9aa7c4\" stroke-width=\"3.2\" stroke-linecap=\"round\"/></svg>"
   },
   "postiats": {
     "color": "#1e4aec",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#1e4aec\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">ATS</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#1e4aec\"/>\n<path d=\"M16 20 L40 32 L16 44 Z\" fill=\"#fff\"/>\n<path d=\"M36 16 L52 32 L36 48\" stroke=\"#fff\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "powerquery": {
     "color": "#d24136",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#d24136\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">PQ</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#d24136\"/>\n<text x=\"32\" y=\"41\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#fff\">PQ</text></svg>"
   },
   "powershell": {
     "color": "#012456",
@@ -202,7 +202,7 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "protobuf": {
     "color": "#607d8b",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#607d8b\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">Proto</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#607d8b\"/>\n<path d=\"M32 12 L50 24 V40 L32 52 L14 40 V24 Z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linejoin=\"round\"/>\n<path d=\"M14 24 L32 36 L50 24 M32 36 V52\" fill=\"none\" stroke=\"#fff\" stroke-width=\"3.4\" stroke-linejoin=\"round\"/></svg>"
   },
   "pug": {
     "color": "#a86454",
@@ -214,15 +214,15 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "qsharp": {
     "color": "#fed659",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#fed659\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#1a1a1a\">Q#</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#fed659\"/>\n<text x=\"32\" y=\"41\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-weight=\"800\" font-size=\"19\" fill=\"#1a1a1a\">|ψ⟩</text></svg>"
   },
   "r": {
     "color": "#198ce7",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#198ce7\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">R</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#198ce7\"/>\n<text x=\"30\" y=\"39\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#fff\">R</text>\n<path d=\"M20 46 q 6 5 12 0 q 6 -5 12 0\" stroke=\"#fff\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\"/></svg>"
   },
   "razor": {
     "color": "#512bd4",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#512bd4\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">Razor</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#512bd4\"/>\n<path d=\"M20 14 L48 30 L44 36 L38 39 L22 18 Z\" fill=\"#fff\"/>\n<path d=\"M38 39 L20 14\" stroke=\"#512bd4\" stroke-width=\"3\"/>\n<path d=\"M38 34 l3 8 M34 32 l3 8\" stroke=\"#fff\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>"
   },
   "redis": {
     "color": "#d82c20",
@@ -230,11 +230,11 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "redshift": {
     "color": "#e4433d",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#e4433d\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"12\" fill=\"#ffffff\">Redshift</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#e4433d\"/>\n<circle cx=\"32\" cy=\"32\" r=\"17\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/>\n<circle cx=\"32\" cy=\"32\" r=\"6\" fill=\"#fff\"/>\n<ellipse cx=\"32\" cy=\"32\" rx=\"22\" ry=\"6\" transform=\"rotate(-18 32 32)\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.6\"/></svg>"
   },
   "restructuredtext": {
-    "color": "#141414",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#141414\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">RST</text></svg>"
+    "color": "#9aa7c4",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#9aa7c4\"/>\n<rect x=\"17\" y=\"9\" width=\"30\" height=\"46\" rx=\"4\" fill=\"#fff\"/>\n<path d=\"M47 9 h-7 a7 7 0 0 1 7 7 z\" fill=\"#9aa7c4\"/>\n<path d=\"M24 22 h16 M24 28 h16 M24 34 h10\" stroke=\"#9aa7c4\" stroke-width=\"3.2\" stroke-linecap=\"round\"/></svg>"
   },
   "ruby": {
     "color": "#701516",
@@ -245,8 +245,8 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#2a1f18\"/>\n<g stroke=\"#e05d2b\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\">\n<path d=\"M15 30 q-9 0 -5 10 M13 37 q-8 3 -3 11 M16 44 q-6 4 -1 11\"/>\n<path d=\"M49 30 q9 0 5 10 M51 37 q8 3 3 11 M48 44 q6 4 1 11\"/>\n</g>\n<circle cx=\"17\" cy=\"19\" r=\"8.5\" fill=\"#c9431c\"/><circle cx=\"13.5\" cy=\"15.5\" r=\"4.5\" fill=\"#2a1f18\"/>\n<circle cx=\"47\" cy=\"19\" r=\"8.5\" fill=\"#c9431c\"/><circle cx=\"50.5\" cy=\"15.5\" r=\"4.5\" fill=\"#2a1f18\"/>\n<ellipse cx=\"32\" cy=\"34\" rx=\"15\" ry=\"12\" fill=\"#e05d2b\"/>\n<circle cx=\"27\" cy=\"31\" r=\"2.4\" fill=\"#fff\"/><circle cx=\"37\" cy=\"31\" r=\"2.4\" fill=\"#fff\"/>\n<circle cx=\"27.6\" cy=\"31.7\" r=\"1.1\" fill=\"#2a1f18\"/><circle cx=\"37.6\" cy=\"31.7\" r=\"1.1\" fill=\"#2a1f18\"/>\n<path d=\"M27.5 39.5 q4.5 3.5 9 0\" stroke=\"#2a1f18\" stroke-width=\"2\" fill=\"none\" stroke-linecap=\"round\"/></svg>"
   },
   "sb": {
-    "color": "#6b7280",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#6b7280\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">SB</text></svg>"
+    "color": "#9aa7c4",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#9aa7c4\"/>\n<rect x=\"17\" y=\"9\" width=\"30\" height=\"46\" rx=\"4\" fill=\"#fff\"/>\n<path d=\"M47 9 h-7 a7 7 0 0 1 7 7 z\" fill=\"#9aa7c4\"/>\n<path d=\"M24 22 h16 M24 28 h16 M24 34 h10\" stroke=\"#9aa7c4\" stroke-width=\"3.2\" stroke-linecap=\"round\"/></svg>"
   },
   "scala": {
     "color": "#c22d40",
@@ -254,7 +254,7 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "scheme": {
     "color": "#1e4aec",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#1e4aec\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">Scheme</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#1e4aec\"/>\n<path d=\"M22 20 q -7 7 0 12 q 7 5 0 12 M42 20 q 7 7 0 12 q -7 5 0 12\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\"/></svg>"
   },
   "scss": {
     "color": "#c6538c",
@@ -269,8 +269,8 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#aa6746\"/>\n<path d=\"M32 11 l6 8 -6 8 -6 -8 z\" fill=\"#fff\"/>\n<path d=\"M32 24 l9 11 -9 11 -9 -11 z\" fill=\"#fff\"/>\n<path d=\"M32 42 l11 13 -11 13 -11 -13 z\" fill=\"#fff\"/></svg>"
   },
   "sophia": {
-    "color": "#cc6687",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#cc6687\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">Sophia</text></svg>"
+    "color": "#aa6746",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#aa6746\"/>\n<path d=\"M32 11 l6 8 -6 8 -6 -8 z\" fill=\"#fff\"/>\n<path d=\"M32 24 l9 11 -9 11 -9 -11 z\" fill=\"#fff\"/>\n<path d=\"M32 42 l11 13 -11 13 -11 -13 z\" fill=\"#fff\"/></svg>"
   },
   "sparql": {
     "color": "#0c4597",
@@ -281,8 +281,8 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#e38c00\"/>\n<ellipse cx=\"32\" cy=\"19\" rx=\"15\" ry=\"5.5\" fill=\"#fff\"/>\n<path d=\"M17 19 v15 a15 5.5 0 0 0 30 0 V19\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\"/>\n<ellipse cx=\"32\" cy=\"28\" rx=\"15\" ry=\"5.5\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2.6\" opacity=\"0.75\"/></svg>"
   },
   "st": {
-    "color": "#58595b",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#58595b\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">ST</text></svg>"
+    "color": "#5c6bc0",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#5c6bc0\"/>\n<path d=\"M10 48 h8 v-20 h9 v10 h10 v-24 h8 v14 h9 v-8 h8 v22\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "swift": {
     "color": "#F05138",
@@ -290,11 +290,11 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "systemverilog": {
     "color": "#6a7cc9",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#6a7cc9\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">SV</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#6a7cc9\"/>\n<path d=\"M10 46 h9 v-18 h10 v10 h9 v-22 h9 v12 h8 v-6 h9 v24\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n<rect x=\"16\" y=\"36\" width=\"7\" height=\"7\" fill=\"#fff\"/></svg>"
   },
   "tcl": {
     "color": "#e4cc98",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#e4cc98\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#1a1a1a\">Tcl</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#e4cc98\"/>\n<circle cx=\"31\" cy=\"34\" r=\"13\" fill=\"#5b7d4e\"/>\n<path d=\"M18 34 q -5 -5 -4 -11 M18 38 q -6 3 -4 9 M46 34 q 5 -5 4 -11 M46 38 q 6 3 4 9\" stroke=\"#5b7d4e\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/>\n<circle cx=\"13\" cy=\"22\" r=\"3.5\" fill=\"#5b7d4e\"/>\n<circle cx=\"51\" cy=\"22\" r=\"3.5\" fill=\"#5b7d4e\"/>\n<path d=\"M31 21 v-7 q 0 -4 -3 -4\" stroke=\"#5b7d4e\" stroke-width=\"4\" fill=\"none\" stroke-linecap=\"round\"/></svg>"
   },
   "twig": {
     "color": "#7f9a3a",
@@ -314,7 +314,7 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "wgsl": {
     "color": "#8f4fd1",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#8f4fd1\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">WGSL</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#8f4fd1\"/>\n<path d=\"M32 10 L50 22 V44 L32 54 L14 44 V22 Z\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4\" stroke-linejoin=\"round\"/>\n<path d=\"M14 22 L32 34 L50 22 M32 34 V54\" fill=\"#fff\" opacity=\"0.25\" stroke=\"#fff\" stroke-width=\"3\" stroke-linejoin=\"round\"/></svg>"
   },
   "xml": {
     "color": "#0060ac",
@@ -322,7 +322,7 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "yaml": {
     "color": "#cb171e",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#cb171e\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#1a1a1a\">YAML</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#cb171e\"/>\n<path d=\"M16 14 L32 36 L48 14\" stroke=\"#fff\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n<path d=\"M22 50 h20 M32 38 v12\" stroke=\"#fff\" stroke-width=\"5.5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "json": {
     "color": "#3E7B27",
@@ -346,39 +346,39 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   },
   "toml": {
     "color": "#9c4221",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#9c4221\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">TOML</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#9c4221\"/>\n<path d=\"M12 27 L32 12 L52 27\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/>\n<rect x=\"18\" y=\"29\" width=\"28\" height=\"23\" rx=\"3\" fill=\"#fff\"/>\n<path d=\"M24 36 h16 M24 42 h16\" stroke=\"#9c4221\" stroke-width=\"3.4\" stroke-linecap=\"round\"/></svg>"
   },
   "diff": {
     "color": "#d01919",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#d01919\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">±</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#d01919\"/>\n<rect x=\"10\" y=\"10\" width=\"20\" height=\"20\" rx=\"4\" fill=\"#34d399\"/>\n<path d=\"M20 15 v10 M15 20 h10\" stroke=\"#064e3b\" stroke-width=\"3.6\" stroke-linecap=\"round\"/>\n<rect x=\"34\" y=\"34\" width=\"20\" height=\"20\" rx=\"4\" fill=\"#f87171\"/>\n<path d=\"M39 44 h10\" stroke=\"#7f1d1d\" stroke-width=\"3.6\" stroke-linecap=\"round\"/></svg>"
   },
   "tex": {
     "color": "#3d6117",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3d6117\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">LaTeX</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3d6117\"/>\n<path d=\"M18 14 h28 M22 14 h3 l10 18 -10 18 h-3 M18 50 h28\" stroke=\"#fff\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "latex": {
     "color": "#3d6117",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3d6117\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">LaTeX</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#3d6117\"/>\n<path d=\"M18 14 h28 M22 14 h3 l10 18 -10 18 h-3 M18 50 h28\" stroke=\"#fff\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "asm": {
     "color": "#9c7a3c",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#9c7a3c\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">ASM</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#9c7a3c\"/>\n<rect x=\"20\" y=\"20\" width=\"24\" height=\"24\" rx=\"3\" fill=\"#fff\"/>\n<path d=\"M26 13 v7 M32 13 v7 M38 13 v7 M26 44 v7 M32 44 v7 M38 44 v7 M13 26 h7 M13 32 h7 M13 38 h7 M44 26 h7 M44 32 h7 M44 38 h7\" stroke=\"#fff\" stroke-width=\"3.6\" stroke-linecap=\"round\"/>\n<circle cx=\"32\" cy=\"32\" r=\"5\" fill=\"#9c7a3c\"/></svg>"
   },
   "verilog": {
     "color": "#5c6bc0",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#5c6bc0\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"26\" fill=\"#ffffff\">V</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#5c6bc0\"/>\n<path d=\"M10 48 h8 v-20 h9 v10 h10 v-24 h8 v14 h9 v-8 h8 v22\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "vhdl": {
     "color": "#db4d3f",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#db4d3f\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">VHDL</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#db4d3f\"/>\n<path d=\"M12 46 h8 v-22 h7 l6 22 h6 l6 -22 h7 l6 22 h4\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "makefile": {
     "color": "#427819",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#427819\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"21\" fill=\"#ffffff\">Make</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#427819\"/>\n<path d=\"M45 14 L30 29 a11 11 0 1 0 5 5 l15 -15 z\" fill=\"#fff\" transform=\"rotate(45 32 32)\"/></svg>"
   },
   "cmake": {
     "color": "#da3434",
-    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#da3434\"/><text x=\"32\" y=\"40.5\" text-anchor=\"middle\" font-family=\"system-ui,-apple-system,'Segoe UI',Roboto,sans-serif\" font-weight=\"800\" font-size=\"15\" fill=\"#ffffff\">CMake</text></svg>"
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#da3434\"/>\n<path d=\"M42 12 L30 24 a9 9 0 1 0 4 4 l12 -12 z\" fill=\"#fff\" transform=\"rotate(40 32 32)\"/>\n<polygon points=\"45,36 50,39 50,45 45,48 40,45 40,39\" fill=\"#fff\"/></svg>"
   },
   "prisma": {
     "color": "#0c344b",
@@ -399,6 +399,18 @@ export const langLogos: Record<string, { color: string; svg: string }> = {
   "groovy": {
     "color": "#4298b8",
     "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#4298b8\"/>\n<ellipse cx=\"28\" cy=\"40\" rx=\"10\" ry=\"7.5\" fill=\"#fff\"/>\n<path d=\"M36 33 V16\" stroke=\"#fff\" stroke-width=\"4.5\" stroke-linecap=\"round\"/>\n<path d=\"M36 16 q 10 3 7 12\" stroke=\"#fff\" stroke-width=\"4.5\" fill=\"none\" stroke-linecap=\"round\"/></svg>"
+  },
+  "ocaml": {
+    "color": "#3be133",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#ec6813\"/>\n<path d=\"M32 12 L51 32 L32 52 L13 32 Z\" fill=\"#fff\"/>\n<path d=\"M32 22 L42 32 L32 42 L22 32 Z\" fill=\"#ec6813\"/></svg>"
+  },
+  "erlang": {
+    "color": "#b83998",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#b83998\"/>\n<circle cx=\"32\" cy=\"32\" r=\"15\" fill=\"none\" stroke=\"#fff\" stroke-width=\"4.5\"/>\n<circle cx=\"14\" cy=\"14\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"14\" r=\"4.5\" fill=\"#fff\"/>\n<circle cx=\"14\" cy=\"50\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"50\" r=\"4.5\" fill=\"#fff\"/></svg>"
+  },
+  "haskell": {
+    "color": "#5e5086",
+    "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><rect width=\"64\" height=\"64\" rx=\"14\" fill=\"#5e5086\"/>\n<path d=\"M18 18 L34 33 M34 33 L48 48 M34 33 L46 22\" stroke=\"#fff\" stroke-width=\"5\" fill=\"none\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/></svg>"
   },
   "typescript2": {
     "color": "#3178c6",

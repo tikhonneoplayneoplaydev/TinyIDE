@@ -3,7 +3,7 @@ import type {
   Activity, CommandDef, CreateRequest, EditorApi, FsNode, IdeApi,
   MenuState, OpenFile, PaletteState, Settings, Workspace,
 } from './types';
-import { Emitter } from './types';
+import { ACCENT_PRESETS, Emitter, FONT_PRESETS } from './types';
 import {
   isTauri, loadWorkspaceTree, openFolderDialog, readFileText, writeFileText,
   deletePath as fsDeletePath, renamePath as fsRenamePath, vfs,
@@ -26,15 +26,33 @@ import Welcome from './components/Welcome';
 
 const DEFAULT_SETTINGS: Settings = {
   theme: 'dark',
+  accent: 'cyan',
+  fontFamily: FONT_PRESETS[0].id,
   fontSize: 14,
+  fontLigatures: true,
+  lineHeight: 1.5,
   tabSize: 4,
+  insertSpaces: true,
   wordWrap: 'off',
   minimap: true,
   cursorStyle: 'line',
   cursorBlinking: 'smooth',
+  cursorWidth: 2,
+  smoothCaret: true,
+  mouseWheelZoom: true,
+  autoClosingBrackets: true,
+  quickSuggestions: true,
+  bracketPairColorization: true,
+  indentGuides: true,
+  renderLineHighlight: 'all',
+  stickyScroll: false,
+  paddingY: 14,
   trail: true,
+  trailIntensity: 80,
   glow: true,
+  glowIntensity: 60,
   particles: true,
+  particlesIntensity: 70,
   showHidden: false,
 };
 
@@ -102,6 +120,15 @@ export default function App() {
       return next;
     });
   }, []);
+
+  // ─── apply accent CSS variables ───────────────────────────────────────────
+  useEffect(() => {
+    const a = ACCENT_PRESETS[settings.accent];
+    const root = document.documentElement;
+    root.style.setProperty('--accent', a.c1);
+    root.style.setProperty('--accent2', a.c2);
+    root.style.setProperty('--accent3', a.c3);
+  }, [settings.accent]);
 
   // ─── toast ────────────────────────────────────────────────────────────────
   const toast = useCallback((msg: string) => {
@@ -297,6 +324,22 @@ export default function App() {
     {
       id: 'toggle-particles', label: 'Искры при наборе: вкл/выкл',
       run: () => updateSettings({ particles: !settingsRef.current.particles }),
+    },
+    {
+      id: 'cycle-accent', label: 'Сменить акцентный цвет',
+      run: () => {
+        const keys = Object.keys(ACCENT_PRESETS) as Settings['accent'][];
+        const i = keys.indexOf(settingsRef.current.accent);
+        updateSettings({ accent: keys[(i + 1) % keys.length] });
+      },
+    },
+    {
+      id: 'cycle-font', label: 'Сменить шрифт редактора',
+      run: () => {
+        const cur = settingsRef.current.fontFamily;
+        const i = FONT_PRESETS.findIndex((f) => f.id === cur);
+        updateSettings({ fontFamily: FONT_PRESETS[(i + 1) % FONT_PRESETS.length].id });
+      },
     },
     {
       id: 'theme', label: 'Toggle Theme',

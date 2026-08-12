@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="TinyIDE — быстрая IDE на Tauri 2, React и Monaco. Анимированный курсор-комета, 90+ языков, полная кастомизация. Свободное ПО (AGPL-3.0).">
+<title>TinyIDE — быстрая IDE с кометным курсором</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 19.5C8 16 10 12.5 13.5 8.5c2.3-2.6 4.6-3.6 6-3 1.2.5 1.5 2 .2 4.4-.8 1.5-2 3-3.3 4.4-3.4 3.6-7 5.2-11.9 5.2z' fill='%2322d3ee' opacity='0.9'/%3E%3Ccircle cx='17.6' cy='6.4' r='2.6' fill='%23eafcff'/%3E%3C/svg%3E">
+<style>
+:root{--bg0:#070a12;--bg1:#0b0e17;--bg2:#121829;--bg3:#182036;--border:#1e2740;--fg:#dbe3f5;--fg2:#aab6d4;--muted:#7c88a8;--c1:#22d3ee;--c2:#a78bfa;--c3:#f472b6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg0);color:var(--fg);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--c1);text-decoration:none}
+.grad{background:linear-gradient(120deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(7,10,18,.8);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px}
+.logo svg{filter:drop-shadow(0 0 8px rgba(34,211,238,.5))}
+.nav-links{display:flex;gap:22px;font-size:13.5px;color:var(--fg2)}
+.nav-links a:hover{color:var(--fg)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--fg);transition:transform .15s,box-shadow .15s,border-color .15s}
+.btn:hover{transform:translateY(-2px);border-color:var(--c1);box-shadow:0 10px 26px rgba(34,211,238,.15)}
+.btn.primary{background:linear-gradient(120deg,var(--c1),var(--c2),var(--c3));color:#061018;border:none;animation:slide 6s linear infinite;background-size:200% 100%}
+.btn.primary:hover{box-shadow:0 12px 30px rgba(167,139,250,.35)}
+@keyframes slide{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* hero */
+.hero{text-align:center;padding:96px 24px 60px;position:relative}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(800px 400px at 50% 0%,rgba(34,211,238,.09),transparent 70%),radial-gradient(600px 300px at 80% 10%,rgba(167,139,250,.08),transparent 70%);pointer-events:none}
+.hero-logo{width:110px;height:110px;filter:drop-shadow(0 0 28px rgba(34,211,238,.55));animation:float 3.6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.hero h1{font-size:58px;font-weight:800;letter-spacing:-1.5px;margin:22px 0 10px}
+.hero h1 span{background:linear-gradient(120deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent;background-size:220% 100%;animation:slide 5s linear infinite}
+.hero p{color:var(--muted);font-size:17px;max-width:620px;margin:0 auto 34px;line-height:1.6}
+.hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.badges{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+.badge{font-size:12px;color:var(--fg2);background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:5px 13px}
+
+/* screenshot */
+.shot{margin:30px auto 0;max-width:1000px;position:relative}
+.shot img{width:100%;border-radius:18px;border:1px solid var(--border);box-shadow:0 30px 80px rgba(0,0,0,.55)}
+.shot::after{content:'';position:absolute;inset:-1px;border-radius:18px;background:linear-gradient(180deg,transparent 60%,rgba(7,10,18,.25));pointer-events:none}
+
+/* features */
+.features{padding:90px 24px}
+.features h2,.langs h2,.cta h2{text-align:center;font-size:34px;font-weight:800;letter-spacing:-.5px;margin-bottom:14px}
+.features .sub,.langs .sub{text-align:center;color:var(--muted);font-size:15px;margin-bottom:44px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.card{background:var(--bg1);border:1px solid var(--border);border-radius:16px;padding:26px;transition:transform .18s,border-color .18s}
+.card:hover{transform:translateY(-4px);border-color:var(--c1)}
+.card .ico{font-size:26px;margin-bottom:12px}
+.card h3{font-size:16.5px;margin-bottom:8px}
+.card p{color:var(--muted);font-size:13.5px;line-height:1.6}
+
+/* langs */
+.langs{padding:0 24px 90px}
+.chips{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;max-width:860px;margin:0 auto}
+.chip{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--fg2);background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:6px 14px;transition:transform .14s,border-color .14s,color .14s}
+.chip:hover{transform:translateY(-2px);border-color:var(--c1);color:var(--fg)}
+.dot{width:10px;height:10px;border-radius:3.5px;flex-shrink:0}
+
+/* cta */
+.cta{text-align:center;padding:70px 24px 100px;border-top:1px solid var(--border)}
+.cta p{color:var(--muted);font-size:15px;margin-bottom:28px}
+
+/* footer */
+footer{border-top:1px solid var(--border);padding:30px 24px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.8}
+footer b{color:var(--fg2)}
+@media(max-width:640px){.hero h1{font-size:38px}.nav-links{display:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M4.5 19.5C8 16 10 12.5 13.5 8.5c2.3-2.6 4.6-3.6 6-3 1.2.5 1.5 2 .2 4.4-.8 1.5-2 3-3.3 4.4-3.4 3.6-7 5.2-11.9 5.2z" fill="#22d3ee" opacity=".9"/><circle cx="17.6" cy="6.4" r="2.6" fill="#eafcff"/></svg>
+    TinyIDE
+  </div>
+  <div class="nav-links">
+    <a href="#features">Возможности</a>
+    <a href="#langs">Языки</a>
+    <a href="https://github.com/tikhonneoplayneoplaydev/TinyIDE/releases">Скачать</a>
+    <a href="https://github.com/tikhonneoplayneoplaydev/TinyIDE">Исходники</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <svg class="hero-logo" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <defs><linearGradient id="g" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#22d3ee"/><stop offset="55%" stop-color="#a78bfa"/><stop offset="100%" stop-color="#f472b6"/></linearGradient></defs>
+    <path d="M4.5 19.5C8 16 10 12.5 13.5 8.5c2.3-2.6 4.6-3.6 6-3 1.2.5 1.5 2 .2 4.4-.8 1.5-2 3-3.3 4.4-3.4 3.6-7 5.2-11.9 5.2z" fill="url(#g)" opacity=".9"/>
+    <circle cx="17.6" cy="6.4" r="2.6" fill="#eafcff"/><circle cx="17.6" cy="6.4" r="1.2" fill="#a5f3fc"/>
+  </svg>
+  <h1>Пиши код на скорости <span>кометы</span></h1>
+  <p>Быстрая IDE в стиле VS Code на <b>Tauri 2 + React + Monaco</b>. Анимированный курсор-комета, 90+ языков с фирменными логотипами и полная кастомизация — всё бесплатно и открыто (AGPL-3.0).</p>
+  <div class="hero-actions">
+    <a class="btn primary" href="./demo/">🚀 Открыть онлайн-демо</a>
+    <a class="btn" href="https://github.com/tikhonneoplayneoplaydev/TinyIDE/releases">📦 Скачать для Windows / Linux / macOS</a>
+    <a class="btn" href="https://github.com/tikhonneoplayneoplaydev/TinyIDE">🐙 Исходники на GitHub</a>
+  </div>
+  <div class="badges">
+    <span class="badge">⚡ Tauri 2 — 5 МБ</span>
+    <span class="badge">🎨 100+ логотипов языков</span>
+    <span class="badge">🔓 AGPL-3.0</span>
+    <span class="badge">🦀 90+ языков Monaco</span>
+  </div>
+  <div class="shot"><img src="assets/screenshot.png" alt="TinyIDE — редактор с кометным курсором и деревом файлов"></div>
+</header>
+
+<section class="features" id="features">
+  <div class="wrap">
+    <h2>Всё, что нужно, — <span class="grad">без лишнего</span></h2>
+    <p class="sub">Только редактор, проводник, поиск и красота. Никакой телеметрии.</p>
+    <div class="grid">
+      <div class="card"><div class="ico">🚀</div><h3>Курсор-комета</h3><p>Скользящий курсор со шлейфом, светящейся аурой и искрами при наборе. Длину шлейфа, яркость свечения и количество искр можно настроить.</p></div>
+      <div class="card"><div class="ico">🎨</div><h3>Кастомизация всего</h3><p>6 акцентных цветов, тёмная/светлая тема, 8 шрифтов, лигатуры, высота строки, стиль и ширина курсора, скобки, направляющие, зум — десятки настроек.</p></div>
+      <div class="card"><div class="ico">🦀</div><h3>90+ языков</h3><p>Monaco — тот же редактор, что в VS Code: подсветка синтаксиса, автодополнение, мини-карта. У каждого языка — фирменный SVG-логотип.</p></div>
+      <div class="card"><div class="ico">📂</div><h3>Проводник и поиск</h3><p>Дерево файлов с контекстным меню, вкладки, dirty-индикаторы, мгновенный поиск по файлам с переходом к строке.</p></div>
+      <div class="card"><div class="ico">⚡</div><h3>Нативно и быстро</h3><p>Tauri 2 + Rust: инсталлер ~5 МБ, мгновенный запуск, работа с любыми папками на диске — без Electron-тяжести.</p></div>
+      <div class="card"><div class="ico">🔓</div><h3>Свободное ПО</h3><p>Лицензия AGPL-3.0: код открыт навсегда, никакая корпорация не сможет закрыть или переименовать форк.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="langs" id="langs">
+  <div class="wrap">
+    <h2>Языки с <span class="grad">характером</span></h2>
+    <p class="sub">У каждого — свой логотип: краб, змейки, чашка кофе, дельфин, слон, верблюд, ласточка…</p>
+    <div class="chips">
+      <span class="chip"><span class="dot" style="background:#dea584"></span>Rust 🦀</span>
+      <span class="chip"><span class="dot" style="background:#3572A5"></span>Python 🐍</span>
+      <span class="chip"><span class="dot" style="background:#f34b7d"></span>C++</span>
+      <span class="chip"><span class="dot" style="background:#b07219"></span>Java ☕</span>
+      <span class="chip"><span class="dot" style="background:#00ADD8"></span>Go</span>
+      <span class="chip"><span class="dot" style="background:#F05138"></span>Swift</span>
+      <span class="chip"><span class="dot" style="background:#7f52ff"></span>Kotlin</span>
+      <span class="chip"><span class="dot" style="background:#512bd4"></span>C#</span>
+      <span class="chip"><span class="dot" style="background:#701516"></span>Ruby 💎</span>
+      <span class="chip"><span class="dot" style="background:#4F5D95"></span>PHP 🐘</span>
+      <span class="chip"><span class="dot" style="background:#00758f"></span>MySQL 🐬</span>
+      <span class="chip"><span class="dot" style="background:#336791"></span>PostgreSQL 🐘</span>
+      <span class="chip"><span class="dot" style="background:#0298c3"></span>Perl 🐪</span>
+      <span class="chip"><span class="dot" style="background:#ec915c"></span>Zig ⚡</span>
+      <span class="chip"><span class="dot" style="background:#9558b2"></span>Julia</span>
+      <span class="chip"><span class="dot" style="background:#000080"></span>Lua 🌙</span>
+      <span class="chip"><span class="dot" style="background:#41b883"></span>Vue</span>
+      <span class="chip"><span class="dot" style="background:#ff3e00"></span>Svelte</span>
+      <span class="chip"><span class="dot" style="background:#e38c00"></span>SQL</span>
+      <span class="chip"><span class="dot" style="background:#5e5086"></span>Haskell λ</span>
+      <span class="chip"><span class="dot" style="background:#6e4a7e"></span>Elixir</span>
+      <span class="chip"><span class="dot" style="background:#b83998"></span>Erlang</span>
+      <span class="chip"><span class="dot" style="background:#db5855"></span>Clojure</span>
+      <span class="chip"><span class="dot" style="background:#378bba"></span>F#</span>
+    </div>
+  </div>
+</section>
+
+<section class="cta">
+  <h2>Попробуй прямо сейчас</h2>
+  <p>Демо работает в браузере — открывай пример проекта и настраивай всё под себя.</p>
+  <a class="btn primary" href="./demo/">🚀 Открыть онлайн-демо</a>
+</section>
+
+<footer>
+  <div><b>TinyIDE</b> — свободная IDE на Tauri 2 · React · Monaco</div>
+  <div>Лицензия <a href="https://github.com/tikhonneoplayneoplaydev/TinyIDE/blob/main/LICENSE">GNU AGPL-3.0</a> — код открыт навсегда, форки обязаны оставаться открытыми</div>
+  <div><a href="https://github.com/tikhonneoplayneoplaydev/TinyIDE">github.com/tikhonneoplayneoplaydev/TinyIDE</a></div>
+</footer>
+
+</body>
+</html>

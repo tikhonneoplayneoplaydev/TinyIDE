@@ -25,17 +25,60 @@ export type OpenFile = {
   language: string;
 };
 
+export type AccentKey = 'cyan' | 'violet' | 'pink' | 'green' | 'amber' | 'red';
+
+export const ACCENT_PRESETS: Record<
+  AccentKey,
+  { label: string; c1: string; c2: string; c3: string }
+> = {
+  cyan: { label: 'Бирюза', c1: '#22d3ee', c2: '#a78bfa', c3: '#f472b6' },
+  violet: { label: 'Фиолет', c1: '#a78bfa', c2: '#f472b6', c3: '#22d3ee' },
+  pink: { label: 'Розовый', c1: '#f472b6', c2: '#a78bfa', c3: '#22d3ee' },
+  green: { label: 'Зелёный', c1: '#34d399', c2: '#a3e635', c3: '#22d3ee' },
+  amber: { label: 'Янтарный', c1: '#fbbf24', c2: '#fb923c', c3: '#a78bfa' },
+  red: { label: 'Красный', c1: '#f87171', c2: '#fb923c', c3: '#a78bfa' },
+};
+
+export const FONT_PRESETS: { id: string; label: string }[] = [
+  { id: "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace", label: 'Системный моноширинный' },
+  { id: "'JetBrains Mono', ui-monospace, monospace", label: 'JetBrains Mono' },
+  { id: "'Fira Code', ui-monospace, monospace", label: 'Fira Code' },
+  { id: "'Cascadia Code', ui-monospace, monospace", label: 'Cascadia Code' },
+  { id: "'IBM Plex Mono', ui-monospace, monospace", label: 'IBM Plex Mono' },
+  { id: "'SF Mono', ui-monospace, monospace", label: 'SF Mono' },
+  { id: "Consolas, 'Courier New', monospace", label: 'Consolas' },
+  { id: "monospace", label: 'Обычный monospace' },
+];
+
 export type Settings = {
   theme: 'dark' | 'light';
+  accent: AccentKey;
+  fontFamily: string;
   fontSize: number;
+  fontLigatures: boolean;
+  lineHeight: number;
   tabSize: number;
+  insertSpaces: boolean;
   wordWrap: 'off' | 'on';
   minimap: boolean;
   cursorStyle: 'line' | 'line-thin' | 'block' | 'underline' | 'block-outline';
   cursorBlinking: 'blink' | 'smooth' | 'phase' | 'expand' | 'solid';
+  cursorWidth: number;
+  smoothCaret: boolean;
+  mouseWheelZoom: boolean;
+  autoClosingBrackets: boolean;
+  quickSuggestions: boolean;
+  bracketPairColorization: boolean;
+  indentGuides: boolean;
+  renderLineHighlight: 'all' | 'line' | 'none';
+  stickyScroll: boolean;
+  paddingY: number;
   trail: boolean;
+  trailIntensity: number;
   glow: boolean;
+  glowIntensity: number;
   particles: boolean;
+  particlesIntensity: number;
   showHidden: boolean;
 };
 

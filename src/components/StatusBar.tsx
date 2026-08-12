@@ -29,7 +29,7 @@ export default function StatusBar({ ide }: { ide: IdeApi }) {
         </span>
       </div>
       <div className="status-right">
-        <span className="status-item status-click" onClick={() => ide.toast('TinyIDE v0.1.0 — Tauri 2 · React · Monaco · GPL-3.0')}>
+        <span className="status-item status-click" onClick={() => ide.toast('TinyIDE v0.3.0 — Tauri 2 · React · Monaco · AGPL-3.0')}>
           {active ? active.language : 'Plain Text'}
         </span>
         <span className="status-item">Ln {cursor.line}, Col {cursor.col}</span>

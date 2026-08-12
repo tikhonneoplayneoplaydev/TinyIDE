@@ -1,16 +1,35 @@
 import type { IdeApi, Settings } from '../types';
+import { ACCENT_PRESETS, FONT_PRESETS } from '../types';
 
 const DEFAULTS: Settings = {
   theme: 'dark',
+  accent: 'cyan',
+  fontFamily: FONT_PRESETS[0].id,
   fontSize: 14,
+  fontLigatures: true,
+  lineHeight: 1.5,
   tabSize: 4,
+  insertSpaces: true,
   wordWrap: 'off',
   minimap: true,
   cursorStyle: 'line',
   cursorBlinking: 'smooth',
+  cursorWidth: 2,
+  smoothCaret: true,
+  mouseWheelZoom: true,
+  autoClosingBrackets: true,
+  quickSuggestions: true,
+  bracketPairColorization: true,
+  indentGuides: true,
+  renderLineHighlight: 'all',
+  stickyScroll: false,
+  paddingY: 14,
   trail: true,
+  trailIntensity: 80,
   glow: true,
+  glowIntensity: 60,
   particles: true,
+  particlesIntensity: 70,
   showHidden: false,
 };
 
@@ -23,17 +42,32 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function Toggle({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
+function Toggle({
+  label, value, onChange,
+}: { label: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
     <div className="setting-row">
       <span>{label}</span>
-      <button
-        className={`switch ${value ? 'on' : ''}`}
-        onClick={() => onChange(!value)}
-        aria-pressed={value}
-      >
+      <button className={`switch ${value ? 'on' : ''}`} onClick={() => onChange(!value)} aria-pressed={value}>
         <span className="switch-knob" />
       </button>
+    </div>
+  );
+}
+
+function Range({
+  label, value, min, max, step = 1, onChange, suffix = '',
+}: {
+  label: string; value: number; min: number; max: number; step?: number;
+  onChange: (v: number) => void; suffix?: string;
+}) {
+  return (
+    <div className="setting-row">
+      <span>{label} — {value}{suffix}</span>
+      <input
+        type="range" min={min} max={max} step={step} value={value}
+        onChange={(e) => onChange(+e.target.value)} className="range"
+      />
     </div>
   );
 }
@@ -56,90 +90,148 @@ function Segmented<T extends string | number>({
   );
 }
 
+function Select({
+  label, value, options, onChange,
+}: {
+  label: string; value: string; options: { v: string; l: string }[];
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="setting-row">
+      <span>{label}</span>
+      <select className="select" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => (
+          <option key={o.v} value={o.v}>{o.l}</option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 export default function SettingsPanel({ ide }: { ide: IdeApi }) {
   const s = ide.settings;
+  const set = (patch: Partial<Settings>) => ide.updateSettings(patch);
+
   return (
     <div className="settings-panel">
       <div className="panel-header">
         <span className="panel-title">Settings</span>
       </div>
       <div className="settings-scroll">
-        <Section title="Редактор">
-          <div className="setting-row">
-            <span>Размер шрифта — {s.fontSize}px</span>
-            <input
-              type="range"
-              min={10}
-              max={24}
-              value={s.fontSize}
-              onChange={(e) => ide.updateSettings({ fontSize: +e.target.value })}
-              className="range"
-            />
-          </div>
-          <div className="setting-row">
-            <span>Размер табуляции</span>
-            <Segmented
-              options={[{ v: 2, l: '2' }, { v: 4, l: '4' }, { v: 8, l: '8' }]}
-              value={s.tabSize}
-              onPick={(v) => ide.updateSettings({ tabSize: v })}
-            />
-          </div>
-          <Toggle
-            label="Перенос строк"
-            value={s.wordWrap === 'on'}
-            onChange={(v) => ide.updateSettings({ wordWrap: v ? 'on' : 'off' })}
-          />
-          <Toggle label="Миникарта" value={s.minimap} onChange={(v) => ide.updateSettings({ minimap: v })} />
-        </Section>
-
-        <Section title="Курсор-комета">
-          <div className="setting-row">
-            <span>Стиль курсора</span>
-            <select
-              className="select"
-              value={s.cursorStyle}
-              onChange={(e) => ide.updateSettings({ cursorStyle: e.target.value as Settings['cursorStyle'] })}
-            >
-              <option value="line">line</option>
-              <option value="line-thin">line-thin</option>
-              <option value="block">block</option>
-              <option value="underline">underline</option>
-              <option value="block-outline">block-outline</option>
-            </select>
-          </div>
-          <div className="setting-row">
-            <span>Мигание</span>
-            <select
-              className="select"
-              value={s.cursorBlinking}
-              onChange={(e) => ide.updateSettings({ cursorBlinking: e.target.value as Settings['cursorBlinking'] })}
-            >
-              <option value="smooth">smooth</option>
-              <option value="blink">blink</option>
-              <option value="phase">phase</option>
-              <option value="expand">expand</option>
-              <option value="solid">solid</option>
-            </select>
-          </div>
-          <Toggle label="Кометный шлейф" value={s.trail} onChange={(v) => ide.updateSettings({ trail: v })} />
-          <Toggle label="Свечение вокруг курсора" value={s.glow} onChange={(v) => ide.updateSettings({ glow: v })} />
-          <Toggle label="Искры при наборе" value={s.particles} onChange={(v) => ide.updateSettings({ particles: v })} />
-        </Section>
-
-        <Section title="Оформление">
+        <Section title="🎨 Тема и акцент">
           <div className="setting-row">
             <span>Тема</span>
             <Segmented
               options={[{ v: 'dark' as const, l: '🌙 Тёмная' }, { v: 'light' as const, l: '☀️ Светлая' }]}
               value={s.theme}
-              onPick={(v) => ide.updateSettings({ theme: v })}
+              onPick={(v) => set({ theme: v })}
             />
           </div>
+          <div className="setting-row">
+            <span>Акцентный цвет</span>
+            <div className="accent-row">
+              {(Object.keys(ACCENT_PRESETS) as (keyof typeof ACCENT_PRESETS)[]).map((k) => {
+                const a = ACCENT_PRESETS[k];
+                return (
+                  <button
+                    key={k}
+                    className={`accent-dot ${s.accent === k ? 'on' : ''}`}
+                    style={{ background: `linear-gradient(135deg, ${a.c1}, ${a.c3})` }}
+                    title={a.label}
+                    onClick={() => set({ accent: k })}
+                    aria-label={a.label}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </Section>
+
+        <Section title="✍️ Шрифт">
+          <Select
+            label="Семейство шрифта"
+            value={s.fontFamily}
+            options={FONT_PRESETS.map((f) => ({ v: f.id, l: f.label }))}
+            onChange={(v) => set({ fontFamily: v })}
+          />
+          <Range label="Размер шрифта" value={s.fontSize} min={10} max={28} onChange={(v) => set({ fontSize: v })} suffix="px" />
+          <Range label="Высота строки" value={s.lineHeight} min={1} max={2.2} step={0.1} onChange={(v) => set({ lineHeight: v })} />
+          <Toggle label="Лигатуры (>=<->)" value={s.fontLigatures} onChange={(v) => set({ fontLigatures: v })} />
+        </Section>
+
+        <Section title="📝 Редактор">
+          <div className="setting-row">
+            <span>Размер табуляции</span>
+            <Segmented
+              options={[{ v: 2, l: '2' }, { v: 4, l: '4' }, { v: 8, l: '8' }]}
+              value={s.tabSize}
+              onPick={(v) => set({ tabSize: v })}
+            />
+          </div>
+          <Toggle label="Пробелы вместо табов" value={s.insertSpaces} onChange={(v) => set({ insertSpaces: v })} />
+          <Toggle label="Перенос строк" value={s.wordWrap === 'on'} onChange={(v) => set({ wordWrap: v ? 'on' : 'off' })} />
+          <Toggle label="Миникарта" value={s.minimap} onChange={(v) => set({ minimap: v })} />
+          <Toggle label="Автозакрытие скобок" value={s.autoClosingBrackets} onChange={(v) => set({ autoClosingBrackets: v })} />
+          <Toggle label="Автодополнение" value={s.quickSuggestions} onChange={(v) => set({ quickSuggestions: v })} />
+          <Toggle label="Цветные парные скобки" value={s.bracketPairColorization} onChange={(v) => set({ bracketPairColorization: v })} />
+          <Toggle label="Направляющие отступов" value={s.indentGuides} onChange={(v) => set({ indentGuides: v })} />
+          <Toggle label="Прилипающий скролл" value={s.stickyScroll} onChange={(v) => set({ stickyScroll: v })} />
+          <Toggle label="Зум колёсиком мыши" value={s.mouseWheelZoom} onChange={(v) => set({ mouseWheelZoom: v })} />
+          <Select
+            label="Подсветка строки"
+            value={s.renderLineHighlight}
+            options={[{ v: 'all', l: 'Вся строка' }, { v: 'line', l: 'Только линия' }, { v: 'none', l: 'Выкл' }]}
+            onChange={(v) => set({ renderLineHighlight: v as Settings['renderLineHighlight'] })}
+          />
+          <Range label="Отступы по краям" value={s.paddingY} min={0} max={40} onChange={(v) => set({ paddingY: v })} suffix="px" />
+        </Section>
+
+        <Section title="✏️ Курсор">
+          <Select
+            label="Стиль курсора"
+            value={s.cursorStyle}
+            options={[
+              { v: 'line', l: 'line' }, { v: 'line-thin', l: 'line-thin' },
+              { v: 'block', l: 'block' }, { v: 'underline', l: 'underline' },
+              { v: 'block-outline', l: 'block-outline' },
+            ]}
+            onChange={(v) => set({ cursorStyle: v as Settings['cursorStyle'] })}
+          />
+          <Select
+            label="Мигание"
+            value={s.cursorBlinking}
+            options={[
+              { v: 'smooth', l: 'smooth' }, { v: 'blink', l: 'blink' },
+              { v: 'phase', l: 'phase' }, { v: 'expand', l: 'expand' },
+              { v: 'solid', l: 'solid' },
+            ]}
+            onChange={(v) => set({ cursorBlinking: v as Settings['cursorBlinking'] })}
+          />
+          <Range label="Ширина курсора" value={s.cursorWidth} min={1} max={4} onChange={(v) => set({ cursorWidth: v })} suffix="px" />
+          <Toggle label="Плавное движение курсора" value={s.smoothCaret} onChange={(v) => set({ smoothCaret: v })} />
+        </Section>
+
+        <Section title="🚀 Эффекты кометы">
+          <Toggle label="Кометный шлейф" value={s.trail} onChange={(v) => set({ trail: v })} />
+          {s.trail && (
+            <Range label="Длина шлейфа" value={s.trailIntensity} min={10} max={100} onChange={(v) => set({ trailIntensity: v })} suffix="%" />
+          )}
+          <Toggle label="Свечение вокруг курсора" value={s.glow} onChange={(v) => set({ glow: v })} />
+          {s.glow && (
+            <Range label="Яркость свечения" value={s.glowIntensity} min={10} max={100} onChange={(v) => set({ glowIntensity: v })} suffix="%" />
+          )}
+          <Toggle label="Искры при наборе" value={s.particles} onChange={(v) => set({ particles: v })} />
+          {s.particles && (
+            <Range label="Количество искр" value={s.particlesIntensity} min={10} max={100} onChange={(v) => set({ particlesIntensity: v })} suffix="%" />
+          )}
+        </Section>
+
+        <Section title="📂 Файлы">
           <Toggle
             label="Показывать скрытые файлы"
             value={s.showHidden}
             onChange={(v) => {
-              ide.updateSettings({ showHidden: v });
+              set({ showHidden: v });
               ide.refreshTree();
             }}
           />
@@ -154,7 +246,7 @@ export default function SettingsPanel({ ide }: { ide: IdeApi }) {
         >
           Сбросить настройки
         </button>
-        <div className="settings-about">TinyIDE v0.1.0 — Tauri 2 · React 18 · Monaco · GPL-3.0</div>
+        <div className="settings-about">TinyIDE v0.3.0 — Tauri 2 · React 18 · Monaco · AGPL-3.0</div>
       </div>
     </div>
   );

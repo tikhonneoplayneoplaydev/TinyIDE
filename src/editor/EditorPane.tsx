@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
-import { languageForPath } from './monacoSetup';
+import { languageForPath, applyCometTheme } from './monacoSetup';
+import { ACCENT_PRESETS } from '../types';
 import CursorFX from './CursorFX';
 import { readFileText } from '../fs/bridge';
 import type { IdeApi, Settings } from '../types';
@@ -9,36 +10,38 @@ function editorOptions(s: Settings): monaco.editor.IStandaloneEditorConstruction
   return {
     fontSize: s.fontSize,
     tabSize: s.tabSize,
-    insertSpaces: true,
+    insertSpaces: s.insertSpaces,
     wordWrap: s.wordWrap,
     minimap: { enabled: s.minimap },
     cursorStyle: s.cursorStyle,
     cursorBlinking: s.cursorBlinking,
-    cursorSmoothCaretAnimation: 'on',
-    cursorWidth: 2,
-    fontFamily:
-      "ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace",
-    fontLigatures: true,
+    cursorSmoothCaretAnimation: s.smoothCaret ? 'on' : 'off',
+    cursorWidth: s.cursorWidth,
+    fontFamily: s.fontFamily,
+    fontLigatures: s.fontLigatures,
+    lineHeight: s.lineHeight,
     smoothScrolling: true,
     scrollBeyondLastLine: false,
-    renderLineHighlight: 'all',
+    renderLineHighlight: s.renderLineHighlight,
     roundedSelection: true,
-    bracketPairColorization: { enabled: true },
-    guides: { bracketPairs: true, indentation: true },
-    autoClosingBrackets: 'always',
+    bracketPairColorization: { enabled: s.bracketPairColorization },
+    guides: { bracketPairs: s.indentGuides, indentation: s.indentGuides },
+    autoClosingBrackets: s.autoClosingBrackets ? 'always' : 'never',
     autoIndent: 'full',
-    padding: { top: 14, bottom: 14 },
-    mouseWheelZoom: true,
+    padding: { top: s.paddingY, bottom: s.paddingY },
+    mouseWheelZoom: s.mouseWheelZoom,
     scrollbar: {
       verticalScrollbarSize: 11,
       horizontalScrollbarSize: 11,
       useShadows: false,
     },
     overviewRulerLanes: 0,
-    stickyScroll: { enabled: false },
+    stickyScroll: { enabled: s.stickyScroll },
     occurrencesHighlight: 'off',
     selectionHighlight: false,
-    quickSuggestions: { other: true, comments: false, strings: false },
+    quickSuggestions: s.quickSuggestions
+      ? { other: true, comments: false, strings: false }
+      : false,
     wordBasedSuggestions: 'currentDocument',
   };
 }
@@ -88,9 +91,11 @@ export default function EditorPane({ ide }: { ide: IdeApi }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // settings → editor
+  // settings → editor + theme (accent/theme rebuild Monaco theme)
   useEffect(() => {
-    editorRef.current?.updateOptions(editorOptions(ide.settings));
+    const s = ide.settings;
+    applyCometTheme(ACCENT_PRESETS[s.accent], s.theme === 'dark');
+    editorRef.current?.updateOptions(editorOptions(s));
   }, [ide.settings]);
 
   // active file → model

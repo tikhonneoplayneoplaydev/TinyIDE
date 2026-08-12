@@ -9,8 +9,8 @@ type Props = {
   settings: Settings;
 };
 
-function spawnSparks(container: HTMLElement, at: { x: number; y: number }) {
-  for (let i = 0; i < 4; i++) {
+function spawnSparks(container: HTMLElement, at: { x: number; y: number }, count: number) {
+  for (let i = 0; i < count; i++) {
     const el = document.createElement('span');
     el.className = 'fx-spark';
     const angle = Math.random() * Math.PI * 2;
@@ -20,6 +20,7 @@ function spawnSparks(container: HTMLElement, at: { x: number; y: number }) {
     el.style.setProperty('--dx', Math.cos(angle) * dist + 'px');
     el.style.setProperty('--dy', Math.sin(angle) * dist + 'px');
     el.style.background = i % 2 ? '#a78bfa' : '#67e8f9';
+    el.style.setProperty('--sz', (4 + Math.random() * 3).toFixed(1) + 'px');
     container.appendChild(el);
     window.setTimeout(() => el.remove(), 700);
   }
@@ -56,8 +57,9 @@ export default function CursorFX({ editorRef, settings }: Props) {
         }),
         ed.onKeyDown((e) => {
           const key = e.browserEvent.key;
+          const s = sRef.current;
           if (
-            sRef.current.particles &&
+            s.particles &&
             key.length === 1 &&
             !e.ctrlKey &&
             !e.metaKey &&
@@ -65,7 +67,8 @@ export default function CursorFX({ editorRef, settings }: Props) {
             sparksRef.current &&
             target.vis
           ) {
-            spawnSparks(sparksRef.current, target);
+            const count = Math.round(2 + (s.particlesIntensity / 100) * 4);
+            spawnSparks(sparksRef.current, target, count);
           }
         }),
       ];
@@ -83,8 +86,10 @@ export default function CursorFX({ editorRef, settings }: Props) {
             aura.style.transform = t;
             trail.style.transform = t;
           }
-          aura.style.opacity = s.glow && target.vis ? '1' : '0';
-          trail.style.opacity = s.trail && target.vis ? '0.85' : '0';
+          const auraOp = s.glow ? 0.3 + (s.glowIntensity / 100) * 0.7 : 0;
+          const trailOp = s.trail ? 0.35 + (s.trailIntensity / 100) * 0.6 : 0;
+          aura.style.opacity = target.vis ? String(auraOp) : '0';
+          trail.style.opacity = target.vis ? String(trailOp) : '0';
         }
         requestAnimationFrame(loop);
       };

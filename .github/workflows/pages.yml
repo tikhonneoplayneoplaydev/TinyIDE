@@ -30,8 +30,13 @@ jobs:
 
       - run: npm ci
 
-      - name: Build web demo
+      - name: Build web demo (→ dist/demo)
         run: npm run build:web
+
+      - name: Copy landing page (→ dist/)
+        run: |
+          mkdir -p dist
+          cp -r website/. dist/
 
       - uses: actions/configure-pages@v5
 
