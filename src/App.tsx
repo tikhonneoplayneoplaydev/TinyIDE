@@ -7,6 +7,7 @@ import { ACCENT_PRESETS, Emitter, FONT_PRESETS } from './types';
 import {
   isTauri, loadWorkspaceTree, openFolderDialog, readFileText, writeFileText,
   deletePath as fsDeletePath, renamePath as fsRenamePath, vfs,
+  createFile as fsCreateFile,
 } from './fs/bridge';
 import { DEMO_ROOT } from './fs/virtual';
 import { languageForPath } from './editor/monacoSetup';
@@ -19,10 +20,14 @@ import StatusBar from './components/StatusBar';
 import SearchPanel from './components/SearchPanel';
 import LanguagesPanel from './components/LanguagesPanel';
 import SettingsPanel from './components/SettingsPanel';
+import GitPanel from './components/GitPanel';
+import BottomPanel from './components/BottomPanel';
 import Palette from './components/Palette';
 import ContextMenu from './components/ContextMenu';
 import Splash from './components/Splash';
 import Welcome from './components/Welcome';
+import { CONFIG_FILENAME, DEFAULT_CONFIG_TOML, configToSettings } from './config/tomlConfig';
+import type { TaskCommands } from './types';
 
 const DEFAULT_SETTINGS: Settings = {
   theme: 'dark',
@@ -54,6 +59,8 @@ const DEFAULT_SETTINGS: Settings = {
   particles: true,
   particlesIntensity: 70,
   showHidden: false,
+  shell: 'shell',
+  terminalFontSize: 13,
 };
 
 function loadSettings(): Settings {
@@ -79,6 +86,18 @@ export default function App() {
   const [createRequest, setCreateRequest] = useState<CreateRequest>(null);
   const [splash, setSplash] = useState<'show' | 'hide' | 'gone'>('show');
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [panelTab, setPanelTab] = useState<'terminal' | 'tasks'>('terminal');
+  const [taskCommands, setTaskCommands] = useState<TaskCommands>({
+    build: 'npm run build',
+    run: 'npm run dev',
+    test: 'npm test',
+  });
+  const [taskRequest, setTaskRequest] = useState<{
+    nonce: number;
+    name: string;
+    command: string;
+  } | null>(null);
 
   const editorApiRef = useRef<EditorApi | null>(null);
   const savedRef = useRef<Map<string, string>>(new Map());
@@ -160,19 +179,8 @@ export default function App() {
     }
   }, []);
 
-  const saveActive = useCallback(async () => {
-    const path = activePathRef.current;
-    const api = editorApiRef.current;
-    const ws = workspaceRef.current;
-    if (!path || !api || !ws) return;
-    const content = api.getValue();
-    await writeFileText(ws, path, content);
-    savedRef.current.set(path, content);
-    setDirty((d) => ({ ...d, [path]: false }));
-    toast('Файл сохранён');
-  }, [toast]);
 
-  // ─── workspace ops ────────────────────────────────────────────────────────
+
   const refreshTree = useCallback(async () => {
     const ws = workspaceRef.current;
     if (!ws) return;
@@ -217,6 +225,114 @@ export default function App() {
     [doFsOp]
   );
 
+
+  // ─── конфигурация tinyide.toml ───────────────────────────────────────────
+  const configPath = useCallback(
+    () => (workspaceRef.current?.rootPath ?? DEMO_ROOT) + '/' + CONFIG_FILENAME,
+    []
+  );
+
+  const applyConfigText = useCallback(
+    (text: string, silent = false) => {
+      const res = configToSettings(text);
+      if (res.error) {
+        if (!silent) toast('Ошибка конфигурации: ' + res.error);
+        return;
+      }
+      if (res.patch) updateSettings(res.patch);
+      if (res.commands && Object.keys(res.commands).length > 0) {
+        setTaskCommands(res.commands);
+      }
+      if (!silent) toast('Конфигурация применена ✓');
+    },
+    [toast, updateSettings]
+  );
+
+  const tryApplyConfigAt = useCallback(
+    async (mode: 'virtual' | 'real', rootPath: string) => {
+      try {
+        const text =
+          mode === 'virtual'
+            ? vfs.readFile(rootPath + '/' + CONFIG_FILENAME)
+            : await readFileText({ mode } as Workspace, rootPath + '/' + CONFIG_FILENAME);
+        if (text) applyConfigText(text, true);
+      } catch {
+        /* конфига нет — ок */
+      }
+    },
+    [applyConfigText]
+  );
+
+  const openConfigFile = useCallback(async () => {
+    const ws = workspaceRef.current;
+    if (!ws) {
+      toast('Сначала откройте папку или пример проекта');
+      return;
+    }
+    const path = configPath();
+    try {
+      if (ws.mode === 'virtual') {
+        if (!vfs.readFile(path)) vfs.createFile(path, DEFAULT_CONFIG_TOML);
+      } else {
+        try {
+          await fsCreateFile(ws, path);
+        } catch {
+          /* уже существует */
+        }
+        try {
+          const t = await readFileText(ws, path);
+          if (!t.trim()) await writeFileText(ws, path, DEFAULT_CONFIG_TOML);
+        } catch {
+          /* ignore */
+        }
+      }
+      await refreshTree();
+      openFile(path);
+      toast('Открыт ' + CONFIG_FILENAME + ' — сохрани (Ctrl+S), чтобы применить');
+    } catch (e) {
+      toast('Ошибка: ' + String(e));
+    }
+  }, [configPath, refreshTree, openFile, toast]);
+
+  const reloadConfig = useCallback(async () => {
+    const ws = workspaceRef.current;
+    if (!ws) return;
+    const path = configPath();
+    try {
+      const text =
+        path === activePathRef.current && editorApiRef.current
+          ? editorApiRef.current.getValue()
+          : await readFileText(ws, path);
+      applyConfigText(text);
+    } catch {
+      toast('Конфигурация не найдена — создайте её (Open Config File)');
+    }
+  }, [configPath, applyConfigText, toast]);
+
+  const requestTask = useCallback((name: string, command: string) => {
+    setPanelOpen(true);
+    setPanelTab('tasks');
+    setTaskRequest({ nonce: Date.now(), name, command });
+  }, []);
+
+
+  const saveActive = useCallback(async () => {
+    const path = activePathRef.current;
+    const api = editorApiRef.current;
+    const ws = workspaceRef.current;
+    if (!path || !api || !ws) return;
+    const content = api.getValue();
+    await writeFileText(ws, path, content);
+    savedRef.current.set(path, content);
+    setDirty((d) => ({ ...d, [path]: false }));
+    toast('Файл сохранён');
+    // если сохранили tinyide.toml — применяем конфигурацию
+    if (path === (workspaceRef.current?.rootPath ?? DEMO_ROOT) + '/' + CONFIG_FILENAME) {
+      applyConfigText(content);
+    }
+  }, [toast, applyConfigText]);
+
+  // ─── workspace ops ────────────────────────────────────────────────────────
   const openFolder = useCallback(async () => {
     if (!isTauri) {
       toast('Открытие папок доступно в десктоп-приложении (Tauri)');
@@ -230,7 +346,8 @@ export default function App() {
     setOpenFiles([]);
     setActivePath(null);
     toast('Открыта папка ' + name);
-  }, [toast]);
+    tryApplyConfigAt('real', dir);
+  }, [toast, tryApplyConfigAt]);
 
   const openExample = useCallback(async () => {
     const tree = await loadWorkspaceTree(DEMO_ROOT, 'virtual', settingsRef.current.showHidden);
@@ -243,7 +360,8 @@ export default function App() {
     setOpenFiles([]);
     setActivePath(null);
     toast('Пример проекта загружен');
-  }, [toast]);
+    tryApplyConfigAt('virtual', DEMO_ROOT);
+  }, [toast, tryApplyConfigAt]);
 
   const revealLine = useCallback(
     (path: string, line: number) => {
@@ -353,7 +471,15 @@ export default function App() {
       },
     },
     { id: 'reset-demo', label: 'Reset Example Project', run: () => openExample() },
-    { id: 'about', label: 'About TinyIDE', run: () => toast('TinyIDE v0.1.0 — Tauri 2 · React · Monaco') },
+    { id: 'toggle-terminal', label: 'Toggle Terminal', key: 'Ctrl+`', run: () => setPanelOpen((v) => !v) },
+    { id: 'open-config', label: 'Open Config (tinyide.toml)', run: () => openConfigFile() },
+    { id: 'reload-config', label: 'Reload Config', run: () => reloadConfig() },
+    ...Object.entries(taskCommands).map(([name, command]) => ({
+      id: 'task-' + name,
+      label: 'Run task: ' + name,
+      run: () => requestTask(name, command),
+    })),
+    { id: 'about', label: 'About TinyIDE', run: () => toast('TinyIDE v0.4.0 — Tauri 2 · React · Monaco · AGPL-3.0') },
   ];
 
   // ─── global keyboard shortcuts ────────────────────────────────────────────
@@ -389,6 +515,11 @@ export default function App() {
       if (mod && e.code === 'KeyB') {
         e.preventDefault();
         setSidebarOpen((v) => !v);
+        return;
+      }
+      if (mod && e.code === 'Backquote') {
+        e.preventDefault();
+        setPanelOpen((v) => !v);
         return;
       }
       if (mod && e.code === 'KeyW') {
@@ -451,6 +582,15 @@ export default function App() {
     registerEditorApi,
     commands,
     treeFiles,
+    panelOpen,
+    panelTab,
+    setPanelOpen,
+    setPanelTab,
+    taskCommands,
+    taskRequest,
+    requestTask,
+    openConfigFile,
+    reloadConfig,
   };
 
   return (
@@ -464,6 +604,7 @@ export default function App() {
             <div className="sidebar-panel">
               {activity === 'explorer' && <Explorer ide={ide} />}
               {activity === 'search' && <SearchPanel ide={ide} />}
+              {activity === 'source' && <GitPanel ide={ide} />}
               {activity === 'languages' && <LanguagesPanel ide={ide} />}
               {activity === 'settings' && <SettingsPanel ide={ide} />}
             </div>
@@ -475,6 +616,7 @@ export default function App() {
             <EditorPane ide={ide} />
             {!activePath && <Welcome ide={ide} />}
           </div>
+          {panelOpen && <BottomPanel ide={ide} />}
         </div>
       </div>
       <StatusBar ide={ide} />

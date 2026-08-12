@@ -1,5 +1,6 @@
 import type { IdeApi, Settings } from '../types';
-import { ACCENT_PRESETS, FONT_PRESETS } from '../types';
+import { ACCENT_PRESETS, FONT_PRESETS, SHELLS } from '../types';
+import { CONFIG_FILENAME } from '../config/tomlConfig';
 
 const DEFAULTS: Settings = {
   theme: 'dark',
@@ -31,6 +32,8 @@ const DEFAULTS: Settings = {
   particles: true,
   particlesIntensity: 70,
   showHidden: false,
+  shell: 'shell',
+  terminalFontSize: 13,
 };
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -224,6 +227,42 @@ export default function SettingsPanel({ ide }: { ide: IdeApi }) {
           {s.particles && (
             <Range label="Количество искр" value={s.particlesIntensity} min={10} max={100} onChange={(v) => set({ particlesIntensity: v })} suffix="%" />
           )}
+        </Section>
+
+        <Section title="💻 Терминал">
+          <div className="setting-row">
+            <span>Оболочка</span>
+            <select
+              className="select"
+              value={s.shell}
+              onChange={(e) => set({ shell: e.target.value as Settings['shell'] })}
+            >
+              {SHELLS.map((sh) => (
+                <option key={sh.id} value={sh.id}>{sh.label}</option>
+              ))}
+            </select>
+          </div>
+          <Range
+            label="Размер шрифта"
+            value={s.terminalFontSize}
+            min={8}
+            max={24}
+            onChange={(v) => set({ terminalFontSize: v })}
+            suffix="px"
+          />
+        </Section>
+
+        <Section title="⚙️ Конфигурация (tinyide.toml)">
+          <div className="config-note">
+            Все настройки можно задать файлом <code>{CONFIG_FILENAME}</code> в корне проекта:
+            тема, акцент, шрифт, эффекты, терминал и команды задач.
+          </div>
+          <button className="btn ghost config-btn" onClick={() => ide.openConfigFile()}>
+            📄 Открыть {CONFIG_FILENAME}
+          </button>
+          <button className="btn ghost config-btn" onClick={() => ide.reloadConfig()}>
+            🔄 Перечитать конфигурацию
+          </button>
         </Section>
 
         <Section title="📂 Файлы">

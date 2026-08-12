@@ -3,10 +3,12 @@
 // so the IDE always opens with something to explore (a showcase of 50+ languages).
 
 import type { FsNode } from '../types';
+import { DEFAULT_CONFIG_TOML } from '../config/tomlConfig';
 
 export const DEMO_ROOT = '/example-project';
 
 const F: [string, string][] = [
+  [`${DEMO_ROOT}/tinyide.toml`, DEFAULT_CONFIG_TOML],
   [`${DEMO_ROOT}/README.md`, `# 🌠 Example Project
 
 Добро пожаловать в **TinyIDE** — это виртуальная файловая система, которая

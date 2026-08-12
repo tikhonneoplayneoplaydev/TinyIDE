@@ -80,9 +80,24 @@ export type Settings = {
   particles: boolean;
   particlesIntensity: number;
   showHidden: boolean;
+  shell: ShellId;
+  terminalFontSize: number;
 };
 
-export type Activity = 'explorer' | 'search' | 'languages' | 'settings';
+export type Activity = 'explorer' | 'search' | 'languages' | 'settings' | 'source';
+
+export type ShellId = 'shell' | 'nu' | 'pwsh' | 'cmd' | 'zsh' | 'fish';
+
+export const SHELLS: { id: ShellId; label: string }[] = [
+  { id: 'shell', label: 'shell (по умолчанию)' },
+  { id: 'nu', label: 'nu — Nushell' },
+  { id: 'pwsh', label: 'pwsh — PowerShell 7' },
+  { id: 'cmd', label: 'cmd — Командная строка' },
+  { id: 'zsh', label: 'zsh' },
+  { id: 'fish', label: 'fish' },
+];
+
+export type TaskCommands = Record<string, string>;
 
 export type MenuItemDef = { label: string; danger?: boolean; run: () => void };
 export type MenuState = { x: number; y: number; items: (MenuItemDef | 'sep')[] };
@@ -144,4 +159,13 @@ export interface IdeApi {
   registerEditorApi: (api: EditorApi | null) => void;
   commands: CommandDef[];
   treeFiles: () => { path: string; name: string }[];
+  panelOpen: boolean;
+  panelTab: 'terminal' | 'tasks';
+  setPanelOpen: (v: boolean) => void;
+  setPanelTab: (t: 'terminal' | 'tasks') => void;
+  taskCommands: TaskCommands;
+  taskRequest: { nonce: number; name: string; command: string } | null;
+  requestTask: (name: string, command: string) => void;
+  openConfigFile: () => void;
+  reloadConfig: () => void;
 }

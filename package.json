@@ -1,7 +1,7 @@
 {
   "name": "tinyide",
   "private": true,
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "TinyIDE — быстрая IDE на Tauri 2, React и Monaco. Анимированный курсор-комета, 90+ языков.",
   "scripts": {
@@ -14,9 +14,12 @@
   "dependencies": {
     "@tauri-apps/api": "^2.2.0",
     "@tauri-apps/plugin-dialog": "^2.2.0",
+    "@xterm/addon-fit": "^0.11.0",
+    "@xterm/xterm": "^6.0.0",
     "monaco-editor": "^0.52.2",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "smol-toml": "^1.8.0"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2.2.0",

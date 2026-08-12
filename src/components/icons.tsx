@@ -191,3 +191,25 @@ export const TrashIcon = ({ size = 14, className }: P) => (
     <path d="M4 7h16M10 11v6M14 11v6M6 7l1 13a1.5 1.5 0 0 0 1.5 1.4h7A1.5 1.5 0 0 0 17 20l1-13M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2" />
   </svg>
 );
+
+export const TerminalIcon = ({ size = 16, className }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+    <path d="m7 9.5 3 2.7-3 2.7M12.5 15h4.5" />
+  </svg>
+);
+
+export const PlayIcon = ({ size = 14, className }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden>
+    <path d="M7 4.5v15a1 1 0 0 0 1.5.87l12.5-7.5a1 1 0 0 0 0-1.74L8.5 3.63A1 1 0 0 0 7 4.5z" />
+  </svg>
+);
+
+export const GitIcon = ({ size = 22, className }: P) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
+    <circle cx="6" cy="6" r="2.6" />
+    <circle cx="6" cy="18" r="2.6" />
+    <circle cx="18" cy="7" r="2.6" />
+    <path d="M6 8.6v6.8M18 9.6c0 4.4-4.4 3.6-7 4.4" />
+  </svg>
+);

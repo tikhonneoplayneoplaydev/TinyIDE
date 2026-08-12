@@ -1,9 +1,10 @@
 import type { Activity, IdeApi } from '../types';
-import { FilesIcon, GearIcon, LanguagesIcon, SearchIcon } from './icons';
+import { FilesIcon, GearIcon, GitIcon, LanguagesIcon, SearchIcon } from './icons';
 
 const ITEMS: { id: Activity; label: string; icon: (p: { size?: number }) => React.ReactNode }[] = [
   { id: 'explorer', label: 'Explorer', icon: FilesIcon },
   { id: 'search', label: 'Search', icon: SearchIcon },
+  { id: 'source', label: 'Source Control', icon: GitIcon },
   { id: 'languages', label: 'Languages', icon: LanguagesIcon },
   { id: 'settings', label: 'Settings', icon: GearIcon },
 ];

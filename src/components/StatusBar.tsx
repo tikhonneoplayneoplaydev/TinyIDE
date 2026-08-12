@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { IdeApi } from '../types';
-import { BranchIcon, CheckIcon, CometIcon, MoonIcon, SunIcon, SyncIcon, WarnIcon } from './icons';
+import { BranchIcon, CheckIcon, CometIcon, MoonIcon, SunIcon, SyncIcon, TerminalIcon, WarnIcon } from './icons';
 
 export default function StatusBar({ ide }: { ide: IdeApi }) {
   const [cursor, setCursor] = useState({ line: 1, col: 1 });
@@ -42,6 +42,16 @@ export default function StatusBar({ ide }: { ide: IdeApi }) {
           onClick={() => ide.updateSettings({ trail: !ide.settings.trail })}
         >
           <CometIcon />
+        </button>
+        <button
+          className={`status-btn ${ide.panelOpen ? 'on' : ''}`}
+          title="Терминал (Ctrl+`)"
+          onClick={() => {
+            ide.setPanelOpen(!ide.panelOpen);
+            if (!ide.panelOpen) ide.setPanelTab('terminal');
+          }}
+        >
+          <TerminalIcon size={15} />
         </button>
         <button
           className="status-btn"
