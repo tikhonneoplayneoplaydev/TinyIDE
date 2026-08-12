@@ -11,17 +11,20 @@ import SearchPanel from './components/SearchPanel.vue';
 import LanguagesPanel from './components/LanguagesPanel.vue';
 import SettingsPanel from './components/SettingsPanel.vue';
 import GitPanel from './components/GitPanel.vue';
+import PluginsPanel from './components/PluginsPanel.vue';
 import BottomPanel from './components/BottomPanel.vue';
 import Palette from './components/Palette.vue';
 import ContextMenu from './components/ContextMenu.vue';
 import Splash from './components/Splash.vue';
 import Welcome from './components/Welcome.vue';
 import FunoPanel from './funo/FunoPanel.vue';
+import { loadPluginSystem } from './plugins/manager';
 
 onMounted(() => {
   initHotkeys();
   startSplashTimer();
   applyAccentCSS(store.settings.accent);
+  loadPluginSystem();
   // debug-хук для e2e/отладки
   (window as unknown as { __tinyide?: unknown }).__tinyide = store;
 });
@@ -49,6 +52,7 @@ const activeFileName = () => {
           <SearchPanel v-else-if="store.activity === 'search'" />
           <GitPanel v-else-if="store.activity === 'source'" />
           <FunoPanel v-else-if="store.activity === 'funo'" />
+          <PluginsPanel v-else-if="store.activity === 'plugins'" />
           <LanguagesPanel v-else-if="store.activity === 'languages'" />
           <SettingsPanel v-else-if="store.activity === 'settings'" />
         </div>

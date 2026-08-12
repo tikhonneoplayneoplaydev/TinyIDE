@@ -158,6 +158,44 @@ watch(
   }
 );
 
+// ─── Problems (маркеры Monaco) ─────────────────────────────────────────────
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api';
+
+type Marker = {
+  path: string;
+  line: number;
+  col: number;
+  severity: string;
+  message: string;
+};
+
+const markers = ref<Marker[]>([]);
+
+function collectMarkers() {
+  const all = monaco.editor.getModelMarkers({});
+  markers.value = all.map((m) => {
+    const uri = m.uri.toString();
+    const path = uri.startsWith('comet://') ? uri.slice('comet://'.length) : uri;
+    return {
+      path,
+      line: m.startLineNumber,
+      col: m.startColumn,
+      severity: m.severity === monaco.MarkerSeverity.Error ? 'error' : m.severity === monaco.MarkerSeverity.Warning ? 'warning' : 'info',
+      message: m.message,
+    };
+  });
+}
+
+const markerCounts = () => ({
+  errors: markers.value.filter((m) => m.severity === 'error').length,
+  warnings: markers.value.filter((m) => m.severity === 'warning').length,
+});
+
+function openMarker(m: Marker) {
+  store.openFile(m.path);
+  window.setTimeout(() => store.revealLine(m.path, m.line), 150);
+}
+
 // ─── Задачи ────────────────────────────────────────────────────────────────
 const taskName = ref('build');
 const output = ref('');
@@ -215,6 +253,12 @@ const styledLines = (line: string) =>
     <div class="bottom-tabs">
       <button class="bottom-tab" :class="{ active: store.panelTab === 'terminal' }" @click="store.setPanelTab('terminal')">Терминал</button>
       <button class="bottom-tab" :class="{ active: store.panelTab === 'tasks' }" @click="store.setPanelTab('tasks')">Задачи</button>
+      <button class="bottom-tab" :class="{ active: store.panelTab === 'problems' }" @click="store.setPanelTab('problems'); collectMarkers()">
+        Проблемы
+        <span v-if="markers.length" class="problems-count" :class="{ err: markerCounts().errors > 0 }">
+          {{ markerCounts().errors }}⚑ {{ markerCounts().warnings }}⚠
+        </span>
+      </button>
       <div class="bottom-tabs-spacer" />
       <button class="bottom-close" title="Закрыть панель (Ctrl+`)" @click="store.setPanelOpen(false)">
         <AppIcon name="close" :size="13" />
@@ -231,6 +275,23 @@ const styledLines = (line: string) =>
         <div class="bottom-tabs-spacer" />
       </div>
       <div ref="hostRef" class="term-host" />
+    </template>
+
+    <template v-else-if="store.panelTab === 'problems'">
+      <div class="problems-wrap">
+        <div v-if="markers.length === 0" class="git-empty">Проблем нет — код чистый ✨</div>
+        <div
+          v-for="(m, i) in markers"
+          :key="i"
+          class="problem-row"
+          :class="m.severity"
+          @click="openMarker(m)"
+        >
+          <span class="problem-icon">{{ m.severity === 'error' ? '✕' : m.severity === 'warning' ? '⚠' : 'ℹ' }}</span>
+          <span class="problem-path">{{ m.path }}:{{ m.line }}:{{ m.col }}</span>
+          <span class="problem-msg">{{ m.message }}</span>
+        </div>
+      </div>
     </template>
 
     <template v-else>

@@ -37,6 +37,7 @@ bracket_pair_colorization = true
 indent_guides = true
 render_line_highlight = "all" # "all" | "line" | "none"
 sticky_scroll = false
+breadcrumbs = true
 padding_y = 14
 
 [effects]
@@ -129,6 +130,8 @@ export function configToSettings(text: string): ConfigResult {
     patch.renderLineHighlight = String(editor.render_line_highlight) as Settings['renderLineHighlight'];
   const ss = bool(editor.sticky_scroll);
   if (ss !== undefined) patch.stickyScroll = ss;
+  const bc = bool(editor.breadcrumbs);
+  if (bc !== undefined) patch.breadcrumbs = bc;
   const py = num(editor.padding_y, 0, 80);
   if (py !== undefined) patch.paddingY = py;
 

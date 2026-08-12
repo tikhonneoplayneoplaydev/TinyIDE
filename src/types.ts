@@ -72,6 +72,7 @@ export type Settings = {
   indentGuides: boolean;
   renderLineHighlight: 'all' | 'line' | 'none';
   stickyScroll: boolean;
+  breadcrumbs: boolean;
   paddingY: number;
   trail: boolean;
   trailIntensity: number;
@@ -85,7 +86,7 @@ export type Settings = {
   customShells: CustomShell[];
 };
 
-export type Activity = 'explorer' | 'search' | 'languages' | 'settings' | 'source' | 'funo';
+export type Activity = 'explorer' | 'search' | 'languages' | 'settings' | 'source' | 'funo' | 'plugins';
 
 export type ShellId = string; // preset: 'shell'|'nu'|'pwsh'|'cmd'|'zsh'|'fish' | custom: 'custom:<name>'
 

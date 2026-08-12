@@ -41,6 +41,7 @@ function editorOptions(s: Settings): monaco.editor.IStandaloneEditorConstruction
     scrollbar: { verticalScrollbarSize: 11, horizontalScrollbarSize: 11, useShadows: false },
     overviewRulerLanes: 0,
     stickyScroll: { enabled: s.stickyScroll },
+    breadcrumbs: { enabled: s.breadcrumbs, showSymbolIcons: false, height: 24 },
     occurrencesHighlight: 'off',
     selectionHighlight: false,
     quickSuggestions: s.quickSuggestions ? { other: true, comments: false, strings: false } : false,

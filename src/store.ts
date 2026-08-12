@@ -37,6 +37,7 @@ const DEFAULT_SETTINGS: Settings = {
   indentGuides: true,
   renderLineHighlight: 'all',
   stickyScroll: false,
+  breadcrumbs: true,
   paddingY: 14,
   trail: true,
   trailIntensity: 80,

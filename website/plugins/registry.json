@@ -1,0 +1,19 @@
+{
+  "name": "TinyIDE Plugin Registry",
+  "url": "https://tikhonneoplayneoplaydev.github.io/TinyIDE/plugins/",
+  "plugins": [
+    {
+      "name": "funo",
+      "display_name": "Funo Language",
+      "publisher": "TinyIDE",
+      "version": "1.0.0",
+      "description": "Язык Funo (компилируется в Java/JVM): автодополнение, диагностика, транспиляция в Java, outline документа. Встроен в TinyIDE как WASM-плагин.",
+      "kind": "language",
+      "wasm": true,
+      "size_kb": 959,
+      "builtin": true,
+      "tags": ["language", "funo", "java", "minecraft"],
+      "icon": "funo"
+    }
+  ]
+}

@@ -35,6 +35,8 @@ const ICONS: Record<string, { viewBox?: string; fill?: boolean; body: string }> 
   git: { body: '<circle cx="6" cy="6" r="2.6"/><circle cx="6" cy="18" r="2.6"/><circle cx="18" cy="7" r="2.6"/><path d="M6 8.6v6.8M18 9.6c0 4.4-4.4 3.6-7 4.4"/>' },
   github: { fill: true, body: '<path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.2.8-.6v-2c-3.2.7-3.9-1.4-3.9-1.4-.5-1.3-1.3-1.7-1.3-1.7-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.7 1.3 3.4 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.4-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.2 1.2a11 11 0 0 1 5.8 0C17.4 4.7 18.4 5 18.4 5c.6 1.6.2 2.8.1 3.1.7.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6 4.6-1.5 7.9-5.8 7.9-10.9C23.5 5.7 18.3.5 12 .5z"/>' },
   funo: { body: '<circle cx="12" cy="12" r="9"/><path d="M12 5l7 7-7 7-7-7z" fill="currentColor" stroke="none"/>' },
+  puzzle: { body: '<path d="M10 3h4v3h1a2 2 0 0 1 2 2v1h3v4h-3v1a2 2 0 0 1-2 2h-1v3h-4v-3H9a2 2 0 0 1-2-2v-1H4v-4h3V8a2 2 0 0 1 2-2h1z"/>' },
+  problems: { body: '<circle cx="12" cy="12" r="9"/><path d="M12 7v6M12 16.5v.5"/>' },
   palette: { body: '<path d="M12 21a9 9 0 1 1 9-9c0 2-1.5 3-3 3h-2a2 2 0 0 0-1.5 3.3c.4.5.3 1.4-.5 1.9-.6.4-1.3.8-2 .8z"/><circle cx="7.5" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="10.5" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="15" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="17.5" cy="11" r="1" fill="currentColor" stroke="none"/>' },
   down: { body: '<path d="m6 9 6 6 6-6"/>' },
 };

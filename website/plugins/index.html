@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Магазин WASM-плагинов TinyIDE. Устанавливай языки, инструменты и расширения — один .wasm работает и в десктопе, и в браузере.">
+<title>Плагины TinyIDE — WASM-маркет</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M4.5 19.5C8 16 10 12.5 13.5 8.5c2.3-2.6 4.6-3.6 6-3 1.2.5 1.5 2 .2 4.4-.8 1.5-2 3-3.3 4.4-3.4 3.6-7 5.2-11.9 5.2z' fill='%2322d3ee' opacity='0.9'/%3E%3Ccircle cx='17.6' cy='6.4' r='2.6' fill='%23eafcff'/%3E%3C/svg%3E">
+<style>
+:root{--bg0:#070a12;--bg1:#0b0e17;--bg2:#121829;--bg3:#182036;--border:#1e2740;--fg:#dbe3f5;--fg2:#aab6d4;--muted:#7c88a8;--c1:#22d3ee;--c2:#a78bfa;--c3:#f472b6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg0);color:var(--fg);-webkit-font-smoothing:antialiased}
+a{color:var(--c1);text-decoration:none}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+.grad{background:linear-gradient(120deg,var(--c1),var(--c2),var(--c3));-webkit-background-clip:text;background-clip:text;color:transparent}
+nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(7,10,18,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:16px}
+.nav-links{display:flex;gap:20px;font-size:13px;color:var(--fg2)}
+.nav-links a:hover{color:var(--fg)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:11px;font-size:13.5px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg2);color:var(--fg);transition:transform .15s,box-shadow .15s,border-color .15s}
+.btn:hover{transform:translateY(-2px);border-color:var(--c1)}
+.btn.primary{background:linear-gradient(120deg,var(--c1),var(--c2),var(--c3));color:#061018;border:none}
+.hero{text-align:center;padding:70px 24px 30px}
+.hero h1{font-size:44px;font-weight:800;letter-spacing:-1px}
+.hero p{color:var(--muted);font-size:16px;max-width:640px;margin:14px auto 0;line-height:1.6}
+.badges{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.badge{font-size:12px;color:var(--fg2);background:var(--bg2);border:1px solid var(--border);border-radius:999px;padding:5px 13px}
+.market{padding:40px 24px 80px}
+.market h2{font-size:24px;font-weight:800;margin-bottom:20px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.card{background:var(--bg1);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:transform .18s,border-color .18s}
+.card:hover{transform:translateY(-4px);border-color:var(--c1)}
+.card-head{display:flex;align-items:center;gap:12px}
+.logo-box{width:46px;height:46px;border-radius:12px;background:linear-gradient(135deg,rgba(34,211,238,.25),rgba(167,139,250,.25));display:flex;align-items:center;justify-content:center;font-size:22px}
+.card-name{font-size:16px;font-weight:800}
+.card-pub{font-size:11.5px;color:var(--muted)}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{font-size:10.5px;padding:2px 9px;border-radius:999px;background:var(--bg3);color:var(--fg2);border:1px solid var(--border)}
+.card-desc{font-size:13px;color:var(--fg2);line-height:1.55;flex:1}
+.card-meta{display:flex;gap:10px;font-size:11px;color:var(--muted);align-items:center}
+.wasm-chip{font-size:9.5px;font-weight:800;padding:2px 8px;border-radius:5px;background:rgba(34,211,238,.18);color:var(--c1)}
+.card-actions{display:flex;gap:8px}
+.howto{padding:0 24px 90px}
+.howto h2{font-size:24px;font-weight:800;margin-bottom:20px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.step{background:var(--bg1);border:1px solid var(--border);border-radius:14px;padding:18px}
+.step-num{font-size:11px;font-weight:800;color:var(--c1);letter-spacing:1px}
+.step h3{font-size:14.5px;margin:6px 0 8px}
+.step p{font-size:12.5px;color:var(--muted);line-height:1.55}
+.step code{display:block;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:8px 10px;margin-top:8px;color:var(--c1);word-break:break-all}
+.api{padding:0 24px 90px}
+.api h2{font-size:24px;font-weight:800;margin-bottom:8px}
+.api p{color:var(--muted);font-size:13.5px;margin-bottom:18px}
+.api-code{background:var(--bg1);border:1px solid var(--border);border-radius:14px;padding:20px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;line-height:1.7;color:var(--fg2);overflow-x:auto;white-space:pre}
+.api-code .k{color:var(--c3)}.api-code .c{color:var(--muted)}.api-code .s{color:#a3e88a}
+footer{border-top:1px solid var(--border);padding:26px 24px;text-align:center;color:var(--muted);font-size:12px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M4.5 19.5C8 16 10 12.5 13.5 8.5c2.3-2.6 4.6-3.6 6-3 1.2.5 1.5 2 .2 4.4-.8 1.5-2 3-3.3 4.4-3.4 3.6-7 5.2-11.9 5.2z" fill="#22d3ee" opacity=".9"/><circle cx="17.6" cy="6.4" r="2.6" fill="#eafcff"/></svg>
+    TinyIDE · Plugins
+  </div>
+  <div class="nav-links">
+    <a href="#market">Маркет</a>
+    <a href="#howto">Установка</a>
+    <a href="#api">Plugin API</a>
+    <a href="../">← Главная</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <h1>WASM-<span class="grad">плагины</span> TinyIDE</h1>
+  <p>Один <b>.wasm</b>-модуль работает и в десктоп-версии (интерпретатор wasmi), и в браузере (нативный WebAssembly). Безопасно, быстро, кроссплатформенно.</p>
+  <div class="badges">
+    <span class="badge">⚡ WebAssembly</span>
+    <span class="badge">🖥️ Десктоп + браузер</span>
+    <span class="badge">🔌 Простой ABI</span>
+    <span class="badge">🧩 Языки, инструменты, темы</span>
+  </div>
+</header>
+
+<section class="market wrap" id="market">
+  <h2>🛒 Маркет</h2>
+  <div class="cards" id="cards"><div class="card"><div class="card-head"><div class="logo-box">🧩</div><div><div class="card-name">Загрузка…</div><div class="card-pub">реестр плагинов</div></div></div></div></div>
+</section>
+
+<section class="howto wrap" id="howto">
+  <h2>📦 Как установить</h2>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">ШАГ 1</div>
+      <h3>Собери плагин</h3>
+      <p>Rust или любой язык в WASM (wasm32-unknown-unknown). Папка с <code>plugin.toml</code> и <code>plugin.wasm</code>.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">ШАГ 2</div>
+      <h3>Установи в TinyIDE</h3>
+      <p>Панель <b>Plugins</b> → «Установить из папки…» и выбери папку плагина.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">ШАГ 3</div>
+      <h3>Готово</h3>
+      <p>Плагин загрузится (wasmi в десктопе / нативный WASM в браузере) и включится. Отключить/включить можно в любой момент.</p>
+    </div>
+  </div>
+</section>
+
+<section class="api wrap" id="api">
+  <h2>🛠 Plugin API</h2>
+  <p>Плагин экспортирует три функции и общается JSON-командами через <code>tinyide_handle</code>.</p>
+  <div class="api-code"><span class="c">// plugin.wasm exports (C ABI)</span>
+<span class="k">alloc</span>(len: u32) -&gt; ptr
+<span class="k">dealloc</span>(ptr: u32, len: u32)
+<span class="k">tinyide_handle</span>(cmd_ptr, cmd_len, out_ptr, out_cap) -&gt; len
+
+<span class="c">// команды (JSON):</span>
+{ <span class="s">"cmd"</span>: <span class="s">"init"</span> }                     <span class="c">// -&gt; {languages, commands}</span>
+{ <span class="s">"cmd"</span>: <span class="s">"completions"</span>, <span class="s">"word"</span>: <span class="s">"pri"</span> }
+{ <span class="s">"cmd"</span>: <span class="s">"diagnose"</span>, <span class="s">"source"</span>: <span class="s">"..."</span> }
+{ <span class="s">"cmd"</span>: <span class="s">"transpile"</span>, <span class="s">"source"</span>: <span class="s">"..."</span> }
+{ <span class="s">"cmd"</span>: <span class="s">"outline"</span>, <span class="s">"source"</span>: <span class="s">"..."</span> }</div>
+</section>
+
+<footer>
+  TinyIDE · свободная IDE на Tauri 2 + Vue 3 + Monaco · <a href="https://github.com/tikhonneoplayneoplaydev/TinyIDE">github</a>
+</footer>
+
+<script>
+(async () => {
+  const host = 'https://tikhonneoplayneoplaydev.github.io/TinyIDE/plugins/';
+  const res = await fetch(host + 'registry.json');
+  const reg = await res.json();
+  const cards = document.getElementById('cards');
+  cards.innerHTML = '';
+  for (const p of reg.plugins) {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card-head">
+        <div class="logo-box">${p.icon === 'funo' ? '🦀' : '🧩'}</div>
+        <div>
+          <div class="card-name">${p.display_name}</div>
+          <div class="card-pub">by ${p.publisher} · v${p.version}</div>
+        </div>
+      </div>
+      <div class="tags"><span class="tag">${p.kind}</span>${(p.tags||[]).map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      <div class="card-desc">${p.description}</div>
+      <div class="card-meta"><span class="wasm-chip">WASM</span><span>${p.size_kb} КБ</span>${p.builtin?'<span>встроен в TinyIDE</span>':''}</div>
+      <div class="card-actions">
+        <button class="btn primary" onclick="navigator.clipboard.writeText('TinyIDE: встроенный плагин — уже установлен');this.textContent='✓ Встроен'">Встроен</button>
+      </div>`;
+    cards.appendChild(card);
+  }
+})().catch(e => { document.getElementById('cards').innerHTML = '<div class="card"><div class="card-desc">Ошибка загрузки реестра: ' + e.message + '</div></div>'; });
+</script>
+</body>
+</html>

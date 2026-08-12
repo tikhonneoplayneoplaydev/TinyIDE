@@ -30,6 +30,7 @@ const DEFAULT_SETTINGS: Settings = {
   indentGuides: true,
   renderLineHighlight: 'all',
   stickyScroll: false,
+  breadcrumbs: true,
   paddingY: 14,
   trail: true,
   trailIntensity: 80,
@@ -119,6 +120,7 @@ const reset = () => {
           { label: 'Цветные парные скобки', key: 'bracketPairColorization' },
           { label: 'Направляющие отступов', key: 'indentGuides' },
           { label: 'Прилипающий скролл', key: 'stickyScroll' },
+          { label: 'Хлебные крошки (breadcrumbs)', key: 'breadcrumbs' },
           { label: 'Зум колёсиком мыши', key: 'mouseWheelZoom' },
         ]" :key="key" class="setting-row">
           <span>{{ toggle.label }}</span>

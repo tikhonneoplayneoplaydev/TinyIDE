@@ -6,6 +6,9 @@ use std::sync::Mutex;
 use tauri::{Emitter, State};
 
 mod funo;
+mod plugins;
+
+use plugins::PluginsState;
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -502,11 +505,36 @@ fn funo_compile(
     Ok(serde_json::to_value(&result).map_err(|e| e.to_string())?)
 }
 
+#[tauri::command]
+fn plugins_list(state: tauri::State<'_, PluginsState>) -> Vec<plugins::PluginInfo> {
+    plugins::plugins_list(&state)
+}
+
+#[tauri::command]
+fn plugins_call(
+    state: tauri::State<'_, PluginsState>,
+    name: String,
+    cmd: String,
+) -> Result<String, String> {
+    plugins::plugins_call(&state, &name, &cmd)
+}
+
+#[tauri::command]
+fn plugins_install(source_dir: String) -> Result<String, String> {
+    plugins::plugins_install(source_dir)
+}
+
+#[tauri::command]
+fn plugins_uninstall(name: String) -> Result<(), String> {
+    plugins::plugins_uninstall(name)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(PtyState(Mutex::new(HashMap::new())))
+        .manage(PluginsState::new())
         .invoke_handler(tauri::generate_handler![
             list_dir,
             read_file,
@@ -529,7 +557,11 @@ pub fn run() {
             git_init,
             funo_check,
             funo_transpile,
-            funo_compile
+            funo_compile,
+            plugins_list,
+            plugins_call,
+            plugins_install,
+            plugins_uninstall
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

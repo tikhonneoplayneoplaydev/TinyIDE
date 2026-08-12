@@ -2,11 +2,12 @@
 import { store } from '../store';
 import AppIcon from './AppIcon.vue';
 
-const ITEMS: { id: 'explorer' | 'search' | 'source' | 'funo' | 'languages' | 'settings'; label: string; icon: string }[] = [
+const ITEMS: { id: 'explorer' | 'search' | 'source' | 'funo' | 'plugins' | 'languages' | 'settings'; label: string; icon: string }[] = [
   { id: 'explorer', label: 'Explorer', icon: 'files' },
   { id: 'search', label: 'Search', icon: 'search' },
   { id: 'source', label: 'Source Control', icon: 'git' },
   { id: 'funo', label: 'Funo — компилятор', icon: 'funo' },
+  { id: 'plugins', label: 'Plugins (WASM)', icon: 'puzzle' },
   { id: 'languages', label: 'Languages', icon: 'languages' },
   { id: 'settings', label: 'Settings', icon: 'gear' },
 ];

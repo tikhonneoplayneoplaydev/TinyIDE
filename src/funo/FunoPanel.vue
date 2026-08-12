@@ -8,6 +8,8 @@ import AppIcon from '../components/AppIcon.vue';
 import {
   getFunoSource, funoCheck, funoTranspile, funoCompile, funoCheckWeb, funoTranspileWeb,
 } from './bridge';
+import { pluginDiagnose, pluginTranspile } from '../plugins/manager';
+import { callPlugin } from '../plugins/bridge';
 import type { FunoBuildResult, FunoDiagnostic, FunoTranspileResult } from './bridge';
 
 const busy = ref(false);
@@ -61,7 +63,13 @@ async function doCheck() {
   await withSource(async (src, path) => {
     let diags: FunoDiagnostic[];
     if (isTauri) diags = await funoCheck(src);
-    else diags = funoCheckWeb(src);
+    else {
+      try {
+        diags = (await pluginDiagnose('funo', 'funo', src)) as FunoDiagnostic[];
+      } catch {
+        diags = funoCheckWeb(src);
+      }
+    }
     lastDiags.value = diags;
     // маркеры в Monaco
     const { setMarkers } = await import('./funoMarkers');
@@ -74,7 +82,13 @@ async function doTranspile() {
   await withSource(async (src) => {
     let res: FunoTranspileResult;
     if (isTauri) res = await funoTranspile(src);
-    else res = funoTranspileWeb(src);
+    else {
+      try {
+        res = (await pluginTranspile('funo', 'funo', src)) as FunoTranspileResult;
+      } catch {
+        res = funoTranspileWeb(src);
+      }
+    }
     if (res.ok) {
       return `\x1b[32m✓ Funo → Java OK\x1b[0m\n\n${res.java}`;
     }

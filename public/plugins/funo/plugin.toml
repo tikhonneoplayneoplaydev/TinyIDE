@@ -1,0 +1,7 @@
+name = "funo"
+display_name = "Funo Language"
+publisher = "TinyIDE"
+version = "1.0.0"
+description = "Funo — язык, компилируемый в Java/JVM. Автодополнение, диагностика, транспиляция в Java, outline."
+entry = "plugin.wasm"
+builtin = true
