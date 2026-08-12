@@ -9,7 +9,7 @@ use serde::Serialize;
 use std::collections::HashMap;
 use std::fs;
 use std::path::PathBuf;
-use std::sync::Mutex;
+use std::sync::{Arc, Mutex};
 use wasmi::{Engine, Linker, Memory, Module, Store, TypedFunc};
 
 const BUILTIN_PLUGINS: &[(&str, &[u8])] = &[("funo", include_bytes!("../plugins/funo/plugin.wasm"))];
@@ -26,14 +26,15 @@ pub struct PluginInfo {
     pub size_kb: u64,
 }
 
+#[derive(Clone)]
 pub struct PluginsState {
-    pub map: Mutex<HashMap<String, WasmPlugin>>,
+    pub map: Arc<Mutex<HashMap<String, WasmPlugin>>>,
 }
 
 impl PluginsState {
     pub fn new() -> Self {
         PluginsState {
-            map: Mutex::new(HashMap::new()),
+            map: Arc::new(Mutex::new(HashMap::new())),
         }
     }
 }

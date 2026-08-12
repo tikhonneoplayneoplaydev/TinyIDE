@@ -94,15 +94,41 @@ onUnmounted(() => {
   monacoCreated = false;
 });
 
-// настройки → редактор + тема
+// ─── настройки → редактор ────────────────────────────────────────────────
+// ВАЖНО: тема Monaco пересоздаётся ТОЛЬКО при реальной смене theme/accent
+// (кэш), а остальные настройки применяются лёгким updateOptions.
+// Это убирает фриз UI при открытии примера (deep-watch вызывал
+// defineTheme×2 + setTheme на каждое изменение настроек).
+let lastThemeKey = '';
+function applyThemeIfChanged() {
+  const key = store.settings.theme + ':' + store.settings.accent;
+  if (key === lastThemeKey) return;
+  lastThemeKey = key;
+  if (!monacoCreated) return;
+  applyCometTheme(ACCENT_PRESETS[store.settings.accent], store.settings.theme === 'dark');
+}
+
+// тяжёлые настройки (тема/акцент/шрифт) — по отдельным watch
 watch(
-  () => store.settings,
-  (s) => {
+  () => [store.settings.theme, store.settings.accent] as const,
+  () => applyThemeIfChanged()
+);
+
+// всё остальное — единый лёгкий updateOptions (без deep-сканирования)
+const EDITOR_OPTS_KEYS = [
+  'fontSize', 'fontFamily', 'fontLigatures', 'lineHeight', 'tabSize', 'insertSpaces',
+  'wordWrap', 'minimap', 'cursorStyle', 'cursorBlinking', 'cursorWidth', 'smoothCaret',
+  'mouseWheelZoom', 'autoClosingBrackets', 'quickSuggestions', 'bracketPairColorization',
+  'indentGuides', 'renderLineHighlight', 'stickyScroll', 'breadcrumbs', 'paddingY',
+] as const;
+
+watch(
+  () => EDITOR_OPTS_KEYS.map((k) => store.settings[k]).join('|'),
+  () => {
     if (!monacoCreated) return;
-    applyCometTheme(ACCENT_PRESETS[s.accent], s.theme === 'dark');
-    editorRef.value?.updateOptions(editorOptions(s));
-  },
-  { deep: true }
+    applyThemeIfChanged();
+    editorRef.value?.updateOptions(editorOptions(store.settings));
+  }
 );
 
 // активный файл → модель

@@ -84,6 +84,9 @@ export function getMonacoEditor(): monaco_editor | null {
 // ─── защита от циклов при ленивой загрузке (реальные пути) ─────────────────
 let visitedReal = new Set<string>();
 
+// ─── кэш конфигурации: не применять настройки повторно, если не изменились ─
+let lastConfigJson = '';
+
 // ─── стор ─────────────────────────────────────────────────────────────────
 export const store = reactive({
   settings: loadSettings(),

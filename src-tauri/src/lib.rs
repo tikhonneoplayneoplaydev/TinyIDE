@@ -396,7 +396,13 @@ fn git_remote_info(cwd: String) -> Result<RemoteInfo, String> {
 /// Клонирование любого git-репозитория по URL (https/ssh/git).
 /// parent_dir — куда клонировать; вернёт путь к папке репозитория.
 #[tauri::command]
-fn git_clone(url: String, parent_dir: String) -> Result<String, String> {
+async fn git_clone(url: String, parent_dir: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || git_clone_inner(&url, &parent_dir))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn git_clone_inner(url: &str, parent_dir: &str) -> Result<String, String> {
     let name = url
         .trim_end_matches('/')
         .rsplit('/')
@@ -407,33 +413,39 @@ fn git_clone(url: String, parent_dir: String) -> Result<String, String> {
     let target = format!("{}/{}", parent_dir.trim_end_matches('/'), name);
     run_git(
         &parent_dir,
-        &[
-            String::from("clone"),
-            url.clone(),
-            target.clone(),
-        ],
+        &[String::from("clone"), url.to_string(), target.clone()],
     )?;
     Ok(target)
 }
 
 #[tauri::command]
-fn git_pull(cwd: String) -> Result<String, String> {
-    run_git(&cwd, &[String::from("pull")])
+async fn git_pull(cwd: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || run_git(&cwd, &[String::from("pull")]))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn git_push(cwd: String) -> Result<String, String> {
-    run_git(&cwd, &[String::from("push")])
+async fn git_push(cwd: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || run_git(&cwd, &[String::from("push")]))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn git_commit(cwd: String, message: String) -> Result<String, String> {
-    run_git(&cwd, &[String::from("commit"), String::from("-m"), message])
+async fn git_commit(cwd: String, message: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        run_git(&cwd, &[String::from("commit"), String::from("-m"), message])
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn git_init(cwd: String) -> Result<String, String> {
-    run_git(&cwd, &[String::from("init")])
+async fn git_init(cwd: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || run_git(&cwd, &[String::from("init")]))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
@@ -479,33 +491,42 @@ fn git_status(cwd: String) -> Result<GitInfo, String> {
 // ═══════════════════════════════════════════════════════════════════════
 
 /// Проверка исходника Funo: возвращает диагностику (без компиляции).
+/// Выполняется в потоке tokio (spawn_blocking) — не блокирует IPC.
 #[tauri::command]
-fn funo_check(source: String) -> Vec<funo::Diagnostic> {
-    funo::check_source(&source)
+async fn funo_check(source: String) -> Vec<funo::Diagnostic> {
+    tauri::async_runtime::spawn_blocking(move || funo::check_source(&source))
+        .await
+        .unwrap_or_default()
 }
 
 /// Транспиляция Funo → Java-код (работает без установленной Java).
 #[tauri::command]
-fn funo_transpile(source: String) -> Result<serde_json::Value, String> {
-    match funo::transpile(&source) {
+async fn funo_transpile(source: String) -> Result<serde_json::Value, String> {
+    tauri::async_runtime::spawn_blocking(move || match funo::transpile(&source) {
         Ok(java) => Ok(serde_json::json!({ "ok": true, "java": java })),
         Err(diags) => Ok(serde_json::json!({ "ok": false, "errors": diags })),
-    }
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 /// Компиляция в .class/.jar (нужны javac/jar в PATH) + опциональный запуск.
 #[tauri::command]
-fn funo_compile(
+async fn funo_compile(
     source: String,
     project_root: String,
     run_after: bool,
 ) -> Result<serde_json::Value, String> {
-    let cp = funo::discover_classpath(&project_root);
-    let result = if run_after {
-        funo::compile_and_run(&project_root, &source, &cp)
-    } else {
-        funo::compile_only(&project_root, &source, &cp)
-    };
+    let result = tauri::async_runtime::spawn_blocking(move || {
+        let cp = funo::discover_classpath(&project_root);
+        if run_after {
+            funo::compile_and_run(&project_root, &source, &cp)
+        } else {
+            funo::compile_only(&project_root, &source, &cp)
+        }
+    })
+    .await
+    .map_err(|e| e.to_string())?;
     Ok(serde_json::to_value(&result).map_err(|e| e.to_string())?)
 }
 
@@ -515,12 +536,16 @@ fn plugins_list(state: tauri::State<'_, PluginsState>) -> Vec<plugins::PluginInf
 }
 
 #[tauri::command]
-fn plugins_call(
+async fn plugins_call(
     state: tauri::State<'_, PluginsState>,
     name: String,
     cmd: String,
 ) -> Result<String, String> {
-    plugins::plugins_call(&state, &name, &cmd)
+    // wasmi-инстанс создаётся/вызывается в пуле потоков tokio
+    let state = state.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || plugins::plugins_call(&state, &name, &cmd))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
@@ -547,6 +572,97 @@ fn write_binary(path: String, base64_data: String) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     std::fs::write(&path, bytes).map_err(|e| e.to_string())
 }
+
+
+// ═══════════════════════════════════════════════════════════════════════
+//  Параллельный поиск по файлам (rayon) — не блокирует UI
+// ═══════════════════════════════════════════════════════════════════════
+
+#[derive(Serialize)]
+struct SearchHit {
+    path: String,
+    name: String,
+    line: u32,
+    text: String,
+}
+
+const SKIP_SEARCH_DIRS: &[&str] = &[
+    "node_modules", ".git", "target", "dist", "build", "out", ".next", ".nuxt",
+    ".cache", "__pycache__", ".venv", "vendor", ".parcel-cache", "coverage",
+];
+
+fn collect_files(dir: &std::path::Path, show_hidden: bool, depth: usize, out: &mut Vec<std::path::PathBuf>) {
+    if depth > 8 {
+        return;
+    }
+    let Ok(entries) = std::fs::read_dir(dir) else { return };
+    for entry in entries.flatten() {
+        let p = entry.path();
+        let name = entry.file_name().to_string_lossy().into_owned();
+        if !show_hidden && name.starts_with('.') {
+            continue;
+        }
+        if p.is_dir() {
+            if SKIP_SEARCH_DIRS.contains(&name.as_str()) {
+                continue;
+            }
+            collect_files(&p, show_hidden, depth + 1, out);
+        } else {
+            out.push(p);
+        }
+    }
+}
+
+/// Поиск по содержимому файлов рабочей папки, параллельно (rayon).
+#[tauri::command]
+async fn search_files_parallel(
+    cwd: String,
+    query: String,
+    show_hidden: bool,
+) -> Result<Vec<SearchHit>, String> {
+    let q = query.to_lowercase();
+    let hits = tauri::async_runtime::spawn_blocking(move || {
+        let mut files = Vec::new();
+        collect_files(std::path::Path::new(&cwd), show_hidden, 0, &mut files);
+        use rayon::prelude::*;
+        let grouped: Vec<Vec<SearchHit>> = files
+            .par_iter()
+            .filter_map(|p| {
+                let meta = std::fs::metadata(p).ok()?;
+                if meta.len() > 512_000 {
+                    return None;
+                }
+                let content = std::fs::read_to_string(p).ok()?;
+                let name = p.file_name()?.to_string_lossy().into_owned();
+                let path = p.to_string_lossy().replace('\\', "/");
+                let mut local: Vec<SearchHit> = Vec::new();
+                for (i, line) in content.lines().enumerate() {
+                    if line.to_lowercase().contains(&q) {
+                        local.push(SearchHit {
+                            path: path.clone(),
+                            name: name.clone(),
+                            line: (i + 1) as u32,
+                            text: line.trim().chars().take(160).collect(),
+                        });
+                        if local.len() >= 30 {
+                            break;
+                        }
+                    }
+                }
+                if local.is_empty() {
+                    None
+                } else {
+                    Some(local)
+                }
+            })
+            .collect();
+        grouped.into_iter().flatten().take(300).collect::<Vec<SearchHit>>()
+    })
+    .await
+    .map_err(|e| e.to_string())?;
+    Ok(hits)
+}
+
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -582,7 +698,8 @@ pub fn run() {
             plugins_install,
             plugins_uninstall,
             plugins_dir,
-            write_binary
+            write_binary,
+            search_files_parallel
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

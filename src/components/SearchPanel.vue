@@ -2,7 +2,8 @@
 import { onUnmounted, ref, watch } from 'vue';
 import type { FsNode } from '../types';
 import { store } from '../store';
-import { readFileText, listDirReal, SKIP_DIRS } from '../fs/bridge';
+import { readFileText, listDirReal, SKIP_DIRS, isTauri } from '../fs/bridge';
+import { invoke } from '@tauri-apps/api/core';
 import AppIcon from './AppIcon.vue';
 
 type Result = { path: string; name: string; line: number; text: string };
@@ -24,6 +25,21 @@ watch(query, async (qRaw) => {
   window.clearTimeout(timer);
   const myCancel = { flag: false };
   timer = window.setTimeout(async () => {
+    // Tauri: параллельный поиск в Rust (tokio + rayon) — не блокирует UI
+    if (isTauri && ws.mode === 'real') {
+      try {
+        const hits = (await invoke('search_files_parallel', {
+          cwd: ws.rootPath,
+          query: qRaw.trim(),
+          showHidden: store.settings.showHidden,
+        })) as Result[];
+        results.value = hits;
+        searching.value = false;
+        return;
+      } catch {
+        /* fallback ниже */
+      }
+    }
     const out: Result[] = [];
     const readOne = async (path: string, name: string) => {
       if (myCancel.flag || out.length >= 300) return;

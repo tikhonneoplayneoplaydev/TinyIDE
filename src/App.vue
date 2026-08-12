@@ -67,7 +67,8 @@ onMounted(() => {
   initHotkeys();
   startSplashTimer();
   applyAccentCSS(store.settings.accent);
-  loadPluginSystem();
+  // плагины грузим после отрисовки — не блокируем первый кадр
+  window.setTimeout(() => loadPluginSystem(), 600);
   document.documentElement.dir = store.settings.lang === 'he' ? 'rtl' : 'ltr';
   window.addEventListener('contextmenu', onContextMenu);
   // debug-хук для e2e/отладки
