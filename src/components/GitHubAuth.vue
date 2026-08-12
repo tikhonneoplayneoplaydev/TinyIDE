@@ -16,9 +16,39 @@ let timer: number | undefined;
 let pollTimer: number | undefined;
 let cancelled = false;
 
+// ─── десктоп: Authorization Code Flow + PKCE, локальный сервер :1250 ─────
+async function startCodeFlow() {
+  cancelled = false;
+  step.value = 'wait';
+  statusMsg.value = 'Поднимаем локальный сервер на localhost:1250 и открываем браузер…';
+  try {
+    const res = await invoke('oauth_github_authorize', {
+      clientId: store.githubClientId.trim(),
+      masterPassword: store.githubMasterPassword || null,
+    });
+    const r = res as { token: string; login: string };
+    loginName.value = r.login;
+    store.completeGithubAuth(r.token, r.login);
+    step.value = 'done';
+    statusMsg.value = '';
+    window.setTimeout(() => {
+      store.githubAuthOpen = false;
+      store.toast('Вы вошли как @' + loginName.value + ' 🎉');
+    }, 900);
+  } catch (e) {
+    step.value = 'error';
+    statusMsg.value = String(e);
+  }
+}
+
 async function start() {
   const clientId = store.githubClientId.trim();
   if (!clientId) return;
+  // десктоп — код-флоу через локальный сервер (PKCE, шифрование Argon2+ChaCha20)
+  if (isTauri) {
+    await startCodeFlow();
+    return;
+  }
   cancelled = false;
   step.value = 'wait';
   statusMsg.value = 'Запрашиваем код…';

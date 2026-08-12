@@ -6,6 +6,8 @@ use std::sync::Mutex;
 use tauri::{Emitter, State};
 
 mod funo;
+use base64::Engine as _;
+use base64::engine::general_purpose;
 mod plugins;
 
 use plugins::PluginsState;
@@ -419,7 +421,7 @@ fn git_clone_inner(url: &str, parent_dir: &str) -> Result<String, String> {
 }
 
 fn git_auth_args(token: &str) -> Vec<String> {
-    use base64::Engine;
+    use base64::{Engine as _, engine::general_purpose};
     let b64 = base64::engine::general_purpose::STANDARD
         .encode(format!("x-access-token:{token}"));
     vec![
@@ -594,7 +596,7 @@ fn plugins_dir() -> Result<String, String> {
 /// Запись бинарного файла (base64) — для установки .wasm плагинов из маркета.
 #[tauri::command]
 fn write_binary(path: String, base64_data: String) -> Result<(), String> {
-    use base64::Engine;
+    use base64::{Engine as _, engine::general_purpose};
     let bytes = base64::engine::general_purpose::STANDARD
         .decode(base64_data.trim())
         .map_err(|e| e.to_string())?;
@@ -785,6 +787,331 @@ fn open_url(url: String) -> Result<(), String> {
 }
 
 
+
+// ═══════════════════════════════════════════════════════════════════════
+//  GitHub OAuth — Authorization Code Flow + PKCE через локальный callback
+//  http://localhost:1250/callback
+//  Схема: сервер поднимается -> браузер авторизует -> GitHub редиректит
+//  на localhost -> сервер получает code, отвечает HTML и МОМЕНТАЛЬНО
+//  убивает себя -> код обменивается на токен -> токен ШИФРУЕТСЯ
+//  (Argon2id -> ключ, ChaCha20-Poly1305) и сохраняется в oauth.bin
+// ═══════════════════════════════════════════════════════════════════════
+
+use argon2::Argon2;
+use argon2::password_hash::rand_core::{OsRng, RngCore};
+use chacha20poly1305::{ChaCha20Poly1305, KeyInit, aead::Aead};
+use sha2::{Digest, Sha256};
+use std::io::{Read, Write};
+use std::net::TcpListener;
+
+const OAUTH_PORT: u16 = 1250;
+const OAUTH_CALLBACK: &str = "http://localhost:1250/callback";
+const OAUTH_TIMEOUT_SECS: u64 = 120;
+
+fn data_dir() -> Result<std::path::PathBuf, String> {
+    let home = std::env::var("HOME").unwrap_or_else(|_| ".".into());
+    let dir = std::path::PathBuf::from(home).join(".tinyide");
+    std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    Ok(dir)
+}
+
+/// Ключ шифрования: мастер-пароль (Argon2id) ИЛИ файловый ключ secret.key
+fn get_encryption_key(master_password: Option<&str>, salt: &[u8]) -> Result<[u8; 32], String> {
+    let mut key = [0u8; 32];
+    if let Some(pw) = master_password {
+        if pw.is_empty() {
+            return Err("мастер-пароль пуст".into());
+        }
+        Argon2::default()
+            .hash_password_into(pw.as_bytes(), salt, &mut key)
+            .map_err(|e| format!("argon2: {e}"))?;
+    } else {
+        let path = data_dir()?.join("secret.key");
+        if path.exists() {
+            let bytes = std::fs::read(&path).map_err(|e| e.to_string())?;
+            if bytes.len() != 32 {
+                return Err("secret.key повреждён".into());
+            }
+            key.copy_from_slice(&bytes);
+        } else {
+            OsRng.fill_bytes(&mut key);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::PermissionsExt;
+                std::fs::write(&path, &key).map_err(|e| e.to_string())?;
+                let _ = std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600));
+            }
+            #[cfg(not(unix))]
+            {
+                std::fs::write(&path, &key).map_err(|e| e.to_string())?;
+            }
+        }
+    }
+    Ok(key)
+}
+
+/// Шифрование данных: Argon2id-ключ + ChaCha20-Poly1305
+fn encrypt_data(plain: &str, master_password: Option<&str>) -> Result<Vec<u8>, String> {
+    let mut salt = [0u8; 16];
+    OsRng.fill_bytes(&mut salt);
+    let key = get_encryption_key(master_password, &salt)?;
+    let cipher = ChaCha20Poly1305::new_from_slice(&key).map_err(|e| format!("cipher: {e}"))?;
+    let mut nonce = [0u8; 12];
+    OsRng.fill_bytes(&mut nonce);
+    let ct = cipher
+        .encrypt(chacha20poly1305::aead::Nonce::<chacha20poly1305::ChaCha20Poly1305>::from_slice(&nonce), plain.as_bytes())
+        .map_err(|e| format!("encrypt: {e}"))?;
+    let mut out = Vec::with_capacity(16 + 12 + ct.len());
+    out.extend_from_slice(&salt);
+    out.extend_from_slice(&nonce);
+    out.extend_from_slice(&ct);
+    Ok(out)
+}
+
+/// Расшифровка: salt(16) || nonce(12) || ct
+fn decrypt_data(data: &[u8], master_password: Option<&str>) -> Result<String, String> {
+    if data.len() < 28 {
+        return Err("oauth.bin повреждён".into());
+    }
+    let salt = &data[..16];
+    let nonce = &data[16..28];
+    let ct = &data[28..];
+    let key = get_encryption_key(master_password, salt)?;
+    let cipher = ChaCha20Poly1305::new_from_slice(&key).map_err(|e| format!("cipher: {e}"))?;
+    let pt = cipher
+        .decrypt(chacha20poly1305::aead::Nonce::<chacha20poly1305::ChaCha20Poly1305>::from_slice(nonce), ct)
+        .map_err(|_| "расшифровать не удалось (неверный мастер-пароль?)")?;
+    String::from_utf8(pt).map_err(|e| e.to_string())
+}
+
+fn save_oauth_token(token: &str, login: &str, master_password: Option<&str>) -> Result<(), String> {
+    let encrypted = encrypt_data(&format!("{token}\n{login}"), master_password)?;
+    let path = data_dir()?.join("oauth.bin");
+    std::fs::write(&path, &encrypted).map_err(|e| e.to_string())?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let _ = std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600));
+    }
+    Ok(())
+}
+
+fn load_oauth_token(master_password: Option<&str>) -> Result<(String, String), String> {
+    let path = data_dir()?.join("oauth.bin");
+    if !path.exists() {
+        return Err("нет сохранённого входа".into());
+    }
+    let data = std::fs::read(&path).map_err(|e| e.to_string())?;
+    let plain = decrypt_data(&data, master_password)?;
+    let mut lines = plain.lines();
+    let token = lines.next().unwrap_or("").to_string();
+    let login = lines.next().unwrap_or("").to_string();
+    if token.is_empty() {
+        return Err("oauth.bin пуст".into());
+    }
+    Ok((token, login))
+}
+
+fn urlencode(s: &str) -> String {
+    let mut out = String::new();
+    for b in s.bytes() {
+        match b {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.' | b'~' => {
+                out.push(b as char)
+            }
+            _ => out.push_str(&format!("%{b:02X}")),
+        }
+    }
+    out
+}
+
+/// Чтение HTTP-запроса: вернёт path с query (например /callback?code=..&state=..)
+fn read_http_request(stream: &mut std::net::TcpStream) -> Result<String, String> {
+    let mut buf = [0u8; 8192];
+    let mut data = Vec::new();
+    stream
+        .set_read_timeout(Some(std::time::Duration::from_secs(10)))
+        .map_err(|e| e.to_string())?;
+    loop {
+        let n = stream.read(&mut buf).map_err(|e| e.to_string())?;
+        if n == 0 {
+            break;
+        }
+        data.extend_from_slice(&buf[..n]);
+        if data.windows(4).any(|w| w == b"\r\n\r\n") {
+            break;
+        }
+        if data.len() > 8192 {
+            break;
+        }
+    }
+    let text = String::from_utf8_lossy(&data).into_owned();
+    Ok(text
+        .lines()
+        .next()
+        .unwrap_or("")
+        .split(' ')
+        .nth(1)
+        .unwrap_or("/")
+        .to_string())
+}
+
+fn send_http(stream: &mut std::net::TcpStream, body: &str) {
+    let resp = format!(
+        "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {}\r\nConnection: close\r\n\r\n{}",
+        body.len(),
+        body
+    );
+    let _ = stream.write_all(resp.as_bytes());
+    let _ = stream.flush();
+}
+
+/// Полный флоу: поднять сервер -> браузер -> callback -> убить сервер -> токен
+#[tauri::command]
+async fn oauth_github_authorize(client_id: String, master_password: Option<String>) -> Result<serde_json::Value, String> {
+    // PKCE: verifier + challenge
+    let mut ver_bytes = [0u8; 32];
+    OsRng.fill_bytes(&mut ver_bytes);
+    let verifier = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(ver_bytes);
+    let challenge = base64::engine::general_purpose::URL_SAFE_NO_PAD.encode(Sha256::digest(verifier.as_bytes()));
+
+    // state (случайный hex)
+    let mut st = [0u8; 16];
+    OsRng.fill_bytes(&mut st);
+    let state: String = st.iter().map(|b| format!("{b:02x}")).collect();
+
+    // listener на 127.0.0.1:1250
+    let listener = TcpListener::bind(("127.0.0.1", OAUTH_PORT)).map_err(|e| {
+        format!("не удалось занять порт {OAUTH_PORT} (занят?): {e}")
+    })?;
+
+    // URL авторизации
+    let auth_url = format!(
+        "https://github.com/login/oauth/authorize?client_id={}&redirect_uri={}&scope={}&state={}&code_challenge={}&code_challenge_method=S256",
+        urlencode(&client_id),
+        urlencode(OAUTH_CALLBACK),
+        urlencode("repo read:user"),
+        state,
+        challenge
+    );
+    open_url(auth_url)?;
+
+    // ─── сервер живёт ровно до первого callback, потом умирает ────────────
+    let code: Result<String, String> = std::thread::spawn(move || {
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(OAUTH_TIMEOUT_SECS);
+        listener.set_nonblocking(true).map_err(|e| e.to_string())?;
+        loop {
+            match listener.accept() {
+                Ok((mut stream, _)) => {
+                    let req = read_http_request(&mut stream)?;
+                    if req.starts_with("/callback") {
+                        let q: std::collections::HashMap<String, String> = req
+                            .split('?')
+                            .nth(1)
+                            .unwrap_or("")
+                            .split('&')
+                            .filter_map(|kv| {
+                                let mut it = kv.split('=');
+                                let k = it.next()?.to_string();
+                                let v = it.next().unwrap_or("").to_string();
+                                Some((k, v))
+                            })
+                            .collect();
+                        let cb_state = q.get("state").cloned().unwrap_or_default();
+                        if cb_state != state {
+                            send_http(&mut stream, "<h2>Ошибка: state не совпал (возможна CSRF-атака)</h2>");
+                            return Err("state mismatch".into());
+                        }
+                        let code = q.get("code").cloned().unwrap_or_default();
+                        if code.is_empty() {
+                            send_http(&mut stream, "<h2>Ошибка: нет code в ответе GitHub</h2>");
+                            return Err("no code".into());
+                        }
+                        send_http(
+                            &mut stream,
+                            "<html><body style='font-family:sans-serif;text-align:center;padding:60px'><h2>✅ Вход в TinyIDE выполнен!</h2><p>Это окно можно закрыть.</p></body></html>",
+                        );
+                        return Ok(code);
+                    } else {
+                        send_http(&mut stream, "<h2>404 — это локальный callback TinyIDE</h2>");
+                    }
+                }
+                Err(e) if e.kind() == std::io::ErrorKind::WouldBlock => {
+                    if std::time::Instant::now() > deadline {
+                        return Err("время ожидания истекло (120 с) — повторите вход".into());
+                    }
+                    std::thread::sleep(std::time::Duration::from_millis(200));
+                }
+                Err(e) => return Err(e.to_string()),
+            }
+        }
+    })
+    .join()
+    .map_err(|_| "сервер callback упал".to_string())?;
+
+    let code = code?; // сервер уже убит (поток завершился)
+
+    // обмен code -> токен (PKCE, секрет не нужен)
+    let resp = http_client()
+        .post("https://github.com/login/oauth/access_token")
+        .form(&[
+            ("client_id", client_id.as_str()),
+            ("code", code.as_str()),
+            ("redirect_uri", OAUTH_CALLBACK),
+            ("grant_type", "authorization_code"),
+            ("code_verifier", verifier.as_str()),
+        ])
+        .header("Accept", "application/json")
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+    let v: serde_json::Value = resp.json().await.map_err(|e| e.to_string())?;
+    let token = v
+        .get("access_token")
+        .and_then(|t| t.as_str())
+        .ok_or_else(|| v.get("error_description").and_then(|e| e.as_str()).unwrap_or("нет токена").to_string())?
+        .to_string();
+
+    // профиль
+    let user: serde_json::Value = http_client()
+        .get("https://api.github.com/user")
+        .bearer_auth(&token)
+        .header("User-Agent", "TinyIDE")
+        .header("Accept", "application/vnd.github+json")
+        .send()
+        .await
+        .map_err(|e| e.to_string())?
+        .json()
+        .await
+        .map_err(|e| e.to_string())?;
+    let login = user.get("login").and_then(|l| l.as_str()).unwrap_or("").to_string();
+
+    // шифруем и сохраняем (Argon2id -> ключ, ChaCha20-Poly1305)
+    save_oauth_token(&token, &login, master_password.as_deref())?;
+
+    Ok(serde_json::json!({ "token": token, "login": login }))
+}
+
+/// Загрузить сохранённый (зашифрованный) вход.
+#[tauri::command]
+async fn github_load_auth(master_password: Option<String>) -> Result<serde_json::Value, String> {
+    match load_oauth_token(master_password.as_deref()) {
+        Ok((token, login)) => Ok(serde_json::json!({ "token": token, "login": login })),
+        Err(_) => Ok(serde_json::json!({ "token": "", "login": "" })),
+    }
+}
+
+/// Удалить сохранённый вход.
+#[tauri::command]
+fn github_logout_local() -> Result<(), String> {
+    let path = data_dir()?.join("oauth.bin");
+    if path.exists() {
+        std::fs::remove_file(&path).map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -824,7 +1151,10 @@ pub fn run() {
             oauth_github_start,
             oauth_github_token,
             github_user,
-            open_url
+            open_url,
+            oauth_github_authorize,
+            github_load_auth,
+            github_logout_local
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -226,6 +226,17 @@ const reset = () => {
           />
         </div>
         <div class="setting-row">
+          <span>Мастер-пароль (шифрование токена)</span>
+          <input
+            type="password"
+            class="git-input"
+            style="max-width: 170px"
+            :value="store.githubMasterPassword"
+            placeholder="необязательно"
+            @input="(e) => store.setGithubMasterPassword((e.target as HTMLInputElement).value)"
+          />
+        </div>
+        <div class="setting-row">
           <span>{{ store.githubLogin ? '👤 @' + store.githubLogin : 'Вход не выполнен' }}</span>
           <button
             v-if="!store.githubLogin"
@@ -239,8 +250,10 @@ const reset = () => {
           </button>
         </div>
         <div class="config-note">
-          Device Flow: введи код на github.com/login/device — токен получится без секрета.
-          Создай OAuth App: Settings → Developer settings → OAuth Apps (включи Enable Device Flow).
+          Локальный callback: GitHub перенаправит на <code>http://localhost:1250/callback</code> —
+          сервер получит код и мгновенно закроется. Токен шифруется (Argon2id → ChaCha20-Poly1305)
+          в <code>~/.tinyide/oauth.bin</code>. В OAuth App укажи callback URL
+          <code>http://localhost:1250/callback</code> и включи Enable Device Flow (для веб-версии).
         </div>
       </div>
 

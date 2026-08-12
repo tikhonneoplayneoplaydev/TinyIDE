@@ -115,6 +115,11 @@ export const store = reactive({
   githubToken: localStorage.getItem('tinyide.github.token') ?? '',
   githubLogin: localStorage.getItem('tinyide.github.login') ?? '',
   githubAuthOpen: false,
+  githubMasterPassword: '',
+
+  setGithubMasterPassword(pw: string) {
+    this.githubMasterPassword = pw;
+  },
 
   setGithubClientId(id: string) {
     this.githubClientId = id;
@@ -144,6 +149,9 @@ export const store = reactive({
       localStorage.removeItem('tinyide.github.login');
     } catch {
       /* ignore */
+    }
+    if (isTauri) {
+      invoke('github_logout_local').catch(() => {});
     }
   },
 
