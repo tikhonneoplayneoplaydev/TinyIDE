@@ -19,6 +19,8 @@ add_executable(tinyide-qt
   src/Editor.cpp
   src/FunoHighlighter.h
   src/FunoHighlighter.cpp
+  src/TerminalWidget.h
+  src/TerminalWidget.cpp
 )
 
 target_link_libraries(tinyide-qt PRIVATE Qt6::Widgets)

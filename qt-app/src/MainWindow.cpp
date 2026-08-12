@@ -1,12 +1,18 @@
 #include "MainWindow.h"
 
 #include "Editor.h"
+#include "TerminalWidget.h"
 
 #include <QApplication>
+#include <QComboBox>
 #include <QFileSystemModel>
 #include <QHeaderView>
 #include <QPlainTextEdit>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 #include <QSplitter>
+#include <QVBoxLayout>
 #include <QStatusBar>
 #include <QTabWidget>
 #include <QTreeView>
@@ -47,12 +53,46 @@ void MainWindow::setupUi() {
         delete w;
     });
 
-    splitter->addWidget(m_tree);
-    splitter->addWidget(m_tabs);
-    splitter->setStretchFactor(0, 0);
-    splitter->setStretchFactor(1, 1);
+    // ── терминал (нижняя панель) ─────────────────────────────────────────
+    auto* terminal = new TerminalWidget(this);
+    auto* shellBox = new QComboBox(this);
+    shellBox->addItems(TerminalWidget::availableShells());
+    auto* startBtn = new QPushButton("Запустить", this);
 
-    setCentralWidget(splitter);
+    auto* termBar = new QWidget(this);
+    auto* termBarLayout = new QHBoxLayout(termBar);
+    termBarLayout->setContentsMargins(6, 4, 6, 4);
+    termBarLayout->addWidget(new QLabel("Оболочка:", this));
+    termBarLayout->addWidget(shellBox);
+    termBarLayout->addWidget(startBtn);
+    termBarLayout->addStretch();
+
+    auto* termPanel = new QWidget(this);
+    auto* termPanelLayout = new QVBoxLayout(termPanel);
+    termPanelLayout->setContentsMargins(0, 0, 0, 0);
+    termPanelLayout->setSpacing(0);
+    termPanelLayout->addWidget(termBar);
+    termPanelLayout->addWidget(terminal);
+
+    connect(startBtn, &QPushButton::clicked, this, [terminal, shellBox]() {
+        terminal->startShell(shellBox->currentText());
+    });
+
+    // ── вертикальный сплиттер: редакторы сверху, терминал снизу ──────────
+    auto* top = new QSplitter(Qt::Horizontal, this);
+    top->addWidget(m_tree);
+    top->addWidget(m_tabs);
+    top->setStretchFactor(0, 0);
+    top->setStretchFactor(1, 1);
+
+    auto* vertical = new QSplitter(Qt::Vertical, this);
+    vertical->addWidget(top);
+    vertical->addWidget(termPanel);
+    vertical->setStretchFactor(0, 3);
+    vertical->setStretchFactor(1, 1);
+    vertical->setSizes({600, 220});
+
+    setCentralWidget(vertical);
 }
 
 void MainWindow::openFileFromTree(const QModelIndex& index) {
