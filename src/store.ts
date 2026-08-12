@@ -84,6 +84,14 @@ export function getMonacoEditor(): monaco_editor | null {
 // ─── защита от циклов при ленивой загрузке (реальные пути) ─────────────────
 let visitedReal = new Set<string>();
 
+// ─── anti-freeze: клик должен вернуться мгновенно ─────────────────────────
+// Все смены workspace выполняются ПОРЦИЯМИ (setTimeout 0 между шагами),
+// чтобы main thread дышал и окно не «умирало» (кнопки не работали).
+function nextFrame(): Promise<void> {
+  return new Promise((r) => setTimeout(r, 0));
+}
+let workspaceBusy = false;
+
 // ─── кэш конфигурации: не применять настройки повторно, если не изменились ─
 let lastConfigJson = '';
 
@@ -259,14 +267,23 @@ export const store = reactive({
   },
 
   async setWorkspacePath(path: string, toastMsg?: string) {
-    visitedReal.clear();
-    const tree = await loadRootLazy(path, this.settings.showHidden);
-    const name = path.split('/').pop() || path;
-    this.workspace = { mode: 'real', rootName: name, rootPath: path, tree };
-    this.openFiles = [];
-    this.activePath = null;
-    if (toastMsg) this.toast(toastMsg);
-    tryApplyConfigAt('real', path);
+    if (workspaceBusy) return;
+    workspaceBusy = true;
+    try {
+      await nextFrame();
+      visitedReal.clear();
+      const tree = await loadRootLazy(path, this.settings.showHidden);
+      await nextFrame();
+      const name = path.split('/').pop() || path;
+      this.workspace = { mode: 'real', rootName: name, rootPath: path, tree };
+      this.openFiles = [];
+      this.activePath = null;
+      await nextFrame();
+      if (toastMsg) this.toast(toastMsg);
+      void tryApplyConfigAt('real', path);
+    } finally {
+      workspaceBusy = false;
+    }
   },
 
   /** Ленивое раскрытие папки: подгружает детей один раз. */
@@ -306,13 +323,23 @@ export const store = reactive({
   },
 
   async openExample() {
-    visitedReal.clear();
-    const tree = await loadWorkspaceTree(DEMO_ROOT, 'virtual', this.settings.showHidden);
-    this.workspace = { mode: 'virtual', rootName: 'example-project', rootPath: DEMO_ROOT, tree };
-    this.openFiles = [];
-    this.activePath = null;
-    this.toast(this.t('toast.exampleLoaded'));
-    tryApplyConfigAt('virtual', DEMO_ROOT);
+    if (workspaceBusy) return; // повторный клик игнорируем
+    workspaceBusy = true;
+    try {
+      await nextFrame(); // клик вернулся, UI отрисовался
+      visitedReal.clear();
+      const tree = await loadWorkspaceTree(DEMO_ROOT, 'virtual', this.settings.showHidden);
+      await nextFrame();
+      this.workspace = { mode: 'virtual', rootName: 'example-project', rootPath: DEMO_ROOT, tree };
+      this.openFiles = [];
+      this.activePath = null;
+      await nextFrame();
+      this.toast(this.t('toast.exampleLoaded'));
+      // конфиг применяем асинхронно, порциями — не в стеке клика
+      void tryApplyConfigAt('virtual', DEMO_ROOT);
+    } finally {
+      workspaceBusy = false;
+    }
   },
 
   revealLine(path: string, line: number) {
@@ -529,10 +556,12 @@ function applyConfigText(text: string, silent = false) {
 
 async function tryApplyConfigAt(mode: 'virtual' | 'real', rootPath: string) {
   try {
+    await nextFrame();
     const text =
       mode === 'virtual'
         ? vfs.readFile(rootPath + '/' + CONFIG_FILENAME)
         : await readFileText({ mode } as Workspace, rootPath + '/' + CONFIG_FILENAME);
+    await nextFrame();
     if (text) applyConfigText(text, true);
   } catch {
     /* конфига нет — ок */

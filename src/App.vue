@@ -70,6 +70,12 @@ onMounted(() => {
   applyAccentCSS(store.settings.accent);
   // плагины грузим после отрисовки — не блокируем первый кадр
   window.setTimeout(() => loadPluginSystem(), 600);
+  // перехватчик JS-ошибок: покажет тостом, если что-то падает
+  window.addEventListener('error', (e) => {
+    const msg = String(e.message || e).slice(0, 120);
+    console.error('[TinyIDE] uncaught:', e);
+    store.toast('⚠ JS: ' + msg);
+  });
   document.documentElement.dir = store.settings.lang === 'he' ? 'rtl' : 'ltr';
   window.addEventListener('contextmenu', onContextMenu);
   // debug-хук для e2e/отладки

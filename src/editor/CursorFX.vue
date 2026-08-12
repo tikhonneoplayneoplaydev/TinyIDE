@@ -62,23 +62,38 @@ onMounted(() => {
       }),
     ];
 
+    let lastAuraOp = -1;
+    let lastTrailOp = -1;
+    let lastT = '';
     const loop = () => {
       if (disposed) return;
       const s = store.settings;
       const aura = auraRef.value;
       const trail = trailRef.value;
       if (aura && trail) {
-        if (target.vis) {
+        // если файл не открыт (welcome поверх) — гасим эффекты и НЕ пишем стили
+        const show = target.vis && !!store.activePath;
+        if (show) {
           cur.x += (target.x - cur.x) * 0.22;
           cur.y += (target.y - cur.y) * 0.22;
           const t = `translate3d(${cur.x}px, ${cur.y}px, 0) translate(-50%, -50%)`;
-          aura.style.transform = t;
-          trail.style.transform = t;
+          if (t !== lastT) {
+            lastT = t;
+            aura.style.transform = t;
+            trail.style.transform = t;
+          }
         }
-        const auraOp = s.glow ? 0.3 + (s.glowIntensity / 100) * 0.7 : 0;
-        const trailOp = s.trail ? 0.35 + (s.trailIntensity / 100) * 0.6 : 0;
-        aura.style.opacity = target.vis ? String(auraOp) : '0';
-        trail.style.opacity = target.vis ? String(trailOp) : '0';
+        const auraOp = show ? (s.glow ? 0.3 + (s.glowIntensity / 100) * 0.7 : 0) : 0;
+        const trailOp = show ? (s.trail ? 0.35 + (s.trailIntensity / 100) * 0.6 : 0) : 0;
+        // пишем opacity ТОЛЬКО при изменении — меньше layout-работы для WebKit
+        if (auraOp !== lastAuraOp) {
+          lastAuraOp = auraOp;
+          aura.style.opacity = String(auraOp);
+        }
+        if (trailOp !== lastTrailOp) {
+          lastTrailOp = trailOp;
+          trail.style.opacity = String(trailOp);
+        }
       }
       requestAnimationFrame(loop);
     };
