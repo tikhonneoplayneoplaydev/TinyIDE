@@ -121,14 +121,16 @@ export default function App() {
   }, []);
 
   const closeTab = useCallback((path: string) => {
-    const prev = openFilesRef.current;
-    const next = prev.filter((f) => f.path !== path);
+    // functional update: несколько подряд вызовов (напр. удаление папки)
+    // корректно закрывают все вкладки, а не только одну
+    setOpenFiles((prev) => prev.filter((f) => f.path !== path));
     if (activePathRef.current === path) {
+      const prev = openFilesRef.current;
       const idx = prev.findIndex((f) => f.path === path);
+      const next = prev.filter((f) => f.path !== path);
       const neighbor = next[Math.min(idx, next.length - 1)];
       setActivePath(neighbor ? neighbor.path : null);
     }
-    setOpenFiles(next);
   }, []);
 
   const saveActive = useCallback(async () => {

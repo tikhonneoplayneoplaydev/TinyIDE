@@ -11,8 +11,11 @@ struct DirEntry {
 }
 
 /// List the contents of a directory (files and folders, dirs first).
+/// Paths are normalized to forward slashes so the frontend can rely on '/'
+/// separators on every platform (Windows uses backslashes natively).
 #[tauri::command]
 fn list_dir(path: String) -> Result<Vec<DirEntry>, String> {
+    let path = path.replace('\\', "/");
     let entries = fs::read_dir(&path).map_err(|e| e.to_string())?;
     let mut out = Vec::new();
     for entry in entries.flatten() {
@@ -25,7 +28,7 @@ fn list_dir(path: String) -> Result<Vec<DirEntry>, String> {
         };
         out.push(DirEntry {
             name: entry.file_name().to_string_lossy().into_owned(),
-            path: p.to_string_lossy().into_owned(),
+            path: p.to_string_lossy().replace('\\', "/"),
             is_dir,
             size,
         });

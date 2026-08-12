@@ -1,7 +1,7 @@
 {
   "name": "tinyide",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "type": "module",
   "description": "TinyIDE — быстрая IDE на Tauri 2, React и Monaco. Анимированный курсор-комета, 90+ языков.",
   "scripts": {

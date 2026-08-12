@@ -21,6 +21,8 @@ async function loadRealDir(
   maxDepth: number,
   showHidden: boolean
 ): Promise<FsNode> {
+  // normalize Windows separators, just in case
+  path = path.replace(/\\/g, '/');
   const name = path.slice(path.lastIndexOf('/') + 1) || path;
   const node: FsNode = { name, path, kind: 'dir', children: [] };
   if (depth >= maxDepth) return node;
