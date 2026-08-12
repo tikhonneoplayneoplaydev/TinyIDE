@@ -25,6 +25,7 @@
   --activity-w: 52px;
   --status-h: 26px;
   --grad: linear-gradient(120deg, var(--accent), var(--accent2), var(--accent3));
+  --mono: ui-monospace, 'Cascadia Code', 'JetBrains Mono', 'SF Mono', Consolas, Menlo, monospace;
 }
 
 [data-theme='light'] {

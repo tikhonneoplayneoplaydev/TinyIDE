@@ -143,9 +143,9 @@ export default function EditorPane({ ide }: { ide: IdeApi }) {
   }, [ide.activePath, ide.workspace]);
 
   return (
-    <div className="editor-area">
+    <>
       <div ref={hostRef} className="editor-host" />
       <CursorFX editorRef={editorRef} settings={ide.settings} />
-    </div>
+    </>
   );
 }
