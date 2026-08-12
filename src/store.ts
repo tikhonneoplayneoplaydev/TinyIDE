@@ -47,6 +47,7 @@ const DEFAULT_SETTINGS: Settings = {
   showHidden: false,
   shell: 'shell',
   terminalFontSize: 13,
+  customShells: [],
 };
 
 function loadSettings(): Settings {
@@ -183,6 +184,16 @@ export const store = reactive({
     if (this.activePath === oldPath || this.activePath?.startsWith(oldPath + '/')) {
       this.activePath = newPath + (this.activePath ?? '').slice(oldPath.length);
     }
+  },
+
+  async setWorkspacePath(path: string, toastMsg?: string) {
+    const tree = await loadWorkspaceTree(path, 'real', this.settings.showHidden);
+    const name = path.split('/').pop() || path;
+    this.workspace = { mode: 'real', rootName: name, rootPath: path, tree };
+    this.openFiles = [];
+    this.activePath = null;
+    if (toastMsg) this.toast(toastMsg);
+    tryApplyConfigAt('real', path);
   },
 
   async openFolder() {

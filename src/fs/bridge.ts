@@ -96,11 +96,11 @@ export async function renamePath(ws: Workspace, oldPath: string, newPath: string
   else await invoke('rename_path', { oldPath, newPath });
 }
 
-export async function openFolderDialog(): Promise<string | null> {
+export async function openFolderDialog(title = 'Открыть папку'): Promise<string | null> {
   if (!isTauri) return null;
   try {
-    const dir = await open({ directory: true, multiple: false, title: 'Открыть папку' });
-    return typeof dir === 'string' ? dir : null;
+    const dir = await open({ directory: true, multiple: false, title });
+    return typeof dir === 'string' ? dir.replace(/\\/g, '/') : null;
   } catch (err) {
     console.error('open folder failed:', err);
     return null;

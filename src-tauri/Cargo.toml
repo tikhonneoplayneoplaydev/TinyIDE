@@ -1,6 +1,6 @@
 [package]
 name = "tinyide"
-version = "0.4.0"
+version = "0.6.0"
 description = "TinyIDE — быстрая IDE на Tauri 2, React и Monaco"
 authors = ["tikhonneoplayneoplaydev"]
 edition = "2021"

@@ -99,21 +99,25 @@ struct PtySession {
 
 struct PtyState(Mutex<HashMap<String, PtySession>>);
 
-fn shell_command(shell: &str, cwd: &str) -> CommandBuilder {
-    let program: String = match shell {
-        "nu" => "nu".into(),
-        "pwsh" => "pwsh".into(),
-        "cmd" => "cmd.exe".into(),
-        "zsh" => "zsh".into(),
-        "fish" => "fish".into(),
-        _ => {
-            #[cfg(windows)]
-            {
-                "powershell.exe".into()
-            }
-            #[cfg(not(windows))]
-            {
-                std::env::var("SHELL").unwrap_or_else(|_| "/bin/bash".into())
+fn shell_command(shell: &str, command: Option<&str>, cwd: &str) -> CommandBuilder {
+    let program: String = if let Some(cmd) = command {
+        cmd.to_string()
+    } else {
+        match shell {
+            "nu" => "nu".into(),
+            "pwsh" => "pwsh".into(),
+            "cmd" => "cmd.exe".into(),
+            "zsh" => "zsh".into(),
+            "fish" => "fish".into(),
+            _ => {
+                #[cfg(windows)]
+                {
+                    "powershell.exe".into()
+                }
+                #[cfg(not(windows))]
+                {
+                    std::env::var("SHELL").unwrap_or_else(|_| "/bin/bash".into())
+                }
             }
         }
     };
@@ -130,6 +134,7 @@ fn pty_start(
     cwd: String,
     cols: u16,
     rows: u16,
+    command: Option<String>,
 ) -> Result<String, String> {
     let system = native_pty_system();
     let pair = system
@@ -141,7 +146,7 @@ fn pty_start(
         })
         .map_err(|e| e.to_string())?;
 
-    let cmd = shell_command(&shell, &cwd);
+    let cmd = shell_command(&shell, command.as_deref(), &cwd);
     let child = pair
         .slave
         .spawn_command(cmd)
@@ -305,6 +310,125 @@ struct GitInfo {
     files: Vec<GitFile>,
 }
 
+#[derive(Serialize)]
+struct RemoteInfo {
+    url: Option<String>,
+    host: Option<String>,
+    branch: Option<String>,
+    ahead: i64,
+    behind: i64,
+}
+
+fn run_git(cwd: &str, args: &[String]) -> Result<String, String> {
+    let out = std::process::Command::new("git")
+        .args(args)
+        .current_dir(cwd)
+        .output()
+        .map_err(|e| format!("git: {e}"))?;
+    let mut text = String::from_utf8_lossy(&out.stdout).into_owned();
+    text.push_str(&String::from_utf8_lossy(&out.stderr));
+    let trimmed = text.trim().to_string();
+    if out.status.success() {
+        Ok(trimmed)
+    } else {
+        Err(trimmed)
+    }
+}
+
+fn host_of_url(url: &str) -> Option<String> {
+    let u = url
+        .split("://")
+        .nth(1)
+        .or_else(|| url.split('@').nth(1))
+        .unwrap_or(url);
+    let host = u.split('/').next().unwrap_or("").to_string();
+    if host.is_empty() {
+        None
+    } else {
+        Some(host)
+    }
+}
+
+/// Информация о remote (работает с любым git-провайдером: GitHub, GitLab, Bitbucket, Gitea…)
+#[tauri::command]
+fn git_remote_info(cwd: String) -> Result<RemoteInfo, String> {
+    let url = run_git(&cwd, &[String::from("remote"), String::from("get-url"), String::from("origin")]).ok();
+    let host = url.as_deref().and_then(host_of_url);
+    let branch = run_git(&cwd, &[String::from("branch"), String::from("--show-current")])
+        .ok()
+        .filter(|s| !s.is_empty());
+    let mut ahead = 0i64;
+    let mut behind = 0i64;
+    if let Ok(sb) = run_git(&cwd, &[String::from("status"), String::from("-sb")]) {
+        if let Some(first) = sb.lines().next() {
+            if let Some(idx) = first.find("[ahead ") {
+                if let Some(rest) = first[idx + 7..].split(']').next() {
+                    if let Ok(n) = rest.trim().parse::<i64>() {
+                        ahead = n;
+                    }
+                }
+            }
+            if let Some(idx) = first.find("[behind ") {
+                if let Some(rest) = first[idx + 8..].split(']').next() {
+                    if let Ok(n) = rest.trim().parse::<i64>() {
+                        behind = n;
+                    }
+                }
+            }
+        }
+    }
+    Ok(RemoteInfo {
+        url,
+        host,
+        branch,
+        ahead,
+        behind,
+    })
+}
+
+/// Клонирование любого git-репозитория по URL (https/ssh/git).
+/// parent_dir — куда клонировать; вернёт путь к папке репозитория.
+#[tauri::command]
+fn git_clone(url: String, parent_dir: String) -> Result<String, String> {
+    let name = url
+        .trim_end_matches('/')
+        .rsplit('/')
+        .next()
+        .unwrap_or("repo")
+        .trim_end_matches(".git")
+        .to_string();
+    let target = format!("{}/{}", parent_dir.trim_end_matches('/'), name);
+    run_git(
+        &parent_dir,
+        &[
+            String::from("clone"),
+            url.clone(),
+            target.clone(),
+        ],
+    )?;
+    Ok(target)
+}
+
+#[tauri::command]
+fn git_pull(cwd: String) -> Result<String, String> {
+    run_git(&cwd, &[String::from("pull")])
+}
+
+#[tauri::command]
+fn git_push(cwd: String) -> Result<String, String> {
+    run_git(&cwd, &[String::from("push")])
+}
+
+#[tauri::command]
+fn git_commit(cwd: String, message: String) -> Result<String, String> {
+    run_git(&cwd, &[String::from("commit"), String::from("-m"), message])
+}
+
+#[tauri::command]
+fn git_init(cwd: String) -> Result<String, String> {
+    run_git(&cwd, &[String::from("init")])
+}
+
 #[tauri::command]
 fn git_status(cwd: String) -> Result<GitInfo, String> {
     let out = std::process::Command::new("git")
@@ -397,6 +521,12 @@ pub fn run() {
             pty_kill,
             run_task,
             git_status,
+            git_remote_info,
+            git_clone,
+            git_pull,
+            git_push,
+            git_commit,
+            git_init,
             funo_check,
             funo_transpile,
             funo_compile

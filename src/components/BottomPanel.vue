@@ -5,9 +5,9 @@ import { FitAddon } from '@xterm/addon-fit';
 import '@xterm/xterm/css/xterm.css';
 import { startTerminal, runTask } from '../terminal/bridge';
 import type { TermHandle } from '../terminal/bridge';
-import { SHELLS } from '../types';
 import { store } from '../store';
 import AppIcon from './AppIcon.vue';
+import ShellSelector from './ShellSelector.vue';
 
 const TERM_THEME = {
   background: '#0b0e17',
@@ -140,6 +140,13 @@ watch(
   () => store.settings.shell,
   () => bootTerminal()
 );
+watch(
+  () => store.settings.customShells.map((c) => c.name + ':' + c.command).join('|'),
+  () => {
+    // если выбранная оболочка — кастомная и её команда изменилась — перезапуск
+    if (store.settings.shell.startsWith('custom:')) bootTerminal();
+  }
+);
 watch(restartKey, () => bootTerminal());
 watch(
   () => [store.settings.terminalFontSize, store.settings.fontFamily],
@@ -216,9 +223,7 @@ const styledLines = (line: string) =>
 
     <template v-if="store.panelTab === 'terminal'">
       <div class="bottom-toolbar">
-        <select class="select shell-select" :value="store.settings.shell" title="Выбрать оболочку (перезапустит терминал)" @change="(e) => store.updateSettings({ shell: (e.target as HTMLSelectElement).value as never })">
-          <option v-for="s in SHELLS" :key="s.id" :value="s.id">{{ s.label }}</option>
-        </select>
+        <ShellSelector :model-value="store.settings.shell" @update:model-value="(v) => store.updateSettings({ shell: v })" />
         <button class="btn-icon" title="Перезапустить терминал" @click="restartKey++">
           <AppIcon name="refresh" />
         </button>

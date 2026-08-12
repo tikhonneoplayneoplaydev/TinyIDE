@@ -160,6 +160,16 @@ export function configToSettings(text: string): ConfigResult {
     patch.shell = String(term.shell) as ShellId;
   const tfs = num(term.font_size, 8, 24);
   if (tfs !== undefined) patch.terminalFontSize = tfs;
+  if (Array.isArray(term.custom_shells)) {
+    const custom = term.custom_shells
+      .filter((s): s is Record<string, unknown> => typeof s === 'object' && s !== null)
+      .map((s) => ({
+        name: str(s.name) ?? '',
+        command: str(s.command) ?? '',
+      }))
+      .filter((s) => s.name && s.command);
+    if (custom.length) patch.customShells = custom;
+  }
 
   // commands
   const commands: TaskCommands = {};

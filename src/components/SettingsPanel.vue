@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { store } from '../store';
-import { ACCENT_PRESETS, FONT_PRESETS, SHELLS } from '../types';
+import { ACCENT_PRESETS, FONT_PRESETS } from '../types';
 import type { Settings } from '../types';
 import { CONFIG_FILENAME } from '../config/tomlConfig';
+import ShellSelector from './ShellSelector.vue';
 
 const s = () => store.settings;
 const set = (patch: Partial<Settings>) => store.updateSettings(patch);
@@ -39,6 +40,7 @@ const DEFAULT_SETTINGS: Settings = {
   showHidden: false,
   shell: 'shell',
   terminalFontSize: 13,
+  customShells: [],
 };
 
 const reset = () => {
@@ -202,9 +204,7 @@ const reset = () => {
         <div class="settings-section-title">💻 Терминал</div>
         <div class="setting-row">
           <span>Оболочка</span>
-          <select class="select" :value="s().shell" @change="(e) => set({ shell: (e.target as HTMLSelectElement).value as Settings['shell'] })">
-            <option v-for="sh in SHELLS" :key="sh.id" :value="sh.id">{{ sh.label }}</option>
-          </select>
+          <ShellSelector :model-value="s().shell" @update:model-value="(v) => set({ shell: v })" />
         </div>
         <div class="setting-row">
           <span>Размер шрифта — {{ s().terminalFontSize }}px</span>

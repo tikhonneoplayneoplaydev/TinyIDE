@@ -5,6 +5,11 @@ import { listen } from '@tauri-apps/api/event';
 import { isTauri } from '../fs/bridge';
 import { vfs } from '../fs/bridge';
 import type { ShellId } from '../types';
+import { store } from '../store';
+
+export function getCustomShellCommand(name: string): string | undefined {
+  return store.settings.customShells.find((c) => c.name === name)?.command;
+}
 
 export type TermHandle = {
   write(data: string): void;
@@ -22,12 +27,19 @@ export type TaskHandle = {
 // ─── Tauri (реальный PTY) ─────────────────────────────────────────────────
 
 export async function startTerminal(
-  shell: ShellId,
+  shell: string,
   cwd: string,
   cols: number,
   rows: number
 ): Promise<TermHandle> {
-  if (!isTauri) return startSimTerminal(shell, cwd);
+  if (!isTauri) return startSimTerminal(shell as ShellId, cwd);
+
+  // кастомная оболочка → передаём команду в Rust
+  let command: string | undefined;
+  if (shell.startsWith('custom:')) {
+    const name = shell.slice('custom:'.length);
+    command = getCustomShellCommand(name);
+  }
 
   let outCb: ((d: string) => void) | null = null;
   let exitCb: (() => void) | null = null;
@@ -44,7 +56,7 @@ export async function startTerminal(
     },
   };
 
-  const id = await invoke<string>('pty_start', { shell, cwd, cols, rows });
+  const id = await invoke<string>('pty_start', { shell, command, cwd, cols, rows });
   h.write = (data) => invoke('pty_write', { id, data }).catch(() => {});
   h.resize = (c, r) => invoke('pty_resize', { id, cols: c, rows: r }).catch(() => {});
   h.kill = () => invoke('pty_kill', { id }).catch(() => {});
@@ -98,7 +110,7 @@ export async function gitStatus(cwd: string): Promise<GitInfo> {
 
 // ─── Веб-симуляция оболочки ───────────────────────────────────────────────
 
-const PROMPTS: Record<ShellId, string> = {
+const PROMPTS: Record<string, string> = {
   nu: '❯ ',
   pwsh: 'PS ❯ ',
   cmd: 'C:\\> ',
@@ -114,11 +126,16 @@ const TINY_LOGO = [
   '/_/\\_\\____/_/ /_/      ',
 ].join('\r\n');
 
-function startSimTerminal(shell: ShellId, cwd: string): TermHandle {
+function startSimTerminal(shell: string, cwd: string): TermHandle {
   let outCb: (d: string) => void = () => {};
   let exitCb: () => void = () => {};
   let input = '';
   let exited = false;
+
+  // промпт для кастомных оболочек
+  const promptStr = shell.startsWith('custom:')
+    ? shell.slice('custom:'.length) + '> '
+    : PROMPTS[shell] ?? '$ ';
 
   const h: TermHandle = {
     write: () => {},
@@ -135,7 +152,7 @@ function startSimTerminal(shell: ShellId, cwd: string): TermHandle {
 
   const print = (text: string) => emit(text + '\r\n');
 
-  const prompt = () => emit(`\x1b[36m${PROMPTS[shell]}\x1b[0m`);
+  const prompt = () => emit(`\x1b[36m${promptStr}\x1b[0m`);
 
   const exec = (line: string) => {
     const parts = line.trim().split(/\s+/);

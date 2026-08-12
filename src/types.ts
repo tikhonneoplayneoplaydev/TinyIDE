@@ -82,20 +82,27 @@ export type Settings = {
   showHidden: boolean;
   shell: ShellId;
   terminalFontSize: number;
+  customShells: CustomShell[];
 };
 
 export type Activity = 'explorer' | 'search' | 'languages' | 'settings' | 'source' | 'funo';
 
-export type ShellId = 'shell' | 'nu' | 'pwsh' | 'cmd' | 'zsh' | 'fish';
+export type ShellId = string; // preset: 'shell'|'nu'|'pwsh'|'cmd'|'zsh'|'fish' | custom: 'custom:<name>'
 
-export const SHELLS: { id: ShellId; label: string }[] = [
-  { id: 'shell', label: 'shell (по умолчанию)' },
-  { id: 'nu', label: 'nu — Nushell' },
-  { id: 'pwsh', label: 'pwsh — PowerShell 7' },
-  { id: 'cmd', label: 'cmd — Командная строка' },
-  { id: 'zsh', label: 'zsh' },
-  { id: 'fish', label: 'fish' },
+export const SHELLS: { id: ShellId; label: string; desc: string; badge: string; badgeBg: string; badgeFg: string }[] = [
+  { id: 'shell', label: 'shell', desc: 'оболочка по умолчанию', badge: '$', badgeBg: '#3f4a63', badgeFg: '#fff' },
+  { id: 'nu', label: 'nu', desc: 'Nushell', badge: '❯', badgeBg: '#29d8db', badgeFg: '#0b0e17' },
+  { id: 'pwsh', label: 'pwsh', desc: 'PowerShell 7', badge: 'PS', badgeBg: '#2672bf', badgeFg: '#fff' },
+  { id: 'cmd', label: 'cmd', desc: 'Командная строка Windows', badge: 'C:', badgeBg: '#a1a1a1', badgeFg: '#0b0e17' },
+  { id: 'zsh', label: 'zsh', desc: 'Z shell', badge: '%', badgeBg: '#e23b4e', badgeFg: '#fff' },
+  { id: 'fish', label: 'fish', desc: 'Friendly Interactive SHell', badge: '>_', badgeBg: '#24b9a8', badgeFg: '#fff' },
 ];
+
+export const SHELL_PRESET_IDS = new Set(SHELLS.map((s) => s.id));
+
+export type CustomShell = { name: string; command: string };
+
+export const customShellId = (name: string) => 'custom:' + name;
 
 export type TaskCommands = Record<string, string>;
 
