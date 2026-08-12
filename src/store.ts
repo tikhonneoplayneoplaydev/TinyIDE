@@ -52,7 +52,7 @@ const DEFAULT_SETTINGS: Settings = {
   terminalFontSize: 13,
   customShells: [],
   lang: 'ru' as Lang,
-  registryUrl: 'https://tikhonneoplayneoplaydev.github.io/TinyIDE/plugins/registry.json',
+  registryUrl: 'https://cdn.jsdelivr.net/gh/tikhonneoplayneoplaydev/TinyIDE-extensions@main/registry.json',
 };
 
 function loadSettings(): Settings {
