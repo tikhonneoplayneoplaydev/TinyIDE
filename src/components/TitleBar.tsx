@@ -29,11 +29,11 @@ export default function TitleBar({ activeFile }: { activeFile: string | null }) 
     <div className="titlebar" data-tauri-drag-region>
       <div className="titlebar-left" data-tauri-drag-region>
         <CometLogo className="titlebar-logo" />
-        <span className="titlebar-name">Comet IDE</span>
+        <span className="titlebar-name">TinyIDE</span>
         {activeFile && <span className="titlebar-file">{activeFile}</span>}
       </div>
       <div className="titlebar-center" data-tauri-drag-region>
-        {!isTauri && <span className="web-badge">web demo</span>}
+        {!isTauri && <span className="web-badge">browser preview</span>}
       </div>
       {isTauri && (
         <div className="titlebar-controls">

@@ -16,7 +16,10 @@ const CHIPS: [string, string][] = [
 export default function Welcome({ ide }: { ide: IdeApi }) {
   const openSample = (ext: string) => {
     const ws = ide.workspace;
-    if (!ws) return;
+    if (!ws) {
+      ide.toast('Сначала откройте пример проекта');
+      return;
+    }
     const walk = (n: FsNode): string | null => {
       if (n.kind === 'file') {
         if (n.name.endsWith('.' + ext)) return n.path;
@@ -30,7 +33,7 @@ export default function Welcome({ ide }: { ide: IdeApi }) {
     };
     const p = walk(ws.tree);
     if (p) ide.openFile(p);
-    else ide.toast('Демо-файл не найден');
+    else ide.toast('Пример не найден');
   };
 
   return (
@@ -38,7 +41,7 @@ export default function Welcome({ ide }: { ide: IdeApi }) {
       <div className="welcome-inner">
         <CometLogo size={76} className="welcome-logo" />
         <h1 className="welcome-title">
-          Comet <span>IDE</span>
+          Tiny<span>IDE</span>
         </h1>
         <p className="welcome-sub">
           Быстрая IDE на <b>Tauri 2</b> · <b>React</b> · <b>Monaco</b> — кометный курсор и 90+ языков
@@ -47,14 +50,11 @@ export default function Welcome({ ide }: { ide: IdeApi }) {
           <button className="btn primary" onClick={() => ide.openFolder()}>
             Открыть папку
           </button>
+          <button className="btn" onClick={() => ide.resetDemo()}>
+            Открыть пример проекта
+          </button>
           <button className="btn" onClick={() => ide.setPalette({ mode: 'quick' })}>
             Быстрое открытие
-          </button>
-          <button
-            className="btn"
-            onClick={() => ide.requestCreate(ide.workspace?.rootPath ?? '/comet-playground', 'file')}
-          >
-            Новый файл
           </button>
         </div>
         <div className="welcome-shortcuts">

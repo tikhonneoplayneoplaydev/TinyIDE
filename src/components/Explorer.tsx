@@ -168,7 +168,7 @@ export default function Explorer({ ide }: { ide: IdeApi }) {
           <ChevronIcon className={`tree-chevron ${rootOpen ? 'open' : ''}`} size={13} />
           <FolderIcon size={15} open={rootOpen} />
           <span className="root-name">{ws.rootName}</span>
-          {ws.mode === 'virtual' && <span className="root-badge">demo</span>}
+          {ws.mode === 'virtual' && <span className="root-badge">example</span>}
         </div>
         <div className={`tree-children ${rootOpen ? 'open' : ''}`}>
           <div className="tree-children-inner">

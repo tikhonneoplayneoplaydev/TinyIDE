@@ -86,8 +86,7 @@ export interface IdeApi {
   closeTab: (path: string) => void;
   saveActive: () => void;
   openFolder: () => void;
-  resetDemo: () => void;
-  refreshTree: () => void;
+  resetDemo: () => void;  refreshTree: () => void;
   doFsOp: (op: () => Promise<void>, then?: () => void) => Promise<void>;
   renameFile: (oldPath: string, newPath: string) => Promise<void>;
   revealLine: (path: string, line: number) => void;

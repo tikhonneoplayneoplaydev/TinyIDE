@@ -1,7 +1,7 @@
 [package]
-name = "comet-ide"
+name = "tinyide"
 version = "0.1.0"
-description = "Comet IDE — VS Code-style IDE built with Tauri 2, React and Monaco"
+description = "TinyIDE — быстрая IDE на Tauri 2, React и Monaco"
 authors = ["tikhonneoplayneoplaydev"]
 edition = "2021"
 

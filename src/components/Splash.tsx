@@ -8,7 +8,7 @@ export default function Splash({ hidden }: { hidden: boolean }) {
         <CometLogo size={104} className="splash-logo" />
       </div>
       <h1 className="splash-title">
-        Comet <span>IDE</span>
+        Tiny<span>IDE</span>
       </h1>
       <div className="splash-bar">
         <div className="splash-bar-fill" />

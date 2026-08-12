@@ -77,16 +77,10 @@ export default function App() {
   const activePathRef = useRef(activePath);
   activePathRef.current = activePath;
 
-  // ─── boot: load initial (demo) workspace ──────────────────────────────────
+  // ─── boot ────────────────────────────────────────────────────────────────
+  // Запускаемся «чисто»: без виртуального проекта. Пользователь открывает
+  // свою папку (десктоп) или пример (браузер/десктоп).
   useEffect(() => {
-    loadWorkspaceTree(DEMO_ROOT, 'virtual', settings.showHidden).then((tree) => {
-      setWorkspace({
-        mode: 'virtual',
-        rootName: 'comet-playground',
-        rootPath: DEMO_ROOT,
-        tree,
-      });
-    });
     const t1 = window.setTimeout(() => setSplash('hide'), 1500);
     const t2 = window.setTimeout(() => setSplash('gone'), 2100);
     return () => {
@@ -209,17 +203,17 @@ export default function App() {
     toast('Открыта папка ' + name);
   }, [toast]);
 
-  const resetDemo = useCallback(() => {
-    vfs.reset();
-    setOpenFiles([]);
-    setActivePath(null);
+  const openExample = useCallback(async () => {
+    const tree = await loadWorkspaceTree(DEMO_ROOT, 'virtual', settingsRef.current.showHidden);
     setWorkspace({
       mode: 'virtual',
-      rootName: 'comet-playground',
+      rootName: 'example-project',
       rootPath: DEMO_ROOT,
-      tree: vfs.getTree(),
+      tree,
     });
-    toast('Демо-проект сброшен');
+    setOpenFiles([]);
+    setActivePath(null);
+    toast('Пример проекта загружен');
   }, [toast]);
 
   const revealLine = useCallback(
@@ -261,6 +255,7 @@ export default function App() {
   // ─── commands (command palette) ───────────────────────────────────────────
   const commands: CommandDef[] = [
     { id: 'open-folder', label: 'Open Folder…', run: () => openFolder() },
+    { id: 'open-example', label: 'Open Example Project', run: () => openExample() },
     { id: 'open-file', label: 'Open File…', key: 'Ctrl+P', run: () => setPalette({ mode: 'quick' }) },
     {
       id: 'new-file', label: 'New File',
@@ -312,8 +307,8 @@ export default function App() {
         setSidebarOpen(true);
       },
     },
-    { id: 'reset-demo', label: 'Reset Demo Project', run: () => resetDemo() },
-    { id: 'about', label: 'About Comet IDE', run: () => toast('Comet IDE v0.1.0 — Tauri 2 · React · Monaco') },
+    { id: 'reset-demo', label: 'Reset Example Project', run: () => openExample() },
+    { id: 'about', label: 'About TinyIDE', run: () => toast('TinyIDE v0.1.0 — Tauri 2 · React · Monaco') },
   ];
 
   // ─── global keyboard shortcuts ────────────────────────────────────────────
@@ -396,8 +391,7 @@ export default function App() {
     closeTab,
     saveActive,
     openFolder,
-    resetDemo,
-    refreshTree,
+    resetDemo: openExample,    refreshTree,
     doFsOp,
     renameFile,
     revealLine,
@@ -434,7 +428,7 @@ export default function App() {
           <TabsBar ide={ide} />
           <div className="editor-area">
             <EditorPane ide={ide} />
-            {!activePath && workspace && <Welcome ide={ide} />}
+            {!activePath && <Welcome ide={ide} />}
           </div>
         </div>
       </div>

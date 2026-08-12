@@ -154,7 +154,7 @@ export default function SettingsPanel({ ide }: { ide: IdeApi }) {
         >
           Сбросить настройки
         </button>
-        <div className="settings-about">Comet IDE v0.1.0 — Tauri 2 · React 18 · Monaco</div>
+        <div className="settings-about">TinyIDE v0.1.0 — Tauri 2 · React 18 · Monaco · GPL-3.0</div>
       </div>
     </div>
   );

@@ -4,12 +4,12 @@
 
 import type { FsNode } from '../types';
 
-export const DEMO_ROOT = '/comet-playground';
+export const DEMO_ROOT = '/example-project';
 
 const F: [string, string][] = [
-  [`${DEMO_ROOT}/README.md`, `# 🌠 Comet Playground
+  [`${DEMO_ROOT}/README.md`, `# 🌠 Example Project
 
-Добро пожаловать в **Comet IDE** — это виртуальная файловая система, которая
+Добро пожаловать в **TinyIDE** — это виртуальная файловая система, которая
 открывается при первом запуске, чтобы показать подсветку синтаксиса
 для 50+ языков программирования.
 
@@ -40,7 +40,7 @@ build/
 .DS_Store
 `],
   [`${DEMO_ROOT}/package.json`, `{
-  "name": "comet-playground",
+  "name": "example-project",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
@@ -224,7 +224,7 @@ export function App(): JSX.Element {
 
   return (
     <main className="app">
-      <Header title="Comet Playground" />
+      <Header title="Example Project" />
       <button onClick={() => addTodo('Новая задача')}>Добавить</button>
       <ul>
         {todos.map((t) => (
@@ -829,7 +829,7 @@ const doubled = nums.map((n) => n * 2).filter((n) => n > 4);
 console.log(doubled);
 `],
   [`${DEMO_ROOT}/samples/data.json`, `{
-  "project": "comet-playground",
+  "project": "example-project",
   "version": "1.0.0",
   "languages": [
     { "name": "Rust", "year": 2010, "paradigm": "multi" },
@@ -929,12 +929,12 @@ $radius: 12px;
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <title>Comet Playground</title>
+    <title>Example Project</title>
     <link rel="stylesheet" href="style.scss" />
   </head>
   <body>
     <header>
-      <h1>Comet IDE</h1>
+      <h1>TinyIDE</h1>
       <nav>
         <a href="#features">Возможности</a>
         <a href="#docs">Документация</a>
@@ -953,8 +953,8 @@ $radius: 12px;
 </html>
 `],
   [`${DEMO_ROOT}/samples/data.xml`, `<?xml version="1.0" encoding="UTF-8"?>
-<project name="comet-playground" version="1.0.0">
-  <description>Демо-проект Comet IDE</description>
+<project name="example-project" version="1.0.0">
+  <description>Демо-проект TinyIDE</description>
   <dependencies>
     <dependency group="org.react" artifact="react" version="18.3.1"/>
     <dependency group="org.monaco" artifact="editor" version="0.52.0"/>
@@ -1067,7 +1067,7 @@ end architecture;
 \\usepackage{amsmath}
 
 \\title{Пример документа}
-\\author{Comet IDE}
+\\author{TinyIDE}
 \\date{\\today}
 
 \\begin{document}
