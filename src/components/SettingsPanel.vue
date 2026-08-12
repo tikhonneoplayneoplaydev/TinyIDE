@@ -214,6 +214,37 @@ const reset = () => {
       </div>
 
       <div class="settings-section">
+        <div class="settings-section-title">🐙 GitHub</div>
+        <div class="setting-row">
+          <span>Client ID (OAuth App)</span>
+          <input
+            class="git-input"
+            style="max-width: 170px"
+            :value="store.githubClientId"
+            placeholder="Iv1.…"
+            @input="(e) => store.setGithubClientId((e.target as HTMLInputElement).value)"
+          />
+        </div>
+        <div class="setting-row">
+          <span>{{ store.githubLogin ? '👤 @' + store.githubLogin : 'Вход не выполнен' }}</span>
+          <button
+            v-if="!store.githubLogin"
+            class="btn git-act primary"
+            @click="store.openGithubAuth()"
+          >
+            <AppIcon name="github" :size="13" /> Войти через GitHub
+          </button>
+          <button v-else class="btn git-act" @click="store.logoutGithub(); store.toast('Вы вышли')">
+            Выйти
+          </button>
+        </div>
+        <div class="config-note">
+          Device Flow: введи код на github.com/login/device — токен получится без секрета.
+          Создай OAuth App: Settings → Developer settings → OAuth Apps (включи Enable Device Flow).
+        </div>
+      </div>
+
+      <div class="settings-section">
         <div class="settings-section-title">{{ store.t('settings.terminal') }}</div>
         <div class="setting-row">
           <span>{{ store.t('settings.shell') }}</span>

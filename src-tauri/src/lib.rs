@@ -418,18 +418,46 @@ fn git_clone_inner(url: &str, parent_dir: &str) -> Result<String, String> {
     Ok(target)
 }
 
-#[tauri::command]
-async fn git_pull(cwd: String) -> Result<String, String> {
-    tauri::async_runtime::spawn_blocking(move || run_git(&cwd, &[String::from("pull")]))
-        .await
-        .map_err(|e| e.to_string())?
+fn git_auth_args(token: &str) -> Vec<String> {
+    use base64::Engine;
+    let b64 = base64::engine::general_purpose::STANDARD
+        .encode(format!("x-access-token:{token}"));
+    vec![
+        String::from("-c"),
+        format!("http.extraheader=Authorization: Basic {b64}"),
+    ]
 }
 
 #[tauri::command]
-async fn git_push(cwd: String) -> Result<String, String> {
-    tauri::async_runtime::spawn_blocking(move || run_git(&cwd, &[String::from("push")]))
-        .await
-        .map_err(|e| e.to_string())?
+async fn git_pull(cwd: String, token: Option<String>) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let mut args: Vec<String> = Vec::new();
+        if let Some(t) = token {
+            if !t.is_empty() {
+                args.extend(git_auth_args(&t));
+            }
+        }
+        args.push(String::from("pull"));
+        run_git(&cwd, &args)
+    })
+    .await
+    .map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+async fn git_push(cwd: String, token: Option<String>) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let mut args: Vec<String> = Vec::new();
+        if let Some(t) = token {
+            if !t.is_empty() {
+                args.extend(git_auth_args(&t));
+            }
+        }
+        args.push(String::from("push"));
+        run_git(&cwd, &args)
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
@@ -664,6 +692,99 @@ async fn search_files_parallel(
 }
 
 
+
+// ═══════════════════════════════════════════════════════════════════════
+//  GitHub OAuth (Device Flow) — вход без секрета и без сервера
+// ═══════════════════════════════════════════════════════════════════════
+
+#[derive(Serialize, serde::Deserialize)]
+struct OAuthDeviceStart {
+    device_code: String,
+    user_code: String,
+    verification_uri: String,
+    expires_in: u64,
+    interval: u64,
+}
+
+fn http_client() -> reqwest::Client {
+    // устанавливаем ring-провайдер для rustls (лёгкая сборка)
+    if rustls::crypto::CryptoProvider::get_default().is_none() {
+        let _ = rustls::crypto::ring::default_provider().install_default();
+    }
+    reqwest::Client::new()
+}
+
+/// Шаг 1: запросить код устройства.
+#[tauri::command]
+async fn oauth_github_start(client_id: String) -> Result<OAuthDeviceStart, String> {
+    let resp = http_client()
+        .post("https://github.com/login/device/code")
+        .form(&[("client_id", client_id.as_str()), ("scope", "repo read:user")])
+        .header("Accept", "application/json")
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+    let v: serde_json::Value = resp.json().await.map_err(|e| e.to_string())?;
+    if let Some(err) = v.get("error").and_then(|e| e.as_str()) {
+        return Err(err.to_string());
+    }
+    serde_json::from_value(v).map_err(|e| e.to_string())
+}
+
+/// Шаг 2: опросить токен (пока пользователь не подтвердит код).
+#[tauri::command]
+async fn oauth_github_token(client_id: String, device_code: String) -> Result<serde_json::Value, String> {
+    let resp = http_client()
+        .post("https://github.com/login/oauth/access_token")
+        .form(&[
+            ("client_id", client_id.as_str()),
+            ("device_code", device_code.as_str()),
+            ("grant_type", "urn:ietf:params:oauth:grant-type:device_code"),
+        ])
+        .header("Accept", "application/json")
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+    resp.json().await.map_err(|e| e.to_string())
+}
+
+/// Профиль пользователя GitHub по токену.
+#[tauri::command]
+async fn github_user(token: String) -> Result<serde_json::Value, String> {
+    let resp = http_client()
+        .get("https://api.github.com/user")
+        .bearer_auth(&token)
+        .header("User-Agent", "TinyIDE")
+        .header("Accept", "application/vnd.github+json")
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+    resp.json().await.map_err(|e| e.to_string())
+}
+
+/// Открыть URL в системном браузере.
+#[tauri::command]
+fn open_url(url: String) -> Result<(), String> {
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("cmd")
+            .args(["/C", "start", ""])
+            .arg(&url)
+            .spawn()
+            .map_err(|e| e.to_string())?;
+    }
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open").arg(&url).spawn().map_err(|e| e.to_string())?;
+    }
+    #[cfg(all(not(target_os = "windows"), not(target_os = "macos")))]
+    {
+        std::process::Command::new("xdg-open").arg(&url).spawn().map_err(|e| e.to_string())?;
+    }
+    Ok(())
+}
+
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -699,7 +820,11 @@ pub fn run() {
             plugins_uninstall,
             plugins_dir,
             write_binary,
-            search_files_parallel
+            search_files_parallel,
+            oauth_github_start,
+            oauth_github_token,
+            github_user,
+            open_url
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

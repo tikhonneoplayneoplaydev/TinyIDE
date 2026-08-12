@@ -18,6 +18,7 @@ import ContextMenu from './components/ContextMenu.vue';
 import Splash from './components/Splash.vue';
 import Welcome from './components/Welcome.vue';
 import FunoPanel from './funo/FunoPanel.vue';
+import GitHubAuth from './components/GitHubAuth.vue';
 import { loadPluginSystem } from './plugins/manager';
 import { DEMO_ROOT } from './fs/virtual';
 
@@ -125,6 +126,7 @@ const activeFileName = () => {
     <StatusBar />
     <Palette v-if="store.palette" />
     <ContextMenu v-if="store.menu" />
+    <GitHubAuth v-if="store.githubAuthOpen" />
     <div v-if="store.toastMsg" class="toast">{{ store.toastMsg }}</div>
   </div>
 </template>

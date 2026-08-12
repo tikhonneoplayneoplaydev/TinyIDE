@@ -110,6 +110,53 @@ export const store = reactive({
   toastMsg: null as string | null,
   splash: 'show' as 'show' | 'hide' | 'gone',
 
+  // ── GitHub OAuth (device flow) ─────────────────────────────────────────
+  githubClientId: localStorage.getItem('tinyide.github.clientId') ?? '',
+  githubToken: localStorage.getItem('tinyide.github.token') ?? '',
+  githubLogin: localStorage.getItem('tinyide.github.login') ?? '',
+  githubAuthOpen: false,
+
+  setGithubClientId(id: string) {
+    this.githubClientId = id;
+    try {
+      localStorage.setItem('tinyide.github.clientId', id);
+    } catch {
+      /* ignore */
+    }
+  },
+
+  completeGithubAuth(token: string, login: string) {
+    this.githubToken = token;
+    this.githubLogin = login;
+    try {
+      localStorage.setItem('tinyide.github.token', token);
+      localStorage.setItem('tinyide.github.login', login);
+    } catch {
+      /* ignore */
+    }
+  },
+
+  logoutGithub() {
+    this.githubToken = '';
+    this.githubLogin = '';
+    try {
+      localStorage.removeItem('tinyide.github.token');
+      localStorage.removeItem('tinyide.github.login');
+    } catch {
+      /* ignore */
+    }
+  },
+
+  openGithubAuth() {
+    if (!this.githubClientId.trim()) {
+      this.toast('Сначала укажи GitHub Client ID в настройках');
+      this.setActivity('settings');
+      this.setSidebarOpen(true);
+      return;
+    }
+    this.githubAuthOpen = true;
+  },
+
   // ── actions ──────────────────────────────────────────────────────────────
   updateSettings(patch: Partial<Settings>) {
     Object.assign(this.settings, patch);

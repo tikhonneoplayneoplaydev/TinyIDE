@@ -90,8 +90,8 @@ async function runGit(op: () => Promise<string>, okMsg: string) {
   }
 }
 
-const pull = () => store.workspace && runGit(() => gitPull(store.workspace!.rootPath), store.t('git.pullDone'));
-const push = () => store.workspace && runGit(() => gitPush(store.workspace!.rootPath), store.t('git.pushDone'));
+const pull = () => store.workspace && runGit(() => gitPull(store.workspace!.rootPath, store.githubToken || undefined), store.t('git.pullDone'));
+const push = () => store.workspace && runGit(() => gitPush(store.workspace!.rootPath, store.githubToken || undefined), store.t('git.pushDone'));
 const commit = () => {
   const m = commitMsg.value.trim();
   if (!m) {
@@ -117,7 +117,10 @@ async function clone() {
       busy.value = false;
       return;
     }
-    const authUrl = embedToken(url, cloneToken.value);
+    const authUrl = embedToken(url, cloneToken.value || (store.githubToken && url.includes('github') ? store.githubToken : ''));
+    if (!cloneToken.value && store.githubToken && url.includes('github')) {
+      output.value = '\x1b[90m[используем токен GitHub-входа @' + store.githubLogin + ']\x1b[0m\n';
+    }
     output.value = '\x1b[36m$ git clone ' + authUrl.replace(/https:\/\/[^@]+@/, 'https://***@') + '\x1b[0m\n';
     const cloned = await gitClone(authUrl, parent);
     output.value += '\x1b[32m✓ Клонировано: ' + cloned + '\x1b[0m\n';
@@ -143,6 +146,20 @@ async function clone() {
     </div>
 
     <div v-if="!isTauri" class="git-empty">{{ err }}</div>
+
+    <!-- вход через GitHub -->
+    <div v-if="isTauri" class="git-login-banner">
+      <template v-if="store.githubLogin">
+        <span class="git-login-user">👤 @{{ store.githubLogin }}</span>
+        <button class="btn git-act" @click="store.logoutGithub(); store.toast('Вы вышли')">Выйти</button>
+      </template>
+      <template v-else>
+        <span class="git-login-text">Войди через GitHub — клонируй приватные репо, push/pull без пароля</span>
+        <button class="btn git-act primary" @click="store.openGithubAuth()">
+          <AppIcon name="github" :size="13" /> Войти
+        </button>
+      </template>
+    </div>
 
     <!-- клонирование -->
     <template v-if="!isRepo && isTauri">
