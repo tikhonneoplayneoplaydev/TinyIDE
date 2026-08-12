@@ -12,3 +12,4 @@ src-tauri/gen/
 *.local
 .DS_Store
 *.log
+qt-app/build/

@@ -159,3 +159,19 @@ FileSystem bridge
 ```
 
 Настройки хранятся в `localStorage`, темы Monaco определены в `src/editor/monacoSetup.ts`.
+
+## 🖥️ Qt-версия (в разработке)
+
+Нативный UI вместо вебвью (Tauri остаётся, но если вебвью тормозит — есть Qt):
+
+```
+qt-app/  — Qt 6 (Widgets) + CMake, MinGW/Windows, сборка:
+  cmake -S qt-app -B qt-app/build -DCMAKE_PREFIX_PATH=C:/Qt/6.8.3/mingw_64
+  cmake --build qt-app/build -j
+```
+
+Сейчас: тёмная тема, дерево файлов, вкладки редактора, номера строк,
+подсветка Funo (QSyntaxHighlighter). Дальше по фазам:
+1. Редактор + конфиг + терминал (QProcess)
+2. Rust-ядро (Funo, git, OAuth, плагины WASM) через C ABI (cdylib)
+3. Маркет плагинов, проблемы, breadcrumbs
