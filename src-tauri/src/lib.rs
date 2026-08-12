@@ -25,8 +25,20 @@ struct DirEntry {
 /// List the contents of a directory (files and folders, dirs first).
 /// Paths are normalized to forward slashes so the frontend can rely on '/'
 /// separators on every platform (Windows uses backslashes natively).
+///
+/// ВАЖНО (фикс зависаний): команда выполняется в пуле потоков tokio
+/// (spawn_blocking), а НЕ на главном потоке Tauri. Синхронная команда на
+/// главном потоке + fs::canonicalize для каждой записи могли вешать весь UI
+/// (кнопки закрыть переставали работать). canonicalize теперь вызывается
+/// только для поддиректорий и тоже в фоновом потоке.
 #[tauri::command]
-fn list_dir(path: String) -> Result<Vec<DirEntry>, String> {
+async fn list_dir(path: String) -> Result<Vec<DirEntry>, String> {
+    tauri::async_runtime::spawn_blocking(move || list_dir_inner(&path))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn list_dir_inner(path: &str) -> Result<Vec<DirEntry>, String> {
     let path = path.replace('\\', "/");
     let entries = fs::read_dir(&path).map_err(|e| e.to_string())?;
     let mut out = Vec::new();
@@ -38,14 +50,21 @@ fn list_dir(path: String) -> Result<Vec<DirEntry>, String> {
         } else {
             p.metadata().ok().map(|m| m.len())
         };
+        // canonicalize — только для директорий (защита от циклов-джункшенов),
+        // для файлов пропускаем: это самый дорогой системный вызов на Windows
+        let canonical = if is_dir {
+            fs::canonicalize(&p)
+                .ok()
+                .map(|c| c.to_string_lossy().replace('\\', "/"))
+        } else {
+            None
+        };
         out.push(DirEntry {
             name: entry.file_name().to_string_lossy().into_owned(),
             path: p.to_string_lossy().replace('\\', "/"),
             is_dir,
             size,
-            canonical: fs::canonicalize(&p)
-                .ok()
-                .map(|c| c.to_string_lossy().replace('\\', "/")),
+            canonical,
         });
     }
     out.sort_by(|a, b| {
@@ -58,42 +77,62 @@ fn list_dir(path: String) -> Result<Vec<DirEntry>, String> {
 
 /// Read a file as text (lossy UTF-8 — binary files won't crash).
 #[tauri::command]
-fn read_file(path: String) -> Result<String, String> {
-    let bytes = fs::read(&path).map_err(|e| e.to_string())?;
-    Ok(String::from_utf8_lossy(&bytes).to_string())
+async fn read_file(path: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let bytes = fs::read(&path).map_err(|e| e.to_string())?;
+        Ok(String::from_utf8_lossy(&bytes).to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn write_file(path: String, content: String) -> Result<(), String> {
-    fs::write(&path, content).map_err(|e| e.to_string())
+async fn write_file(path: String, content: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || fs::write(&path, content).map_err(|e| e.to_string()))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn create_file(path: String) -> Result<(), String> {
-    if fs::metadata(&path).is_ok() {
-        return Err("file already exists".into());
-    }
-    fs::write(&path, "").map_err(|e| e.to_string())
+async fn create_file(path: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        if fs::metadata(&path).is_ok() {
+            return Err("file already exists".into());
+        }
+        fs::write(&path, "").map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn create_dir(path: String) -> Result<(), String> {
-    fs::create_dir_all(&path).map_err(|e| e.to_string())
+async fn create_dir(path: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || fs::create_dir_all(&path).map_err(|e| e.to_string()))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn delete_path(path: String) -> Result<(), String> {
-    let meta = fs::metadata(&path).map_err(|e| e.to_string())?;
-    if meta.is_dir() {
-        fs::remove_dir_all(&path).map_err(|e| e.to_string())
-    } else {
-        fs::remove_file(&path).map_err(|e| e.to_string())
-    }
+async fn delete_path(path: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let meta = fs::metadata(&path).map_err(|e| e.to_string())?;
+        if meta.is_dir() {
+            fs::remove_dir_all(&path).map_err(|e| e.to_string())
+        } else {
+            fs::remove_file(&path).map_err(|e| e.to_string())
+        }
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn rename_path(old_path: String, new_path: String) -> Result<(), String> {
-    fs::rename(&old_path, &new_path).map_err(|e| e.to_string())
+async fn rename_path(old_path: String, new_path: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        fs::rename(&old_path, &new_path).map_err(|e| e.to_string())
+    })
+    .await
+    .map_err(|e| e.to_string())?
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -360,15 +399,21 @@ fn host_of_url(url: &str) -> Option<String> {
 
 /// Информация о remote (работает с любым git-провайдером: GitHub, GitLab, Bitbucket, Gitea…)
 #[tauri::command]
-fn git_remote_info(cwd: String) -> Result<RemoteInfo, String> {
-    let url = run_git(&cwd, &[String::from("remote"), String::from("get-url"), String::from("origin")]).ok();
+async fn git_remote_info(cwd: String) -> Result<RemoteInfo, String> {
+    tauri::async_runtime::spawn_blocking(move || git_remote_info_inner(&cwd))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn git_remote_info_inner(cwd: &str) -> Result<RemoteInfo, String> {
+    let url = run_git(cwd, &[String::from("remote"), String::from("get-url"), String::from("origin")]).ok();
     let host = url.as_deref().and_then(host_of_url);
-    let branch = run_git(&cwd, &[String::from("branch"), String::from("--show-current")])
+    let branch = run_git(cwd, &[String::from("branch"), String::from("--show-current")])
         .ok()
         .filter(|s| !s.is_empty());
     let mut ahead = 0i64;
     let mut behind = 0i64;
-    if let Ok(sb) = run_git(&cwd, &[String::from("status"), String::from("-sb")]) {
+    if let Ok(sb) = run_git(cwd, &[String::from("status"), String::from("-sb")]) {
         if let Some(first) = sb.lines().next() {
             if let Some(idx) = first.find("[ahead ") {
                 if let Some(rest) = first[idx + 7..].split(']').next() {
@@ -479,7 +524,13 @@ async fn git_init(cwd: String) -> Result<String, String> {
 }
 
 #[tauri::command]
-fn git_status(cwd: String) -> Result<GitInfo, String> {
+async fn git_status(cwd: String) -> Result<GitInfo, String> {
+    tauri::async_runtime::spawn_blocking(move || git_status_inner(&cwd))
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn git_status_inner(cwd: &str) -> Result<GitInfo, String> {
     let out = std::process::Command::new("git")
         .args(["status", "--porcelain=v1", "-uall"])
         .current_dir(&cwd)
@@ -490,7 +541,7 @@ fn git_status(cwd: String) -> Result<GitInfo, String> {
     }
     let branch = std::process::Command::new("git")
         .args(["branch", "--show-current"])
-        .current_dir(&cwd)
+        .current_dir(cwd)
         .output()
         .ok()
         .and_then(|o| String::from_utf8(o.stdout).ok())
@@ -561,8 +612,11 @@ async fn funo_compile(
 }
 
 #[tauri::command]
-fn plugins_list(state: tauri::State<'_, PluginsState>) -> Vec<plugins::PluginInfo> {
-    plugins::plugins_list(&state)
+async fn plugins_list(state: tauri::State<'_, PluginsState>) -> Result<Vec<plugins::PluginInfo>, String> {
+    let state = state.inner().clone();
+    tauri::async_runtime::spawn_blocking(move || plugins::plugins_list(&state))
+        .await
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]
@@ -579,13 +633,17 @@ async fn plugins_call(
 }
 
 #[tauri::command]
-fn plugins_install(source_dir: String) -> Result<String, String> {
-    plugins::plugins_install(source_dir)
+async fn plugins_install(source_dir: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || plugins::plugins_install(source_dir))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
-fn plugins_uninstall(name: String) -> Result<(), String> {
-    plugins::plugins_uninstall(name)
+async fn plugins_uninstall(name: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || plugins::plugins_uninstall(name))
+        .await
+        .map_err(|e| e.to_string())?
 }
 
 #[tauri::command]
@@ -766,22 +824,26 @@ async fn github_user(token: String) -> Result<serde_json::Value, String> {
 
 /// Открыть URL в системном браузере.
 #[tauri::command]
-fn open_url(url: String) -> Result<(), String> {
+async fn open_url(url: String) -> Result<(), String> {
+    open_url_inner(&url)
+}
+
+fn open_url_inner(url: &str) -> Result<(), String> {
     #[cfg(target_os = "windows")]
     {
         std::process::Command::new("cmd")
             .args(["/C", "start", ""])
-            .arg(&url)
+            .arg(url)
             .spawn()
             .map_err(|e| e.to_string())?;
     }
     #[cfg(target_os = "macos")]
     {
-        std::process::Command::new("open").arg(&url).spawn().map_err(|e| e.to_string())?;
+        std::process::Command::new("open").arg(url).spawn().map_err(|e| e.to_string())?;
     }
     #[cfg(all(not(target_os = "windows"), not(target_os = "macos")))]
     {
-        std::process::Command::new("xdg-open").arg(&url).spawn().map_err(|e| e.to_string())?;
+        std::process::Command::new("xdg-open").arg(url).spawn().map_err(|e| e.to_string())?;
     }
     Ok(())
 }
@@ -994,7 +1056,7 @@ async fn oauth_github_authorize(client_id: String, master_password: Option<Strin
         state,
         challenge
     );
-    open_url(auth_url)?;
+    open_url_inner(&auth_url)?;
 
     // ─── сервер живёт ровно до первого callback, потом умирает ────────────
     let code: Result<String, String> = std::thread::spawn(move || {
@@ -1103,7 +1165,13 @@ async fn github_load_auth(master_password: Option<String>) -> Result<serde_json:
 
 /// Удалить сохранённый вход.
 #[tauri::command]
-fn github_logout_local() -> Result<(), String> {
+async fn github_logout_local() -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(github_logout_local_inner)
+        .await
+        .map_err(|e| e.to_string())?
+}
+
+fn github_logout_local_inner() -> Result<(), String> {
     let path = data_dir()?.join("oauth.bin");
     if path.exists() {
         std::fs::remove_file(&path).map_err(|e| e.to_string())?;
