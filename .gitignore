@@ -13,3 +13,4 @@ src-tauri/gen/
 .DS_Store
 *.log
 qt-app/build/
+slint-app/target/

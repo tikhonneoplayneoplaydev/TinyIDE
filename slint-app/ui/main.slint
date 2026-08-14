@@ -1,0 +1,206 @@
+// TinyIDE — нативный UI на Slint (тёмная кометная тема)
+
+import { ScrollView, LineEdit, TextEdit } from "std-widgets.slint";
+
+struct FileItem {
+    name: string,
+    path: string,
+    is_dir: bool,
+    depth: int,
+}
+
+component FileRow inherits Rectangle {
+    in property <string> name;
+    in property <int> depth;
+    in property <bool> is-dir;
+    callback clicked;
+    height: 24px;
+    border-radius: 6px;
+    background: touch.has-hover ? #182036 : #0d1120;
+    HorizontalLayout {
+        padding-left: 6px + depth * 14px;
+        padding-right: 6px;
+        spacing: 6px;
+        Text {
+            text: is-dir ? "📁" : "📄";
+            font-size: 11px;
+            color: #7c88a8;
+        }
+        Text {
+            text: name;
+            color: #dbe3f5;
+            font-size: 12px;
+            overflow: elide;
+            horizontal-stretch: 1;
+        }
+    }
+    touch := TouchArea {
+        clicked => { root.clicked(); }
+    }
+}
+
+export component MainWindow inherits Window {
+    title: "TinyIDE — Slint";
+    width: 1380px;
+    height: 880px;
+    background: #0b0e17;
+
+    in-out property <[FileItem]> files;
+    in-out property <string> editor-text;
+    in-out property <string> active-file;
+    in-out property <string> terminal-output;
+    in-out property <string> status-text;
+    in-out property <string> shell-name: "slint-shell";
+
+    callback file-clicked(string);
+    callback run-command(string);
+    callback open-folder;
+
+    VerticalLayout {
+        // ── тайтлбар ──
+        Rectangle {
+            height: 40px;
+            background: #0d1120;
+            HorizontalLayout {
+                padding: 10px;
+                spacing: 9px;
+                Rectangle {
+                    width: 18px; height: 18px;
+                    border-radius: 9px;
+                    background: #22d3ee;
+                }
+                Text { text: "TinyIDE"; color: #67e8f9; font-size: 14px; font-weight: 700; }
+                Text {
+                    text: active-file;
+                    color: #7c88a8;
+                    font-size: 12px;
+                    overflow: elide;
+                    horizontal-stretch: 1;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            // ── сайдбар ──
+            Rectangle {
+                width: 260px;
+                background: #0d1120;
+                VerticalLayout {
+                    Rectangle {
+                        height: 34px;
+                        HorizontalLayout {
+                            padding-left: 6px;
+                            padding-right: 8px;
+                            spacing: 8px;
+                            Text { text: "ПРОВОДНИК"; color: #7c88a8; font-size: 10px; }
+                            Rectangle { horizontal-stretch: 1; }
+                            open-btn := Rectangle {
+                                width: 92px; height: 24px;
+                                border-radius: 6px;
+                                background: touch.has-hover ? #2563eb : #1b2b52;
+                                Text { text: "Открыть папку"; color: #dbe3f5; font-size: 10px; }
+                                touch := TouchArea { clicked => { root.open-folder(); } }
+                            }
+                        }
+                    }
+                    ScrollView {
+                        VerticalLayout {
+                            spacing: 1px;
+                            padding: 4px;
+                            for f in files: FileRow {
+                                name: f.name;
+                                depth: f.depth;
+                                is-dir: f.is_dir;
+                                clicked => { root.file-clicked(f.path); }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ── основная область ──
+            VerticalLayout {
+                // вкладки
+                Rectangle {
+                    height: 34px;
+                    background: #0d1120;
+                    HorizontalLayout {
+                        padding: 6px;
+                        spacing: 4px;
+                        Rectangle {
+                            height: 28px;
+                            border-top-left-radius: 6px;
+                            border-top-right-radius: 6px;
+                            background: #0b0e17;
+                            HorizontalLayout {
+                                padding-left: 0px;
+                                padding-right: 12px;
+                                Text {
+                                    text: active-file == "" ? " — нет открытого файла — " : active-file;
+                                    color: #67e8f9;
+                                    font-size: 12px;
+                                }
+                            }
+                        }
+                        Rectangle { horizontal-stretch: 1; }
+                    }
+                }
+                // редактор
+                Rectangle {
+                    background: #0b0e17;
+                    TextEdit {
+                        text: editor-text;
+                        font-family: "monospace";
+                        font-size: 14px;
+                    }
+                }
+                // терминал
+                Rectangle {
+                    height: 210px;
+                    background: #0b0e17;
+                    VerticalLayout {
+                        Rectangle {
+                            height: 28px;
+                            background: #0d1120;
+                            HorizontalLayout {
+                                padding-left: 4px;
+                                padding-right: 10px;
+                                spacing: 10px;
+                                Text { text: "ТЕРМИНАЛ"; color: #67e8f9; font-size: 10px; }
+                                Text { text: shell-name; color: #7c88a8; font-size: 10px; }
+                            }
+                        }
+                        TextEdit {
+                            text: terminal-output;
+                            read-only: true;
+                            font-family: "monospace";
+                            font-size: 12px;
+                        }
+                        LineEdit {
+                            placeholder-text: "введите команду…";
+                            font-family: "monospace";
+                            font-size: 12px;
+                            accepted => { root.run-command(self.text); }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── статус-бар ──
+        Rectangle {
+            height: 26px;
+            background: #0d1120;
+            HorizontalLayout {
+                padding-left: 4px;
+                                padding-right: 10px;
+                spacing: 16px;
+                Text { text: "● main"; color: #7c88a8; font-size: 11px; }
+                Text { text: "0↓ 0↑"; color: #7c88a8; font-size: 11px; }
+                Rectangle { horizontal-stretch: 1; }
+                Text { text: status-text; color: #7c88a8; font-size: 11px; }
+            }
+        }
+    }
+}
+

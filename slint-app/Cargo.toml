@@ -1,0 +1,17 @@
+[package]
+name = "tinyide-slint"
+version = "0.1.0"
+edition = "2021"
+description = "TinyIDE — нативный UI на Slint (альтернатива вебвью/Qt)"
+
+[build-dependencies]
+slint-build = "1"
+
+[dependencies]
+slint = "1"
+rfd = "0.15"
+
+[profile.release]
+opt-level = "s"
+lto = true
+strip = true
